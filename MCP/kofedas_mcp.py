@@ -1469,6 +1469,53 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
         },
         ["cliente"],
     ),
+    "rentabilidad_articulo_ventas": _tool(
+        "rentabilidad_articulo_ventas",
+        "Ventas/Rentabilidad. Muestra ventas de un articulo en un periodo y calcula margen segun ANAVEN/RENTABILIDAD_LINEA.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "articulo": _string_schema("Codigo de articulo."),
+            "desde": _string_schema("Fecha inicial YYYY-MM-DD."),
+            "hasta": _string_schema("Fecha final YYYY-MM-DD."),
+            "centro": _int_schema("Filtro por centro."),
+            "cliente": _int_schema("Filtro por cliente."),
+            "subcliente": _int_schema("Filtro por subcliente."),
+            "serie": _string_schema("Filtro por serie."),
+            "numero_desde": _int_schema("Numero documento inicial."),
+            "numero_hasta": _int_schema("Numero documento final."),
+            "tipos_documento": {"type": "array", "description": "Tipos de venta a incluir. Por defecto F,A,C,T.", "items": {"type": "string"}},
+            "incluir_pedidos": {"type": "boolean", "description": "Si true no fuerza DMV_SIGNO='1'. Por defecto false."},
+            "modo_coste": _string_schema("Opcional. Fuerza PBASE, PMEDIO, ULTIMO o PREBAS."),
+            "limite": _int_schema("Maximo de lineas."),
+        },
+        ["articulo"],
+    ),
+    "rentabilidad_articulos_resumen": _tool(
+        "rentabilidad_articulos_resumen",
+        "Ventas/Rentabilidad. Resume unidades, ventas, coste, margen y porcentaje de rentabilidad por articulo en un periodo.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "desde": _string_schema("Fecha inicial YYYY-MM-DD."),
+            "hasta": _string_schema("Fecha final YYYY-MM-DD."),
+            "centro": _int_schema("Filtro por centro."),
+            "articulo": _string_schema("Filtro por codigo exacto de articulo."),
+            "texto": _string_schema("Filtro por codigo o descripcion."),
+            "proveedor": _int_schema("Filtro por proveedor principal ART_CODPRO."),
+            "familia": _string_schema("Filtro por ART_CODFAM."),
+            "subfamilia": _string_schema("Filtro por ART_SUBFAM."),
+            "cliente": _int_schema("Filtro por cliente."),
+            "subcliente": _int_schema("Filtro por subcliente."),
+            "serie": _string_schema("Filtro por serie."),
+            "representante": _int_schema("Filtro por CBV_CODREP."),
+            "en_oferta": {"type": "boolean", "description": "Si true, solo lineas con DMV_EJEOFE > 0."},
+            "tipos_documento": {"type": "array", "description": "Tipos de venta a incluir. Por defecto F,A,C,T.", "items": {"type": "string"}},
+            "incluir_pedidos": {"type": "boolean", "description": "Si true no fuerza DMV_SIGNO='1'. Por defecto false."},
+            "modo_coste": _string_schema("Opcional. Fuerza PBASE, PMEDIO, ULTIMO o PREBAS."),
+            "orden": _string_schema("Orden: margen, ventas, rentabilidad, unidades. Por defecto margen."),
+            "limite": _int_schema("Maximo de articulos."),
+            "limite_lineas": _int_schema("Maximo de lineas DETMOV a analizar antes de agregar. Por defecto 1000."),
+        },
+    ),
     "venta_documento_alta_preparar": _tool(
         "venta_documento_alta_preparar",
         "Ventas. Calcula cabecera, lineas, IVA y totales para alta de CABDOCV/DETMOV sin escribir.",
@@ -1928,6 +1975,8 @@ class KofedasToolRuntime:
             "venta_obtener": self.venta_obtener,
             "venta_lineas_listar": self.venta_lineas_listar,
             "venta_precio_articulo": self.venta_precio_articulo,
+            "rentabilidad_articulo_ventas": self.rentabilidad_articulo_ventas,
+            "rentabilidad_articulos_resumen": self.rentabilidad_articulos_resumen,
             "venta_documento_alta_preparar": self.venta_documento_alta_preparar,
             "venta_documento_alta": self.venta_documento_alta,
             "venta_pedido_alta": self.venta_pedido_alta,
@@ -3455,6 +3504,168 @@ class KofedasToolRuntime:
         else:
             cost, source = self._article_last_purchase_cost(empresa, str(article.get("art_codart") or ""), query_date, fallback)
         return {"coste_unitario": round(cost, 6), "origen_coste": source}
+
+    def _profit_article(self, empresa: int, articulo: str, cache: dict[str, dict[str, Any]]) -> dict[str, Any]:
+        key = articulo.strip()
+        if key not in cache:
+            row = self.db.one(
+                """
+                SELECT FIRST 1 ART_CODART, ART_DESCRI, ART_INDINV, ART_CODFAM, ART_SUBFAM,
+                       ART_CODPRO, ART_PRECOS, ART_PREBAS, ART_CANPRE, ART_CODMON
+                FROM ARTICUL
+                WHERE ART_NUMEMP = ? AND ART_CODART = ?
+                """,
+                (empresa, key),
+            )
+            cache[key] = row or {
+                "art_codart": key,
+                "art_descri": "",
+                "art_codfam": None,
+                "art_subfam": None,
+                "art_codpro": None,
+                "art_precos": 0,
+                "art_prebas": 0,
+                "art_canpre": 1,
+            }
+        return cache[key]
+
+    def _profit_line_values(self, empresa: int, row: dict[str, Any], mode: str, article_cache: dict[str, dict[str, Any]]) -> dict[str, Any]:
+        tiplin = str(row.get("dmv_tiplin") or "").strip().upper()
+        description = str(row.get("dmv_descri") or "")
+        if any(marker in description for marker in ("Linea Factura de Tickets", "Tickets Cobro", "IVA:")):
+            return {"incluida": False, "motivo": "linea_resumen_ticket"}
+        excluded_series = str(self._parameter_value("DESSER", "", empresa) or "").strip()
+        if excluded_series and str(row.get("dmv_serie") or "").strip() == excluded_series:
+            return {"incluida": False, "motivo": "serie_excluida_DESSER"}
+        sale_value = 0.0
+        cost_value = 0.0
+        unit_cost = 0.0
+        cost_source = ""
+        quantity = self._to_float(row.get("dmv_cantid"), 0)
+        if tiplin == "D":
+            sale_value = self._to_float(row.get("dmv_vallins"), 0) - self._to_float(row.get("dmv_impdto"), 0)
+            article = self._profit_article(empresa, str(row.get("dmv_codart") or ""), article_cache)
+            cost = self._article_inventory_cost(empresa, article, self._date_arg(row.get("dmv_fecmov")), mode)
+            unit_cost = self._to_float(cost.get("coste_unitario"), 0)
+            cost_value = unit_cost * quantity
+            cost_source = str(cost.get("origen_coste") or "")
+        elif tiplin == "X":
+            sale_value = self._to_float(row.get("dmv_vallins"), 0) - self._to_float(row.get("dmv_impdto"), 0)
+            canpre = self._to_float(row.get("dmv_canpre"), 0)
+            if canpre not in (0, 1):
+                unit_cost = canpre
+                cost_value = canpre * quantity
+                cost_source = "DMV_CANPRE"
+            else:
+                target_margin = self._to_float(self._parameter_value("RENTAF", "25", empresa), 25) / 100
+                cost_value = sale_value * (1 - target_margin)
+                unit_cost = cost_value / quantity if quantity else 0
+                cost_source = "PARAMETROS.RENTAF"
+        else:
+            return {"incluida": False, "motivo": "tipo_linea_no_valorado"}
+        margin = sale_value - cost_value
+        profitability = (margin * 100 / sale_value) if sale_value > 0 else 0
+        return {
+            "incluida": True,
+            "ventas_raw": sale_value,
+            "coste_raw": cost_value,
+            "margen_raw": margin,
+            "ventas": round(sale_value, 2),
+            "coste": round(cost_value, 2),
+            "margen": round(margin, 2),
+            "rentabilidad": round(profitability, 4),
+            "coste_unitario": round(unit_cost, 6),
+            "origen_coste": cost_source,
+        }
+
+    def _profit_sales_rows(self, args: dict[str, Any], require_article: bool, limit_default: int) -> tuple[int, dict[str, Any], list[dict[str, Any]]]:
+        empresa = self._empresa(args)
+        limit = _positive_limit(args.get("limite"), limit_default)
+        mode_info = self._inventory_cost_mode(empresa, args.get("modo_coste"))
+        where = ["D.DMV_NUMEMP = ?"]
+        params: list[Any] = [empresa]
+        if args.get("centro") is not None:
+            where.append("D.DMV_CENTRO = ?")
+            params.append(int(args["centro"]))
+        article = str(args.get("articulo") or "").strip()
+        if article:
+            where.append("D.DMV_CODART = ?")
+            params.append(article)
+        elif require_article:
+            raise KofedasError("articulo es obligatorio")
+        if args.get("desde"):
+            where.append("D.DMV_FECMOV >= ?")
+            params.append(self._date_arg(args["desde"]))
+        if args.get("hasta"):
+            where.append("D.DMV_FECMOV <= ?")
+            params.append(self._date_arg(args["hasta"]))
+        if args.get("cliente"):
+            where.append("C.CBV_CODCLI = ?")
+            params.append(int(args["cliente"]))
+        if args.get("subcliente") not in (None, ""):
+            where.append("C.CBV_SUBCLI = ?")
+            params.append(int(args["subcliente"]))
+        if args.get("representante") is not None:
+            where.append("C.CBV_CODREP = ?")
+            params.append(int(args["representante"]))
+        if args.get("serie") not in (None, ""):
+            where.append("D.DMV_SERIE = ?")
+            params.append(str(args["serie"]).strip())
+        if args.get("numero_desde") is not None:
+            where.append("D.DMV_NUMDOC >= ?")
+            params.append(int(args["numero_desde"]))
+        if args.get("numero_hasta") is not None:
+            where.append("D.DMV_NUMDOC <= ?")
+            params.append(int(args["numero_hasta"]))
+        if args.get("proveedor") is not None:
+            where.append("A.ART_CODPRO = ?")
+            params.append(int(args["proveedor"]))
+        if args.get("familia") not in (None, ""):
+            where.append("A.ART_CODFAM = ?")
+            params.append(str(args["familia"]).strip())
+        if args.get("subfamilia") not in (None, ""):
+            where.append("A.ART_SUBFAM = ?")
+            params.append(str(args["subfamilia"]).strip())
+        if str(args.get("texto") or "").strip():
+            where.append("(UPPER(D.DMV_CODART) LIKE ? OR UPPER(D.DMV_DESCRI) LIKE ?)")
+            like = _like(str(args["texto"]))
+            params.extend([like, like])
+        if args.get("en_oferta"):
+            where.append("D.DMV_EJEOFE > 0")
+        raw_types = args.get("tipos_documento") or DASHBOARD_SALE_DOCUMENTS
+        if isinstance(raw_types, str):
+            raw_types = [item.strip() for item in raw_types.split(",") if item.strip()]
+        document_types = [self._sale_document_type(value) for value in raw_types]
+        if document_types:
+            where.append("D.DMV_TIPDOC IN (" + ", ".join("?" for _ in document_types) + ")")
+            params.extend(document_types)
+        if not args.get("incluir_pedidos"):
+            where.append("D.DMV_SIGNO = '1'")
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   D.DMV_NUMEMP, D.DMV_CENTRO, D.DMV_TIPDOC, D.DMV_TIPAC, D.DMV_EJERCI,
+                   D.DMV_SERIE, D.DMV_NUMDOC, D.DMV_NUMLIN, D.DMV_SIGNO, D.DMV_TIPLIN,
+                   D.DMV_FECMOV, D.DMV_CODART, D.DMV_DESCRI, D.DMV_CODMON, D.DMV_PREVEN,
+                   D.DMV_CANTID, D.DMV_CANPRE, D.DMV_VALLINS, D.DMV_IMPDTO, D.DMV_EJEOFE,
+                   C.CBV_FECHA, C.CBV_CODCLI, C.CBV_SUBCLI, C.CBV_NOMCLI, C.CBV_CODREP,
+                   C.CBV_REFCLI, A.ART_CODFAM, A.ART_SUBFAM, A.ART_CODPRO
+            FROM DETMOV D
+            LEFT JOIN CABDOCV C ON C.CBV_NUMEMP = D.DMV_NUMEMP
+                               AND C.CBV_CENTRO = D.DMV_CENTRO
+                               AND C.CBV_TIPDOC = D.DMV_TIPDOC
+                               AND C.CBV_TIPAC = D.DMV_TIPAC
+                               AND C.CBV_EJERCI = D.DMV_EJERCI
+                               AND C.CBV_SERIE = D.DMV_SERIE
+                               AND C.CBV_NUMDOC = D.DMV_NUMDOC
+            LEFT JOIN ARTICUL A ON A.ART_NUMEMP = D.DMV_NUMEMP AND A.ART_CODART = D.DMV_CODART
+            WHERE {' AND '.join(where)}
+            ORDER BY D.DMV_FECMOV DESC, D.DMV_EJERCI DESC, D.DMV_SERIE, D.DMV_NUMDOC DESC, D.DMV_NUMLIN
+            """,
+            tuple(params),
+            limit,
+        )
+        return empresa, mode_info, rows
 
     def _stock_at_date(self, empresa: int, articulo: str, centro: int, query_date: str) -> float:
         if query_date == date.today().isoformat():
@@ -6973,6 +7184,140 @@ class KofedasToolRuntime:
         item = dict(args)
         item["cantidad"] = self._to_float(args.get("cantidad"), 1)
         return self._sale_price(empresa, cliente, subcliente, item, fecha, tipdoc)
+
+    def rentabilidad_articulo_ventas(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa, mode_info, rows = self._profit_sales_rows(args, True, 250)
+        article_cache: dict[str, dict[str, Any]] = {}
+        lines: list[dict[str, Any]] = []
+        totals = {"unidades": 0.0, "ventas": 0.0, "coste": 0.0, "margen": 0.0}
+        skipped = 0
+        for row in rows:
+            values = self._profit_line_values(empresa, row, str(mode_info["modo"]), article_cache)
+            if not values.get("incluida"):
+                skipped += 1
+                continue
+            quantity = self._to_float(row.get("dmv_cantid"), 0)
+            totals["unidades"] += quantity
+            totals["ventas"] += self._to_float(values.get("ventas_raw"), 0)
+            totals["coste"] += self._to_float(values.get("coste_raw"), 0)
+            totals["margen"] += self._to_float(values.get("margen_raw"), 0)
+            lines.append({
+                "fecha": row.get("dmv_fecmov"),
+                "centro": row.get("dmv_centro"),
+                "tipo_documento": row.get("dmv_tipdoc"),
+                "tipo_accion": row.get("dmv_tipac"),
+                "ejercicio": row.get("dmv_ejerci"),
+                "serie": row.get("dmv_serie"),
+                "numero": row.get("dmv_numdoc"),
+                "linea": row.get("dmv_numlin"),
+                "cliente": row.get("cbv_codcli"),
+                "subcliente": row.get("cbv_subcli"),
+                "nombre_cliente": row.get("cbv_nomcli"),
+                "articulo": row.get("dmv_codart"),
+                "descripcion": row.get("dmv_descri"),
+                "tipo_linea": row.get("dmv_tiplin"),
+                "cantidad": round(quantity, 4),
+                "precio_venta": row.get("dmv_preven"),
+                "venta_neta": values["ventas"],
+                "coste_unitario": values["coste_unitario"],
+                "coste_total": values["coste"],
+                "margen": values["margen"],
+                "rentabilidad": values["rentabilidad"],
+                "origen_coste": values["origen_coste"],
+                "en_oferta": self._to_int(row.get("dmv_ejeofe"), 0) > 0,
+            })
+        profitability = (totals["margen"] * 100 / totals["ventas"]) if totals["ventas"] > 0 else 0
+        return {
+            "empresa": empresa,
+            "articulo": str(args["articulo"]).strip(),
+            "desde": self._date_arg(args.get("desde")) if args.get("desde") else None,
+            "hasta": self._date_arg(args.get("hasta")) if args.get("hasta") else None,
+            "modo_coste": mode_info,
+            "totales": {
+                "unidades": round(totals["unidades"], 4),
+                "ventas": round(totals["ventas"], 2),
+                "coste": round(totals["coste"], 2),
+                "margen": round(totals["margen"], 2),
+                "rentabilidad": round(profitability, 4),
+            },
+            "lineas_total": len(lines),
+            "lineas_omitidas": skipped,
+            "lineas": lines,
+            "fuente_delphi": "ANAVEN_UR.ANALISIS_VENTAS + LIBESP_U.RENTABILIDAD_LINEA",
+        }
+
+    def rentabilidad_articulos_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        query_args = dict(args)
+        query_args["limite"] = args.get("limite_lineas") or MAX_ROWS_LIMIT
+        empresa, mode_info, rows = self._profit_sales_rows(query_args, False, MAX_ROWS_LIMIT)
+        article_cache: dict[str, dict[str, Any]] = {}
+        buckets: dict[str, dict[str, Any]] = {}
+        skipped = 0
+        for row in rows:
+            values = self._profit_line_values(empresa, row, str(mode_info["modo"]), article_cache)
+            if not values.get("incluida"):
+                skipped += 1
+                continue
+            code = str(row.get("dmv_codart") or "")
+            article = self._profit_article(empresa, code, article_cache)
+            bucket = buckets.setdefault(code, {
+                "articulo": code,
+                "descripcion": row.get("dmv_descri") or article.get("art_descri"),
+                "familia": row.get("art_codfam") if row.get("art_codfam") is not None else article.get("art_codfam"),
+                "subfamilia": row.get("art_subfam") if row.get("art_subfam") is not None else article.get("art_subfam"),
+                "proveedor": row.get("art_codpro") if row.get("art_codpro") is not None else article.get("art_codpro"),
+                "lineas": 0,
+                "unidades": 0.0,
+                "ventas": 0.0,
+                "coste": 0.0,
+                "margen": 0.0,
+            })
+            bucket["lineas"] += 1
+            bucket["unidades"] += self._to_float(row.get("dmv_cantid"), 0)
+            bucket["ventas"] += self._to_float(values.get("ventas_raw"), 0)
+            bucket["coste"] += self._to_float(values.get("coste_raw"), 0)
+            bucket["margen"] += self._to_float(values.get("margen_raw"), 0)
+        items: list[dict[str, Any]] = []
+        totals = {"unidades": 0.0, "ventas": 0.0, "coste": 0.0, "margen": 0.0}
+        for bucket in buckets.values():
+            profitability = (bucket["margen"] * 100 / bucket["ventas"]) if bucket["ventas"] > 0 else 0
+            item = {
+                **bucket,
+                "unidades": round(bucket["unidades"], 4),
+                "ventas": round(bucket["ventas"], 2),
+                "coste": round(bucket["coste"], 2),
+                "margen": round(bucket["margen"], 2),
+                "rentabilidad": round(profitability, 4),
+            }
+            items.append(item)
+            totals["unidades"] += bucket["unidades"]
+            totals["ventas"] += bucket["ventas"]
+            totals["coste"] += bucket["coste"]
+            totals["margen"] += bucket["margen"]
+        order = str(args.get("orden") or "margen").strip().lower()
+        order_key = {"margen": "margen", "ventas": "ventas", "rentabilidad": "rentabilidad", "unidades": "unidades"}.get(order, "margen")
+        items.sort(key=lambda item: self._to_float(item.get(order_key), 0), reverse=True)
+        limit = _positive_limit(args.get("limite"), 100)
+        profitability_total = (totals["margen"] * 100 / totals["ventas"]) if totals["ventas"] > 0 else 0
+        return {
+            "empresa": empresa,
+            "desde": self._date_arg(args.get("desde")) if args.get("desde") else None,
+            "hasta": self._date_arg(args.get("hasta")) if args.get("hasta") else None,
+            "modo_coste": mode_info,
+            "totales": {
+                "articulos": len(items),
+                "unidades": round(totals["unidades"], 4),
+                "ventas": round(totals["ventas"], 2),
+                "coste": round(totals["coste"], 2),
+                "margen": round(totals["margen"], 2),
+                "rentabilidad": round(profitability_total, 4),
+            },
+            "lineas_leidas": len(rows),
+            "lineas_omitidas": skipped,
+            "orden": order_key,
+            "items": items[:limit],
+            "fuente_delphi": "ANAVEN_UR.ANALISIS_VENTAS + LIBESP_U.RENTABILIDAD_LINEA",
+        }
 
     def venta_documento_alta_preparar(self, args: dict[str, Any]) -> dict[str, Any]:
         empresa = self._empresa(args)

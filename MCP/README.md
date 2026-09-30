@@ -89,6 +89,8 @@ lectura/escritura controlada:
 - `venta_obtener`
 - `venta_lineas_listar`
 - `venta_precio_articulo`
+- `rentabilidad_articulo_ventas`
+- `rentabilidad_articulos_resumen`
 - `venta_documento_alta_preparar`
 - `venta_documento_alta`
 - `venta_pedido_alta`
@@ -203,6 +205,11 @@ EAN o codigo propio del cliente y aplicando, por este orden, precio especial
 sin escribir; `venta_pedido_alta` crea pedidos de cliente (`CBV_TIPDOC='P'`)
 con `CABDOCV`/`DETMOV` y numeracion `NUMERA`. Los pedidos/presupuestos no
 modifican existencias, igual que el flujo Delphi de pedido de cliente.
+Las herramientas `rentabilidad_articulo_ventas` y
+`rentabilidad_articulos_resumen` replican el enfoque de `ANAVEN`: leen
+`DETMOV`/`CABDOCV`, calculan venta neta (`DMV_VALLINS-DMV_IMPDTO`) y coste con
+`PRECIO_COSTE_ARTICUL`/`PARAMETROS.RENTAB`; para lineas fantasma usan
+`DMV_CANPRE` o `PARAMETROS.RENTAF`, igual que `RENTABILIDAD_LINEA`.
 
 El grupo Cartera cubre los vencimientos/efectos de clientes en `CABDOCVE`,
 enlazando con `CLIEN` y `CABDOCV` cuando hay cabecera origen. Permite listar
