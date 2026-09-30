@@ -511,6 +511,15 @@ CARTERA_EFFECT_TYPE_LABELS: dict[str, str] = {
     "T": "Transferencia",
 }
 
+SALES_COLLECTION_LABELS: dict[str, str] = {
+    "E": "Efectivo",
+    "T": "Tarjeta",
+    "C": "Cheque",
+    "F": "Transferencia",
+    "W": "Web",
+    "O": "Otros",
+}
+
 DASHBOARD_SALE_DOCUMENTS = ("F", "T", "A", "C")
 
 
@@ -1516,6 +1525,62 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
             "limite_lineas": _int_schema("Maximo de lineas DETMOV a analizar antes de agregar. Por defecto 1000."),
         },
     ),
+    "ventas_documentos_detalle": _tool(
+        "ventas_documentos_detalle",
+        "Ventas/ANADOC. Lista documentos de venta de un periodo con importes, cobros, forma de pago, agente, poblacion y vencimiento.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "desde": _string_schema("Fecha inicial YYYY-MM-DD."),
+            "hasta": _string_schema("Fecha final YYYY-MM-DD."),
+            "centro": _int_schema("Filtro por centro."),
+            "tipos_documento": {"type": "array", "description": "Tipos CBV_TIPDOC a incluir. Por defecto T,A,F,C.", "items": {"type": "string"}},
+            "tipo_accion": _string_schema("Filtro CBV_TIPAC. Usa 9 o vacio para todos."),
+            "situacion": _string_schema("Filtro CBV_SITUAC."),
+            "cliente_desde": _int_schema("Cliente inicial."),
+            "cliente_hasta": _int_schema("Cliente final."),
+            "subcliente_desde": _int_schema("Subcliente inicial."),
+            "subcliente_hasta": _int_schema("Subcliente final."),
+            "representante": _int_schema("Filtro CBV_CODREP."),
+            "serie_desde": _string_schema("Serie inicial."),
+            "serie_hasta": _string_schema("Serie final."),
+            "numero_desde": _int_schema("Numero documento inicial."),
+            "numero_hasta": _int_schema("Numero documento final."),
+            "tarjeta": _string_schema("Filtro CBV_CODTAR."),
+            "importe_pendiente_min": {"type": "number", "description": "Importe pendiente minimo."},
+            "importe_pendiente_max": {"type": "number", "description": "Importe pendiente maximo."},
+            "tipo_factura": _string_schema("Para CBV_TIPDOC='F': contado, tickets, albaran o todas. Por defecto todas."),
+            "limite": _int_schema("Maximo de documentos."),
+        },
+    ),
+    "ventas_documentos_resumen": _tool(
+        "ventas_documentos_resumen",
+        "Ventas/ANADOC. Agrupa documentos de venta por tipo, cliente, forma de pago, forma de cobro, agente, poblacion, etc.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "desde": _string_schema("Fecha inicial YYYY-MM-DD."),
+            "hasta": _string_schema("Fecha final YYYY-MM-DD."),
+            "agrupar_por": _string_schema("tipo_documento, cliente, forma_pago, forma_cobro, agente, poblacion, centro, serie, mes, dia_semana, hora, situacion, tarjeta."),
+            "centro": _int_schema("Filtro por centro."),
+            "tipos_documento": {"type": "array", "description": "Tipos CBV_TIPDOC a incluir. Por defecto T,A,F,C.", "items": {"type": "string"}},
+            "tipo_accion": _string_schema("Filtro CBV_TIPAC. Usa 9 o vacio para todos."),
+            "situacion": _string_schema("Filtro CBV_SITUAC."),
+            "cliente_desde": _int_schema("Cliente inicial."),
+            "cliente_hasta": _int_schema("Cliente final."),
+            "subcliente_desde": _int_schema("Subcliente inicial."),
+            "subcliente_hasta": _int_schema("Subcliente final."),
+            "representante": _int_schema("Filtro CBV_CODREP."),
+            "serie_desde": _string_schema("Serie inicial."),
+            "serie_hasta": _string_schema("Serie final."),
+            "numero_desde": _int_schema("Numero documento inicial."),
+            "numero_hasta": _int_schema("Numero documento final."),
+            "tarjeta": _string_schema("Filtro CBV_CODTAR."),
+            "importe_pendiente_min": {"type": "number", "description": "Importe pendiente minimo."},
+            "importe_pendiente_max": {"type": "number", "description": "Importe pendiente maximo."},
+            "tipo_factura": _string_schema("Para CBV_TIPDOC='F': contado, tickets, albaran o todas. Por defecto todas."),
+            "orden": _string_schema("Orden: total, base, pendiente, documentos. Por defecto total."),
+            "limite": _int_schema("Maximo de grupos."),
+        },
+    ),
     "venta_documento_alta_preparar": _tool(
         "venta_documento_alta_preparar",
         "Ventas. Calcula cabecera, lineas, IVA y totales para alta de CABDOCV/DETMOV sin escribir.",
@@ -1977,6 +2042,8 @@ class KofedasToolRuntime:
             "venta_precio_articulo": self.venta_precio_articulo,
             "rentabilidad_articulo_ventas": self.rentabilidad_articulo_ventas,
             "rentabilidad_articulos_resumen": self.rentabilidad_articulos_resumen,
+            "ventas_documentos_detalle": self.ventas_documentos_detalle,
+            "ventas_documentos_resumen": self.ventas_documentos_resumen,
             "venta_documento_alta_preparar": self.venta_documento_alta_preparar,
             "venta_documento_alta": self.venta_documento_alta,
             "venta_pedido_alta": self.venta_pedido_alta,
@@ -3666,6 +3733,124 @@ class KofedasToolRuntime:
             limit,
         )
         return empresa, mode_info, rows
+
+    def _sales_document_types_arg(self, value: Any, default: tuple[str, ...] = DASHBOARD_SALE_DOCUMENTS) -> list[str]:
+        raw = value or default
+        if isinstance(raw, str):
+            raw = [item.strip() for item in raw.split(",") if item.strip()]
+        return [self._sale_document_type(item) for item in raw]
+
+    def _anadoc_base_expr(self, alias: str = "C") -> str:
+        return (
+            f"(COALESCE({alias}.CBV_BASIMP1,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) + COALESCE({alias}.CBV_IMPPOR,0) + "
+            f"COALESCE({alias}.CBV_BASIMP2,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) + "
+            f"COALESCE({alias}.CBV_BASIMP3,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) + "
+            f"COALESCE({alias}.CBV_BASIMP4,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100))"
+        )
+
+    def _anadoc_tax_expr(self, alias: str = "C", tax: str = "IVA") -> str:
+        column = "PORIVA" if tax.upper() == "IVA" else "PORREQ"
+        return (
+            f"((COALESCE({alias}.CBV_BASIMP1,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) + COALESCE({alias}.CBV_IMPPOR,0)) * COALESCE({alias}.CBV_{column}1,0)/100 + "
+            f"COALESCE({alias}.CBV_BASIMP2,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) * COALESCE({alias}.CBV_{column}2,0)/100 + "
+            f"COALESCE({alias}.CBV_BASIMP3,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) * COALESCE({alias}.CBV_{column}3,0)/100 + "
+            f"COALESCE({alias}.CBV_BASIMP4,0) * (1 - COALESCE({alias}.CBV_PORDTO,0)/100) * COALESCE({alias}.CBV_{column}4,0)/100)"
+        )
+
+    def _anadoc_where(self, args: dict[str, Any], alias: str = "C") -> tuple[list[str], list[Any]]:
+        empresa = self._empresa(args)
+        where = [f"{alias}.CBV_NUMEMP = ?"]
+        params: list[Any] = [empresa]
+        if args.get("centro") is not None:
+            where.append(f"{alias}.CBV_CENTRO = ?")
+            params.append(int(args["centro"]))
+        types = self._sales_document_types_arg(args.get("tipos_documento"))
+        if types:
+            where.append(f"{alias}.CBV_TIPDOC IN (" + ", ".join("?" for _ in types) + ")")
+            params.extend(types)
+        if args.get("desde"):
+            where.append(f"{alias}.CBV_FECHA >= ?")
+            params.append(self._date_arg(args["desde"]))
+        if args.get("hasta"):
+            where.append(f"{alias}.CBV_FECHA <= ?")
+            params.append(self._date_arg(args["hasta"]))
+        if args.get("tipo_accion") not in (None, "", "9"):
+            where.append(f"{alias}.CBV_TIPAC = ?")
+            params.append(str(args["tipo_accion"]).strip()[:1])
+        if args.get("situacion") not in (None, ""):
+            where.append(f"{alias}.CBV_SITUAC = ?")
+            params.append(str(args["situacion"]).strip().upper()[:1])
+        if args.get("cliente_desde") is not None:
+            where.append(f"{alias}.CBV_CODCLI >= ?")
+            params.append(int(args["cliente_desde"]))
+        if args.get("cliente_hasta") is not None:
+            where.append(f"{alias}.CBV_CODCLI <= ?")
+            params.append(int(args["cliente_hasta"]))
+        if args.get("subcliente_desde") is not None:
+            where.append(f"{alias}.CBV_SUBCLI >= ?")
+            params.append(int(args["subcliente_desde"]))
+        if args.get("subcliente_hasta") is not None:
+            where.append(f"{alias}.CBV_SUBCLI <= ?")
+            params.append(int(args["subcliente_hasta"]))
+        if args.get("representante") is not None:
+            where.append(f"{alias}.CBV_CODREP = ?")
+            params.append(int(args["representante"]))
+        if args.get("serie_desde") not in (None, ""):
+            where.append(f"{alias}.CBV_SERIE >= ?")
+            params.append(str(args["serie_desde"]).strip())
+        if args.get("serie_hasta") not in (None, ""):
+            where.append(f"{alias}.CBV_SERIE <= ?")
+            params.append(str(args["serie_hasta"]).strip())
+        if args.get("numero_desde") is not None:
+            where.append(f"{alias}.CBV_NUMDOC >= ?")
+            params.append(int(args["numero_desde"]))
+        if args.get("numero_hasta") is not None:
+            where.append(f"{alias}.CBV_NUMDOC <= ?")
+            params.append(int(args["numero_hasta"]))
+        if args.get("tarjeta") not in (None, ""):
+            where.append(f"{alias}.CBV_CODTAR = ?")
+            params.append(str(args["tarjeta"]).strip())
+        pending_expr = f"(COALESCE({alias}.CBV_TOTALD,0) - COALESCE({alias}.CBV_IMPCOB,0))"
+        if args.get("importe_pendiente_min") is not None:
+            where.append(f"{pending_expr} >= ?")
+            params.append(self._to_float(args["importe_pendiente_min"], 0))
+        if args.get("importe_pendiente_max") is not None:
+            where.append(f"{pending_expr} <= ?")
+            params.append(self._to_float(args["importe_pendiente_max"], 0))
+        invoice_kind = str(args.get("tipo_factura") or "todas").strip().lower()
+        contado = self._to_int(self._parameter_value("FPGCON", "0", empresa), 0)
+        if invoice_kind in {"contado", "factura_contado"}:
+            where.append(f"({alias}.CBV_TIPDOC <> 'F' OR {alias}.CBV_CODPAG = ?)")
+            params.append(contado)
+        elif invoice_kind in {"tickets", "ticket", "factura_tickets"}:
+            where.append(f"({alias}.CBV_TIPDOC <> 'F' OR {alias}.CBV_CODPAG = -1)")
+        elif invoice_kind in {"albaran", "albaranes", "factura_albaran"}:
+            where.append(f"({alias}.CBV_TIPDOC <> 'F' OR ({alias}.CBV_CODPAG > 0 AND {alias}.CBV_CODPAG <> ?))")
+            params.append(contado)
+        return where, params
+
+    def _anadoc_group_expr(self, group_by: str) -> tuple[str, str, str, str]:
+        group = group_by.strip().lower()
+        mapping = {
+            "tipo_documento": ("C.CBV_TIPDOC", "C.CBV_TIPDOC", "CODIGO", "NOMBRE"),
+            "documento": ("C.CBV_TIPDOC", "C.CBV_TIPDOC", "CODIGO", "NOMBRE"),
+            "cliente": ("C.CBV_CODCLI || '/' || C.CBV_SUBCLI", "NULLIF(TRIM(COALESCE(CL.CLI_NOMCLI, C.CBV_NOMCLI, '')), '')", "CODIGO", "NOMBRE"),
+            "forma_pago": ("C.CBV_CODPAG", "COALESCE(FP.FPG_DESCRI, CAST(C.CBV_CODPAG AS VARCHAR(20)))", "CODIGO", "NOMBRE"),
+            "forma_cobro": ("C.CBV_FORCOB", "C.CBV_FORCOB", "CODIGO", "NOMBRE"),
+            "agente": ("C.CBV_CODREP", "COALESCE(R.REP_NOMBRE, CAST(C.CBV_CODREP AS VARCHAR(20)))", "CODIGO", "NOMBRE"),
+            "representante": ("C.CBV_CODREP", "COALESCE(R.REP_NOMBRE, CAST(C.CBV_CODREP AS VARCHAR(20)))", "CODIGO", "NOMBRE"),
+            "poblacion": ("UPPER(TRIM(COALESCE(NULLIF(C.CBV_POBLAC, ''), CL.CLI_POBLAC, '')))", "UPPER(TRIM(COALESCE(NULLIF(C.CBV_POBLAC, ''), CL.CLI_POBLAC, '')))", "CODIGO", "NOMBRE"),
+            "centro": ("C.CBV_CENTRO", "COALESCE(CE.CEN_NOMCEN, CAST(C.CBV_CENTRO AS VARCHAR(20)))", "CODIGO", "NOMBRE"),
+            "serie": ("C.CBV_SERIE", "C.CBV_SERIE", "CODIGO", "NOMBRE"),
+            "mes": ("EXTRACT(MONTH FROM C.CBV_FECHA)", "EXTRACT(MONTH FROM C.CBV_FECHA)", "CODIGO", "NOMBRE"),
+            "dia_semana": ("EXTRACT(WEEKDAY FROM C.CBV_FECHA)", "EXTRACT(WEEKDAY FROM C.CBV_FECHA)", "CODIGO", "NOMBRE"),
+            "hora": ("EXTRACT(HOUR FROM C.CBV_FECMOD)", "EXTRACT(HOUR FROM C.CBV_FECMOD)", "CODIGO", "NOMBRE"),
+            "situacion": ("C.CBV_SITUAC", "C.CBV_SITUAC", "CODIGO", "NOMBRE"),
+            "tarjeta": ("C.CBV_CODTAR", "COALESCE(T.TAR_NOMBRE, C.CBV_CODTAR)", "CODIGO", "NOMBRE"),
+        }
+        if group not in mapping:
+            raise KofedasError("agrupar_por no valido para ventas_documentos_resumen")
+        return mapping[group]
 
     def _stock_at_date(self, empresa: int, articulo: str, centro: int, query_date: str) -> float:
         if query_date == date.today().isoformat():
@@ -7317,6 +7502,210 @@ class KofedasToolRuntime:
             "orden": order_key,
             "items": items[:limit],
             "fuente_delphi": "ANAVEN_UR.ANALISIS_VENTAS + LIBESP_U.RENTABILIDAD_LINEA",
+        }
+
+    def ventas_documentos_detalle(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        limit = _positive_limit(args.get("limite"), 250)
+        where, params = self._anadoc_where(args, "C")
+        base_expr = self._anadoc_base_expr("C")
+        iva_expr = self._anadoc_tax_expr("C", "IVA")
+        req_expr = self._anadoc_tax_expr("C", "REQ")
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   C.CBV_NUMEMP, C.CBV_CENTRO, C.CBV_TIPDOC, C.CBV_TIPAC, C.CBV_EJERCI,
+                   C.CBV_SERIE, C.CBV_NUMDOC, C.CBV_CAJA, C.CBV_FECHA, C.CBV_CODCLI,
+                   C.CBV_SUBCLI, C.CBV_NOMCLI, COALESCE(CL.CLI_NOMCLI, C.CBV_NOMCLI) AS CLI_NOMCOR,
+                   C.CBV_CODMON, {base_expr} AS CBV_BASIMP, {iva_expr} AS CBV_IVA, {req_expr} AS CBV_RE,
+                   C.CBV_TOTALD, C.CBV_IMPCOB, (COALESCE(C.CBV_TOTALD,0) - COALESCE(C.CBV_IMPCOB,0)) AS CBV_IMPPEN,
+                   C.CBV_SITUAC, C.CBV_REFCLI, C.CBV_RETIRA, C.CBV_CODTAR, T.TAR_NOMBRE AS TARJETA,
+                   C.CBV_CODPAG, FP.FPG_DESCRI AS FORMA_PAGO, C.CBV_FORCOB, C.CBV_USUMOD,
+                   C.CBV_OBSERV, C.CBV_CIF, C.CBV_CODREP, R.REP_NOMBRE AS REPRESENTANTE,
+                   COALESCE(C.CBV_POBLAC, CL.CLI_POBLAC) AS POBLACION,
+                   EXTRACT(MONTH FROM C.CBV_FECHA) AS MES,
+                   EXTRACT(WEEKDAY FROM C.CBV_FECHA) AS DIA_SEMANA,
+                   EXTRACT(HOUR FROM C.CBV_FECMOD) AS HORA,
+                   E.CBVE_FECVTO AS FECVTO
+            FROM CABDOCV C
+            LEFT JOIN CLIEN CL ON CL.CLI_NUMEMP = C.CBV_NUMEMP
+                              AND CL.CLI_CODCLI = C.CBV_CODCLI
+                              AND CL.CLI_SUBCLI = C.CBV_SUBCLI
+            LEFT JOIN FORPAG FP ON FP.FPG_NUMEMP = C.CBV_NUMEMP AND FP.FPG_CODIGO = C.CBV_CODPAG
+            LEFT JOIN REPRESE R ON R.REP_NUMEMP = C.CBV_NUMEMP AND R.REP_CODREP = C.CBV_CODREP
+            LEFT JOIN CLITAR T ON T.TAR_NUMEMP = C.CBV_NUMEMP AND T.TAR_CODTAR = C.CBV_CODTAR
+            LEFT JOIN (
+                SELECT CBVE_NUMEMP, CBVE_CENTRO, CBVE_TIPDOC, CBVE_TIPAC,
+                       CBVE_EJERCI, CBVE_SERIE, CBVE_NUMDOC, MIN(CBVE_FECVTO) AS CBVE_FECVTO
+                FROM CABDOCVE
+                GROUP BY CBVE_NUMEMP, CBVE_CENTRO, CBVE_TIPDOC, CBVE_TIPAC,
+                         CBVE_EJERCI, CBVE_SERIE, CBVE_NUMDOC
+            ) E ON E.CBVE_NUMEMP = C.CBV_NUMEMP
+               AND E.CBVE_CENTRO = C.CBV_CENTRO
+               AND E.CBVE_TIPDOC = C.CBV_TIPDOC
+               AND E.CBVE_TIPAC = C.CBV_TIPAC
+               AND E.CBVE_EJERCI = C.CBV_EJERCI
+               AND E.CBVE_SERIE = C.CBV_SERIE
+               AND E.CBVE_NUMDOC = C.CBV_NUMDOC
+            WHERE {' AND '.join(where)}
+            ORDER BY C.CBV_FECHA DESC, C.CBV_EJERCI DESC, C.CBV_SERIE, C.CBV_NUMDOC DESC
+            """,
+            tuple(params),
+            limit,
+        )
+        items: list[dict[str, Any]] = []
+        totals = {"base": 0.0, "iva": 0.0, "recargo": 0.0, "total": 0.0, "cobrado": 0.0, "pendiente": 0.0}
+        for row in rows:
+            tipdoc = str(row.get("cbv_tipdoc") or "").strip().upper()
+            for key, source in (("base", "cbv_basimp"), ("iva", "cbv_iva"), ("recargo", "cbv_re"), ("total", "cbv_totald"), ("cobrado", "cbv_impcob"), ("pendiente", "cbv_imppen")):
+                totals[key] += self._to_float(row.get(source), 0)
+            forma_cobro = str(row.get("cbv_forcob") or "").strip().upper()
+            items.append({
+                "centro": row.get("cbv_centro"),
+                "tipo_documento": tipdoc,
+                "tipo_documento_descripcion": SALES_DOCUMENT_TYPES.get(tipdoc, tipdoc),
+                "tipo_accion": row.get("cbv_tipac"),
+                "ejercicio": row.get("cbv_ejerci"),
+                "serie": row.get("cbv_serie"),
+                "numero": row.get("cbv_numdoc"),
+                "fecha": row.get("cbv_fecha"),
+                "cliente": row.get("cbv_codcli"),
+                "subcliente": row.get("cbv_subcli"),
+                "nombre_cliente": row.get("cbv_nomcli"),
+                "poblacion": row.get("poblacion"),
+                "moneda": row.get("cbv_codmon"),
+                "base": round(self._to_float(row.get("cbv_basimp"), 0), 2),
+                "iva": round(self._to_float(row.get("cbv_iva"), 0), 2),
+                "recargo": round(self._to_float(row.get("cbv_re"), 0), 2),
+                "total": round(self._to_float(row.get("cbv_totald"), 0), 2),
+                "cobrado": round(self._to_float(row.get("cbv_impcob"), 0), 2),
+                "pendiente": round(self._to_float(row.get("cbv_imppen"), 0), 2),
+                "situacion": row.get("cbv_situac"),
+                "referencia_cliente": row.get("cbv_refcli"),
+                "retira": row.get("cbv_retira"),
+                "tarjeta": row.get("cbv_codtar"),
+                "tarjeta_nombre": row.get("tarjeta"),
+                "forma_pago": row.get("cbv_codpag"),
+                "forma_pago_descripcion": row.get("forma_pago") or ("FACTURA TICKETS" if self._to_int(row.get("cbv_codpag"), 0) == -1 else None),
+                "forma_cobro": forma_cobro,
+                "forma_cobro_descripcion": SALES_COLLECTION_LABELS.get(forma_cobro, forma_cobro),
+                "usuario": row.get("cbv_usumod"),
+                "observaciones": row.get("cbv_observ"),
+                "cif": row.get("cbv_cif"),
+                "representante": row.get("cbv_codrep"),
+                "representante_nombre": row.get("representante"),
+                "mes": row.get("mes"),
+                "dia_semana": row.get("dia_semana"),
+                "hora": row.get("hora"),
+                "vencimiento": row.get("fecvto"),
+            })
+        return {
+            "empresa": empresa,
+            "periodo": {"desde": self._date_arg(args.get("desde")) if args.get("desde") else None, "hasta": self._date_arg(args.get("hasta")) if args.get("hasta") else None},
+            "documentos": len(items),
+            "totales": {key: round(value, 2) for key, value in totals.items()},
+            "items": items,
+            "fuente_delphi": "ANADOC_UR.ANALISIS_DOCUMENTOS_VENTA",
+        }
+
+    def ventas_documentos_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        limit = _positive_limit(args.get("limite"), 100)
+        group_by = str(args.get("agrupar_por") or "tipo_documento").strip().lower()
+        key_expr, name_expr, key_alias, name_alias = self._anadoc_group_expr(group_by)
+        where, params = self._anadoc_where(args, "C")
+        base_expr = self._anadoc_base_expr("C")
+        iva_expr = self._anadoc_tax_expr("C", "IVA")
+        req_expr = self._anadoc_tax_expr("C", "REQ")
+        order = str(args.get("orden") or "total").strip().lower()
+        order_expr = {"base": "BASE", "total": "TOTAL", "pendiente": "PENDIENTE", "documentos": "DOCUMENTOS"}.get(order, "TOTAL")
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   {key_expr} AS {key_alias}, MIN({name_expr}) AS {name_alias},
+                   COUNT(*) AS DOCUMENTOS,
+                   SUM({base_expr}) AS BASE,
+                   SUM({iva_expr}) AS IVA,
+                   SUM({req_expr}) AS RECARGO,
+                   SUM(COALESCE(C.CBV_TOTALD,0)) AS TOTAL,
+                   SUM(COALESCE(C.CBV_IMPCOB,0)) AS COBRADO,
+                   SUM(COALESCE(C.CBV_TOTALD,0) - COALESCE(C.CBV_IMPCOB,0)) AS PENDIENTE
+            FROM CABDOCV C
+            LEFT JOIN CLIEN CL ON CL.CLI_NUMEMP = C.CBV_NUMEMP
+                              AND CL.CLI_CODCLI = C.CBV_CODCLI
+                              AND CL.CLI_SUBCLI = C.CBV_SUBCLI
+            LEFT JOIN FORPAG FP ON FP.FPG_NUMEMP = C.CBV_NUMEMP AND FP.FPG_CODIGO = C.CBV_CODPAG
+            LEFT JOIN REPRESE R ON R.REP_NUMEMP = C.CBV_NUMEMP AND R.REP_CODREP = C.CBV_CODREP
+            LEFT JOIN CENTROS CE ON CE.CEN_NUMEMP = C.CBV_NUMEMP AND CE.CEN_CODCEN = C.CBV_CENTRO
+            LEFT JOIN CLITAR T ON T.TAR_NUMEMP = C.CBV_NUMEMP AND T.TAR_CODTAR = C.CBV_CODTAR
+            WHERE {' AND '.join(where)}
+            GROUP BY {key_expr}
+            ORDER BY {order_expr} DESC
+            """,
+            tuple(params),
+            limit,
+        )
+        total_row = self.db.one(
+            f"""
+            SELECT COUNT(*) AS DOCUMENTOS,
+                   SUM({base_expr}) AS BASE,
+                   SUM({iva_expr}) AS IVA,
+                   SUM({req_expr}) AS RECARGO,
+                   SUM(COALESCE(C.CBV_TOTALD,0)) AS TOTAL,
+                   SUM(COALESCE(C.CBV_IMPCOB,0)) AS COBRADO,
+                   SUM(COALESCE(C.CBV_TOTALD,0) - COALESCE(C.CBV_IMPCOB,0)) AS PENDIENTE
+            FROM CABDOCV C
+            LEFT JOIN CLIEN CL ON CL.CLI_NUMEMP = C.CBV_NUMEMP
+                              AND CL.CLI_CODCLI = C.CBV_CODCLI
+                              AND CL.CLI_SUBCLI = C.CBV_SUBCLI
+            LEFT JOIN FORPAG FP ON FP.FPG_NUMEMP = C.CBV_NUMEMP AND FP.FPG_CODIGO = C.CBV_CODPAG
+            LEFT JOIN REPRESE R ON R.REP_NUMEMP = C.CBV_NUMEMP AND R.REP_CODREP = C.CBV_CODREP
+            LEFT JOIN CENTROS CE ON CE.CEN_NUMEMP = C.CBV_NUMEMP AND CE.CEN_CODCEN = C.CBV_CENTRO
+            LEFT JOIN CLITAR T ON T.TAR_NUMEMP = C.CBV_NUMEMP AND T.TAR_CODTAR = C.CBV_CODTAR
+            WHERE {' AND '.join(where)}
+            """,
+            tuple(params),
+        ) or {}
+        items: list[dict[str, Any]] = []
+        for row in rows:
+            code = row.get(key_alias.lower())
+            name = row.get(name_alias.lower())
+            if group_by in {"tipo_documento", "documento"}:
+                name = SALES_DOCUMENT_TYPES.get(str(code or "").strip().upper(), name)
+            elif group_by == "forma_cobro":
+                name = SALES_COLLECTION_LABELS.get(str(code or "").strip().upper(), name)
+            elif group_by == "forma_pago" and self._to_int(code, 0) == -1:
+                name = "FACTURA TICKETS"
+            item = {
+                "codigo": code,
+                "nombre": name,
+                "documentos": self._to_int(row.get("documentos"), 0),
+                "base": round(self._to_float(row.get("base"), 0), 2),
+                "iva": round(self._to_float(row.get("iva"), 0), 2),
+                "recargo": round(self._to_float(row.get("recargo"), 0), 2),
+                "total": round(self._to_float(row.get("total"), 0), 2),
+                "cobrado": round(self._to_float(row.get("cobrado"), 0), 2),
+                "pendiente": round(self._to_float(row.get("pendiente"), 0), 2),
+            }
+            items.append(item)
+        totals = {
+            "documentos": self._to_int(total_row.get("documentos"), 0),
+            "base": round(self._to_float(total_row.get("base"), 0), 2),
+            "iva": round(self._to_float(total_row.get("iva"), 0), 2),
+            "recargo": round(self._to_float(total_row.get("recargo"), 0), 2),
+            "total": round(self._to_float(total_row.get("total"), 0), 2),
+            "cobrado": round(self._to_float(total_row.get("cobrado"), 0), 2),
+            "pendiente": round(self._to_float(total_row.get("pendiente"), 0), 2),
+        }
+        return {
+            "empresa": empresa,
+            "periodo": {"desde": self._date_arg(args.get("desde")) if args.get("desde") else None, "hasta": self._date_arg(args.get("hasta")) if args.get("hasta") else None},
+            "agrupar_por": group_by,
+            "orden": order_expr.lower(),
+            "totales": totals,
+            "grupos_devueltos": len(items),
+            "items": items,
+            "fuente_delphi": "ANADOC_UR.ANALISIS_DOCUMENTOS_VENTA",
         }
 
     def venta_documento_alta_preparar(self, args: dict[str, Any]) -> dict[str, Any]:

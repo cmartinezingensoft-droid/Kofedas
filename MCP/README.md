@@ -91,6 +91,8 @@ lectura/escritura controlada:
 - `venta_precio_articulo`
 - `rentabilidad_articulo_ventas`
 - `rentabilidad_articulos_resumen`
+- `ventas_documentos_detalle`
+- `ventas_documentos_resumen`
 - `venta_documento_alta_preparar`
 - `venta_documento_alta`
 - `venta_pedido_alta`
@@ -210,6 +212,11 @@ Las herramientas `rentabilidad_articulo_ventas` y
 `DETMOV`/`CABDOCV`, calculan venta neta (`DMV_VALLINS-DMV_IMPDTO`) y coste con
 `PRECIO_COSTE_ARTICUL`/`PARAMETROS.RENTAB`; para lineas fantasma usan
 `DMV_CANPRE` o `PARAMETROS.RENTAF`, igual que `RENTABILIDAD_LINEA`.
+`ventas_documentos_detalle` y `ventas_documentos_resumen` replican el enfoque
+de `ANADOC`: trabajan por cabecera `CABDOCV`, calculan base, IVA, recargo,
+total, cobrado y pendiente, y permiten agrupar por tipo de documento, cliente,
+forma de pago, forma de cobro, representante/agente, poblacion, centro, serie,
+mes, dia de semana, hora, situacion o tarjeta.
 
 El grupo Cartera cubre los vencimientos/efectos de clientes en `CABDOCVE`,
 enlazando con `CLIEN` y `CABDOCV` cuando hay cabecera origen. Permite listar
