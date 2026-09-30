@@ -3643,6 +3643,15 @@ class KofedasToolRuntime:
         )
         return int((row or {}).get("maximo") or 0) + 1
 
+    def _purchase_order_series(self, empresa: int, centro: int, value: Any = None) -> str:
+        if value not in (None, ""):
+            return str(value).strip()[:2]
+        series = str(self._parameter_value(f"PP{centro}", "", empresa) or "").strip()
+        series = series or str(self._parameter_value("PP", "", empresa) or "").strip()
+        if not series:
+            series = "PP"
+        return series[:2]
+
     def _purchase_order_exists(self, empresa: int, centro: int, ejercicio: int, serie: str, numero: int) -> bool:
         return self.db.one(
             """
@@ -8152,7 +8161,7 @@ class KofedasToolRuntime:
         empresa = self._empresa(args)
         centro = self._centro(args)
         ejercicio = int(args.get("ejercicio") or date.today().year)
-        serie = str(args.get("serie") or "").strip()[:2]
+        serie = self._purchase_order_series(empresa, centro, args.get("serie"))
         numero = self._next_purchase_order_number(empresa, centro, ejercicio, serie, args.get("numero"))
         proveedor = int(args["proveedor"])
         provider = self.db.one(
