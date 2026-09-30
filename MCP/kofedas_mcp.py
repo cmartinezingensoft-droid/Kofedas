@@ -3156,7 +3156,7 @@ class KofedasToolRuntime:
             "PRO_TELDEL": "",
             "PRO_FAXDEL": "",
             "PRO_CONDEL": "",
-            "PRO_COMMIN": "",
+            "PRO_COMMIN": 0,
             "PRO_CODMON": "E",
             "PRO_PORTES": "N",
             "PRO_CODPAG": 0,
@@ -7006,7 +7006,7 @@ class KofedasToolRuntime:
                     self._to_float(stock.get("existencias"), 0),
                     self._to_float(stock.get("minimo"), 0),
                     self._to_float(stock.get("maximo"), 0),
-                    None, None, None,
+                    None, None, date.today().isoformat(),
                 ),
             ))
         if not isinstance(additional, dict):
@@ -10057,6 +10057,18 @@ class KofedasToolRuntime:
                 data[desc_col] = str(args.get("descripcion") or "Remesa MCP")[:60]
             if situac_col:
                 data[situac_col] = "P"
+            for column, value in {
+                "REM_TIPO": str(args.get("tipo") or "C")[:1],
+                "REM_TOTAL": self._to_float(args.get("total"), 0),
+                "REM_CODMON": str(args.get("moneda") or "E")[:1],
+                "REM_CODBAN": self._to_int(args.get("banco"), 0),
+                "REM_CODSUC": self._to_int(args.get("sucursal"), 0),
+                "REM_DIGITO": self._to_int(args.get("digito"), 0),
+                "REM_NUMCUE": self._to_int(args.get("cuenta"), 0),
+                "REM_CUECON": str(args.get("cuenta_contable") or "")[:10],
+            }.items():
+                if column in colset:
+                    data.setdefault(column, value)
             if year_col and code_col:
                 fields = [column for column in remesa_columns if column in data]
                 statements.append(("INSERT INTO REMESA (" + ", ".join(fields) + ") VALUES (" + ", ".join("?" for _ in fields) + ")", tuple(data[column] for column in fields)))
