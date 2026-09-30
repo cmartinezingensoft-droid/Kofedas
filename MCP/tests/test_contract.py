@@ -1,0 +1,115 @@
+from __future__ import annotations
+
+import json
+
+from kofedas_mcp import KofedasToolRuntime, tool_definitions
+
+
+def test_tool_definitions_are_json_serializable():
+    definitions = tool_definitions()
+
+    assert len(definitions) == 104
+    assert {item["name"] for item in definitions} >= {
+        "auxiliar_tablas",
+        "auxiliar_listar",
+        "auxiliar_obtener",
+        "auxiliar_guardar",
+        "empresa_listar",
+        "empresa_guardar",
+        "centro_guardar",
+        "usuario_listar",
+        "usuario_guardar",
+        "grupo_usuario_listar",
+        "grupo_usuario_guardar",
+        "parametro_listar",
+        "parametro_guardar",
+        "cliente_tablas",
+        "cliente_relacion_listar",
+        "cliente_relacion_obtener",
+        "cliente_relacion_guardar",
+        "cliente_completo",
+        "cliente_alta_preparar",
+        "cliente_alta",
+        "articulo_tablas",
+        "articulo_relacion_listar",
+        "articulo_relacion_obtener",
+        "articulo_relacion_guardar",
+        "articulo_completo",
+        "articulo_alta_preparar",
+        "articulo_alta",
+        "articulo_tarifa_excel_previsualizar",
+        "articulo_tarifa_excel_importar",
+        "proveedor_tablas",
+        "proveedor_relacion_listar",
+        "proveedor_relacion_obtener",
+        "proveedor_relacion_guardar",
+        "proveedor_completo",
+        "proveedor_alta_preparar",
+        "proveedor_alta",
+        "oferta_tablas",
+        "oferta_listar",
+        "oferta_obtener",
+        "oferta_articulos_listar",
+        "oferta_alta_preparar",
+        "oferta_alta",
+        "orden_compra_tablas",
+        "orden_compra_listar",
+        "orden_compra_obtener",
+        "orden_compra_lineas_listar",
+        "orden_compra_alta_preparar",
+        "orden_compra_alta",
+        "orden_compra_cerrar",
+        "entrada_almacen_tablas",
+        "entrada_almacen_listar",
+        "entrada_almacen_obtener",
+        "entrada_almacen_lineas_listar",
+        "entrada_almacen_pendientes_facturar",
+        "entrada_almacen_pendientes_contabilizar",
+        "entrada_almacen_alta_preparar",
+        "entrada_almacen_alta",
+        "entrada_almacen_pdf_previsualizar",
+        "entrada_almacen_desde_pdf",
+        "regularizacion_tablas",
+        "regularizacion_listar",
+        "stock_por_almacen",
+        "stock_a_fecha",
+        "articulo_regularizar",
+        "trasvase_generar",
+        "recuento_listar",
+        "recuento_grabar",
+        "recuento_borrar",
+        "venta_tablas",
+        "venta_listar",
+        "venta_obtener",
+        "venta_lineas_listar",
+        "venta_precio_articulo",
+        "venta_documento_alta_preparar",
+        "venta_documento_alta",
+        "venta_pedido_alta",
+        "cartera_tablas",
+        "cartera_efectos_detalle",
+        "cartera_deuda_cliente",
+        "cartera_deuda_por_cliente",
+        "cartera_pendiente_remesar",
+        "cartera_deuda_por_tipo",
+        "dashboard_resumen",
+        "ventas_resumen",
+        "compras_resumen",
+        "dashboard_evolucion_anual",
+        "dashboard_series_temporales",
+        "dashboard_rankings",
+        "articulo_buscar",
+        "articulo_obtener",
+        "stock_consultar",
+        "cliente_buscar",
+        "proveedor_buscar",
+    }
+    json.dumps(definitions, ensure_ascii=False)
+
+
+def test_sistema_estado_uses_kofedas_identity():
+    result, is_error = KofedasToolRuntime().invoke_tool("sistema_estado", {}, None)
+
+    assert is_error is False
+    assert result["ok"] is True
+    assert result["data"]["servidor"] == "kofedas-mcp"
