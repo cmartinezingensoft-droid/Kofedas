@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kofedas - Dashboard de ventas ANADOC</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --ink: #18202a;
+      --muted: #627083;
+      --line: #dce2e8;
+      --blue: #2364aa;
+      --green: #2f8f69;
+      --red: #bd4b4b;
+      --amber: #c7872c;
+      --cyan: #2c8da8;
+      --violet: #7a5ca8;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .wrap {
+      width: min(1420px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .period {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding: 18px 0 28px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .kpi {
+      padding: 14px;
+      min-height: 92px;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .kpi .value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 10px;
+      white-space: nowrap;
+    }
+
+    .kpi .note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+    }
+
+    .panel {
+      min-height: 340px;
+      padding: 14px;
+    }
+
+    .panel.wide {
+      grid-column: span 2;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .metric {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 270px;
+    }
+
+    .panel.short canvas {
+      height: 230px;
+    }
+
+    .table-panel {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      background: #f8fafb;
+    }
+
+    @media (max-width: 1100px) {
+      .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+      .panel.wide { grid-column: auto; }
+    }
+
+    @media (max-width: 640px) {
+      .wrap { width: min(100vw - 20px, 1420px); }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .period { justify-content: flex-start; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi .value { font-size: 20px; }
+      canvas { height: 240px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <div>
+        <h1>Dashboard de ventas</h1>
+        <div class="subtitle">Analisis de documentos basado en ANADOC / CABDOCV</div>
+      </div>
+      <div class="period">
+        <span>Empresa 1</span>
+        <span>01/01/2026 - 31/12/2026</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="kpis" id="kpis"></section>
+
+    <section class="grid">
+      <article class="panel wide">
+        <div class="panel-head">
+          <h2>Evolucion mensual de ventas</h2>
+          <span class="metric">Total por mes</span>
+        </div>
+        <canvas id="monthlyChart"></canvas>
+      </article>
+
+      <article class="panel short">
+        <div class="panel-head">
+          <h2>Tipo de documento</h2>
+          <span class="metric">Total</span>
+        </div>
+        <canvas id="documentPie"></canvas>
+      </article>
+
+      <article class="panel short">
+        <div class="panel-head">
+          <h2>Forma de pago</h2>
+          <span class="metric">Total</span>
+        </div>
+        <canvas id="paymentPie"></canvas>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Zonas / poblaciones</h2>
+          <span class="metric">Top por total</span>
+        </div>
+        <canvas id="zoneBars"></canvas>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <h2>Ventas por dia de la semana</h2>
+          <span class="metric">Total por dia</span>
+        </div>
+        <canvas id="weekdayBars"></canvas>
+      </article>
+
+      <article class="panel wide table-panel">
+        <div class="panel-head">
+          <h2>Detalle por tipo de documento</h2>
+          <span class="metric">Base, IVA, cobrado y pendiente</span>
+        </div>
+        <table id="docTable"></table>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const salesData = {
+      totals: { documentos: 6825, base: 176625.09, iva: 37061.59, recargo: 0, total: 213685.67, cobrado: 134927.45, pendiente: 78758.22 },
+      months: [
+        { codigo: 1, nombre: "Enero", documentos: 626, total: 20592.10, cobrado: 13732.11, pendiente: 6859.99 },
+        { codigo: 2, nombre: "Febrero", documentos: 673, total: 26613.39, cobrado: 15996.44, pendiente: 10616.95 },
+        { codigo: 3, nombre: "Marzo", documentos: 765, total: 30259.39, cobrado: 21564.89, pendiente: 8694.50 },
+        { codigo: 4, nombre: "Abril", documentos: 334, total: 17451.48, cobrado: 10434.41, pendiente: 7017.07 },
+        { codigo: 5, nombre: "Mayo", documentos: 4, total: 153.20, cobrado: 0, pendiente: 153.20 },
+        { codigo: 6, nombre: "Junio", documentos: 794, total: 33136.54, cobrado: 24895.59, pendiente: 8240.95 },
+        { codigo: 7, nombre: "Julio", documentos: 1394, total: 34410.00, cobrado: 23398.70, pendiente: 11011.30 },
+        { codigo: 8, nombre: "Agosto", documentos: 1351, total: 20990.58, cobrado: 16327.87, pendiente: 4662.71 },
+        { codigo: 9, nombre: "Septiembre", documentos: 884, total: 30078.99, cobrado: 8577.44, pendiente: 21501.55 }
+      ],
+      documentTypes: [
+        { codigo: "T", nombre: "Ticket", documentos: 5274, total: 89311.92, base: 73822.63, iva: 15490.03, cobrado: 89289.93, pendiente: 21.99 },
+        { codigo: "F", nombre: "Factura", documentos: 367, total: 80890.03, base: 66861.16, iva: 14029.17, cobrado: 45637.52, pendiente: 35252.51 },
+        { codigo: "A", nombre: "Albaran", documentos: 1184, total: 43483.72, base: 35941.30, iva: 7542.39, cobrado: 0, pendiente: 43483.72 }
+      ],
+      zones: [
+        { nombre: "Sin poblacion", documentos: 5452, total: 138370.21 },
+        { nombre: "AJO", documentos: 300, total: 20302.70 },
+        { nombre: "NOJA", documentos: 87, total: 6900.10 },
+        { nombre: "SAN MIGUEL DE MERUELO", documentos: 132, total: 6457.71 },
+        { nombre: "GUEMES", documentos: 84, total: 5682.01 },
+        { nombre: "SAN MIGUEL DE MERUELO CANTABRIA", documentos: 110, total: 4936.53 },
+        { nombre: "BAREYO", documentos: 109, total: 4573.32 },
+        { nombre: "MERUELO", documentos: 98, total: 2652.88 }
+      ],
+      weekdays: [
+        { codigo: 1, nombre: "Lunes", documentos: 1342, total: 43411.01 },
+        { codigo: 2, nombre: "Martes", documentos: 1132, total: 35544.44 },
+        { codigo: 3, nombre: "Miercoles", documentos: 1125, total: 30884.25 },
+        { codigo: 4, nombre: "Jueves", documentos: 1128, total: 33158.98 },
+        { codigo: 5, nombre: "Viernes", documentos: 1181, total: 34373.06 },
+        { codigo: 6, nombre: "Sabado", documentos: 917, total: 36313.93 }
+      ],
+      payment: [
+        { codigo: 0, nombre: "Recibo bancario", documentos: 5347, total: 92072.57 },
+        { codigo: -1, nombre: "Factura tickets", documentos: 105, total: 42426.46 },
+        { codigo: 1, nombre: "Contado", documentos: 626, total: 35806.37 },
+        { codigo: 2, nombre: "Giro 30 dias", documentos: 464, total: 27527.05 },
+        { codigo: 10, nombre: "Transferencia", documentos: 265, total: 15078.67 },
+        { codigo: 5, nombre: "Tarjeta", documentos: 12, total: 677.85 }
+      ]
+    };
+
+    const palette = ["#2364aa", "#2f8f69", "#c7872c", "#bd4b4b", "#2c8da8", "#7a5ca8", "#5c7c2e", "#9a6238"];
+    const currency = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+    const number = new Intl.NumberFormat("es-ES");
+
+    function resizeCanvas(canvas) {
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.floor(rect.width * ratio);
+      canvas.height = Math.floor(rect.height * ratio);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      return { ctx, width: rect.width, height: rect.height };
+    }
+
+    function clear(ctx, width, height) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.font = "12px Arial";
+      ctx.textBaseline = "middle";
+      ctx.lineWidth = 1;
+    }
+
+    function drawBarChart(canvasId, rows, options = {}) {
+      const canvas = document.getElementById(canvasId);
+      const { ctx, width, height } = resizeCanvas(canvas);
+      clear(ctx, width, height);
+      const pad = { top: 18, right: 14, bottom: 52, left: 58 };
+      const chartW = width - pad.left - pad.right;
+      const chartH = height - pad.top - pad.bottom;
+      const max = Math.max(...rows.map(item => item.total), 1);
+      ctx.strokeStyle = "#dce2e8";
+      ctx.fillStyle = "#627083";
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.top + chartH - (chartH * i / 4);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(width - pad.right, y);
+        ctx.stroke();
+        ctx.fillText(currency.format(max * i / 4), 4, y);
+      }
+      const gap = Math.max(8, chartW / rows.length * 0.18);
+      const barW = Math.max(18, (chartW - gap * (rows.length - 1)) / rows.length);
+      rows.forEach((item, index) => {
+        const x = pad.left + index * (barW + gap);
+        const h = chartH * item.total / max;
+        const y = pad.top + chartH - h;
+        ctx.fillStyle = options.color || palette[index % palette.length];
+        ctx.fillRect(x, y, barW, h);
+        ctx.fillStyle = "#18202a";
+        ctx.textAlign = "center";
+        ctx.fillText(shortLabel(item.nombre), x + barW / 2, height - 28);
+        ctx.fillStyle = "#627083";
+        ctx.fillText(currency.format(item.total), x + barW / 2, y - 8);
+      });
+      ctx.textAlign = "left";
+    }
+
+    function drawHorizontalBars(canvasId, rows) {
+      const canvas = document.getElementById(canvasId);
+      const { ctx, width, height } = resizeCanvas(canvas);
+      clear(ctx, width, height);
+      const pad = { top: 10, right: 88, bottom: 12, left: 188 };
+      const chartW = width - pad.left - pad.right;
+      const rowH = Math.min(30, (height - pad.top - pad.bottom) / rows.length);
+      const max = Math.max(...rows.map(item => item.total), 1);
+      rows.forEach((item, index) => {
+        const y = pad.top + index * rowH + rowH / 2;
+        const w = chartW * item.total / max;
+        ctx.fillStyle = "#18202a";
+        ctx.textAlign = "right";
+        ctx.fillText(truncate(item.nombre, 24), pad.left - 10, y);
+        ctx.fillStyle = palette[index % palette.length];
+        ctx.fillRect(pad.left, y - 8, w, 16);
+        ctx.fillStyle = "#627083";
+        ctx.textAlign = "left";
+        ctx.fillText(currency.format(item.total), pad.left + w + 8, y);
+      });
+      ctx.textAlign = "left";
+    }
+
+    function drawPie(canvasId, rows) {
+      const canvas = document.getElementById(canvasId);
+      const { ctx, width, height } = resizeCanvas(canvas);
+      clear(ctx, width, height);
+      const total = rows.reduce((sum, item) => sum + item.total, 0) || 1;
+      const radius = Math.min(width, height) * 0.31;
+      const cx = width * 0.36;
+      const cy = height * 0.50;
+      let angle = -Math.PI / 2;
+      rows.forEach((item, index) => {
+        const slice = (item.total / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, angle, angle + slice);
+        ctx.closePath();
+        ctx.fillStyle = palette[index % palette.length];
+        ctx.fill();
+        angle += slice;
+      });
+      const lx = width * 0.68;
+      rows.forEach((item, index) => {
+        const y = 42 + index * 27;
+        ctx.fillStyle = palette[index % palette.length];
+        ctx.fillRect(lx, y - 7, 12, 12);
+        ctx.fillStyle = "#18202a";
+        ctx.textAlign = "left";
+        ctx.fillText(truncate(item.nombre, 18), lx + 18, y);
+        ctx.fillStyle = "#627083";
+        ctx.fillText(`${Math.round(item.total * 100 / total)}%`, lx + 18, y + 14);
+      });
+    }
+
+    function shortLabel(value) {
+      const text = String(value);
+      if (text.length <= 3) return text;
+      return text.slice(0, 3);
+    }
+
+    function truncate(value, max) {
+      const text = String(value || "Sin dato").replace(/\s+/g, " ").trim();
+      return text.length > max ? `${text.slice(0, max - 1)}...` : text;
+    }
+
+    function renderKpis() {
+      const t = salesData.totals;
+      const kpis = [
+        ["Documentos", number.format(t.documentos), "CABDOCV"],
+        ["Total ventas", currency.format(t.total), "Importe documento"],
+        ["Base", currency.format(t.base), "Base imponible"],
+        ["IVA", currency.format(t.iva), "Cuota estimada"],
+        ["Cobrado", currency.format(t.cobrado), `${Math.round(t.cobrado * 100 / t.total)}% del total`],
+        ["Pendiente", currency.format(t.pendiente), `${Math.round(t.pendiente * 100 / t.total)}% del total`]
+      ];
+      document.getElementById("kpis").innerHTML = kpis.map(([label, value, note]) => `
+        <div class="kpi">
+          <div class="label">${label}</div>
+          <div class="value">${value}</div>
+          <div class="note">${note}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderTable() {
+      const rows = salesData.documentTypes;
+      document.getElementById("docTable").innerHTML = `
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Docs</th>
+            <th>Base</th>
+            <th>IVA</th>
+            <th>Total</th>
+            <th>Cobrado</th>
+            <th>Pendiente</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td>${row.nombre}</td>
+              <td>${number.format(row.documentos)}</td>
+              <td>${currency.format(row.base)}</td>
+              <td>${currency.format(row.iva)}</td>
+              <td>${currency.format(row.total)}</td>
+              <td>${currency.format(row.cobrado)}</td>
+              <td>${currency.format(row.pendiente)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      `;
+    }
+
+    function render() {
+      renderKpis();
+      renderTable();
+      drawBarChart("monthlyChart", salesData.months, { color: "#2364aa" });
+      drawPie("documentPie", salesData.documentTypes);
+      drawPie("paymentPie", salesData.payment);
+      drawHorizontalBars("zoneBars", salesData.zones);
+      drawBarChart("weekdayBars", salesData.weekdays, { color: "#2f8f69" });
+    }
+
+    window.addEventListener("resize", render);
+    render();
+  </script>
+</body>
+</html>
