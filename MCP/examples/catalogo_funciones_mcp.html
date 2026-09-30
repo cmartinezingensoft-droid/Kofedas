@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kofedas MCP - catalogo de funciones</title>
+  <style>
+    :root {
+      --bg:#f6f7f9; --panel:#ffffff; --ink:#17202a; --muted:#617084; --line:#dce3ea;
+      --read:#2364aa; --read-bg:#e8f1fb; --write:#a15c16; --write-bg:#fff0d9;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial, Helvetica, sans-serif; letter-spacing:0; }
+    header { background:#fff; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:2; }
+    .wrap { width:min(1380px, calc(100vw - 32px)); margin:0 auto; }
+    .top { display:flex; align-items:flex-start; justify-content:space-between; gap:18px; padding:18px 0; }
+    h1 { margin:0; font-size:23px; line-height:1.2; }
+    .sub { color:var(--muted); font-size:13px; margin-top:5px; }
+    .stats { display:grid; grid-template-columns:repeat(3, minmax(110px, 1fr)); gap:8px; min-width:360px; }
+    .stat { border:1px solid var(--line); border-radius:8px; padding:10px; background:#fbfcfd; }
+    .stat b { display:block; font-size:22px; }
+    .stat span { color:var(--muted); font-size:12px; }
+    main { padding:18px 0 34px; }
+    nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+    nav a { color:#184f86; background:#eaf2fb; border:1px solid #c9dced; border-radius:999px; padding:7px 11px; text-decoration:none; font-size:12px; font-weight:700; }
+    nav a span { color:#617084; font-weight:600; margin-left:4px; }
+    .group { background:var(--panel); border:1px solid var(--line); border-radius:8px; margin:14px 0; padding:14px; }
+    .group-head { display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:12px; }
+    h2 { margin:0; font-size:18px; }
+    h3 { margin:0 0 10px; color:var(--muted); font-size:13px; text-transform:uppercase; }
+    .group-counts { display:flex; gap:8px; flex-wrap:wrap; color:var(--muted); font-size:12px; }
+    .columns { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
+    .tool-card { border:1px solid var(--line); border-radius:8px; padding:11px; margin-bottom:10px; background:#fff; }
+    .tool-card.read { border-left:4px solid var(--read); }
+    .tool-card.write { border-left:4px solid var(--write); }
+    .tool-title { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    code { font-family:Consolas, ui-monospace, monospace; font-size:13px; font-weight:700; }
+    .pill { border-radius:999px; padding:3px 8px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .pill.read { color:var(--read); background:var(--read-bg); }
+    .pill.write { color:var(--write); background:var(--write-bg); }
+    p { color:#314055; font-size:13px; line-height:1.45; margin:8px 0 0; }
+    details { margin-top:9px; }
+    summary { cursor:pointer; color:var(--muted); font-size:12px; font-weight:700; }
+    table { width:100%; border-collapse:collapse; margin-top:8px; font-size:12px; }
+    th, td { border-bottom:1px solid #edf1f5; padding:6px; text-align:left; vertical-align:top; }
+    th { background:#f7f9fb; color:var(--muted); }
+    .param-name { font-family:Consolas, ui-monospace, monospace; white-space:nowrap; }
+    .empty { color:var(--muted); font-style:italic; }
+    @media (max-width: 900px) {
+      .top { flex-direction:column; }
+      .stats { min-width:0; width:100%; }
+      .columns { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap top">
+      <div>
+        <h1>Kofedas MCP - catalogo de funciones</h1>
+        <div class="sub">Generado desde <code>kofedas_mcp.tool_definitions()</code> · servidor 0.1.0</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>109</b><span>Total funciones</span></div>
+        <div class="stat"><b>85</b><span>Consultas</span></div>
+        <div class="stat"><b>24</b><span>Escritura</span></div>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>11</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-cartera">Cartera <span>6</span></a><a href="#grupo-dashboard">Dashboard <span>6</span></a></nav>
+    
+            <section id="grupo-sistema" class="group">
+              <div class="group-head">
+                <h2>Sistema</h2>
+                <div class="group-counts">
+                  <span>1 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>sistema_estado</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Devuelve version, DSN y contexto por defecto del servidor Kofedas MCP.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-configuracion" class="group">
+              <div class="group-head">
+                <h2>Configuracion</h2>
+                <div class="group-counts">
+                  <span>10 consultas</span>
+                  <span>5 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>centro_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Lista centros de la empresa desde CENTROS, segun CENTROS_UDM.pas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>centro_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Obtiene un centro desde CENTROS.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>CEN_CODCEN. Por defecto KOFEDAS_CENTRO o 0.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>empresa_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Lista empresas desde EMPRES.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>empresa_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Obtiene una empresa desde EMPRES.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>grupo_usuario_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Lista grupos de usuario desde GRUPUSU.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro opcional por id de grupo, menu o nivel.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>grupo_usuario_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Obtiene un grupo de usuario desde GRUPUSU.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">grupo</td><td>string</td><td>si</td><td>GRU_IDGRUPO.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>parametro_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Lista parametros desde PARAMETROS.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro opcional por codigo, valor o descripcion.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>parametro_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Obtiene un parametro desde PARAMETROS.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">codigo</td><td>string</td><td>si</td><td>PAR_CODIGO.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>usuario_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Lista usuarios desde USUAR sin devolver contraseñas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro opcional por centro.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro opcional por usuario, nombre o grupo.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>usuario_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Configuracion. Obtiene un usuario desde USUAR sin devolver contraseña.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">usuario</td><td>string</td><td>si</td><td>USU_NOMUSU.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>USU_CODCEN. Por defecto KOFEDAS_CENTRO o 0.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>centro_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Configuracion. ESCRITURA. Crea o actualiza una fila de CENTROS. Las claves no se modifican.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>CEN_NUMEMP. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>CEN_CODCEN. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos CEN_* a guardar, con nombres de base de datos o sin prefijo.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>empresa_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Configuracion. ESCRITURA. Crea o actualiza una fila de EMPRES. Las claves no se modifican.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>EMP_NUMEMP. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos EMP_* a guardar, con nombres de base de datos o sin prefijo.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>grupo_usuario_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Configuracion. ESCRITURA. Crea o actualiza una fila de GRUPUSU. Las claves no se modifican.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">grupo</td><td>string</td><td>si</td><td>GRU_IDGRUPO.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>GRU_NUMEMP. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos GRU_* a guardar, con nombres de base de datos o sin prefijo.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>parametro_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Configuracion. ESCRITURA. Crea o actualiza una fila de PARAMETROS.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">codigo</td><td>string</td><td>si</td><td>PAR_CODIGO.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>PAR_NUMEMP. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">valor</td><td>string</td><td>no</td><td>PAR_VALOR. Alternativa comoda a datos.PAR_VALOR.</td></tr><tr><td class="param-name">descripcion</td><td>string</td><td>no</td><td>PAR_DESCRI. Alternativa comoda a datos.PAR_DESCRI.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>no</td><td>Campos PAR_* a guardar.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>usuario_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Configuracion. ESCRITURA. Crea o actualiza una fila de USUAR. Admite USU_PASSWORD para cambiar contraseña, pero nunca la devuelve.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">usuario</td><td>string</td><td>si</td><td>USU_NOMUSU.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>USU_NUMEMP. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>USU_CODCEN. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos USU_* a guardar, con nombres de base de datos o sin prefijo.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-auxiliares" class="group">
+              <div class="group-head">
+                <h2>Auxiliares</h2>
+                <div class="group-counts">
+                  <span>4 consultas</span>
+                  <span>1 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>auxiliar_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Auxiliares. Lista filas de una tabla auxiliar permitida con filtros opcionales.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Nombre de tabla auxiliar permitida.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Filtro por empresa si la tabla tiene columna *_NUMEMP.</td></tr><tr><td class="param-name">filtros</td><td>object</td><td>no</td><td>Filtros exactos por columna.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Busqueda textual opcional en columnas de texto.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>auxiliar_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Auxiliares. Obtiene una fila de una tabla auxiliar por sus claves primarias.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Nombre de tabla auxiliar permitida.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>si</td><td>Valores de clave primaria por columna.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>auxiliar_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Auxiliares. Lista las tablas auxiliares disponibles, sus columnas y claves primarias.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>familia_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Lista familias, subfamilias o tercer nivel desde FAMILI/SUBFAM/SSUBFAM.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tipo</td><td>string</td><td>no</td><td>Nivel a listar.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">familia</td><td>integer</td><td>no</td><td>Filtro de familia para subfamilias/ssubfamilias.</td></tr><tr><td class="param-name">subfamilia</td><td>integer</td><td>no</td><td>Filtro de subfamilia para ssubfamilias.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>auxiliar_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Auxiliares. ESCRITURA. Crea o actualiza una fila de una tabla auxiliar permitida usando su clave primaria real.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Nombre de tabla auxiliar permitida.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>no</td><td>Valores de clave primaria por columna.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos a guardar. Puede incluir tambien las claves.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-clientes" class="group">
+              <div class="group-head">
+                <h2>Clientes</h2>
+                <div class="group-counts">
+                  <span>7 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Clientes. Calcula codigo y defaults para dar de alta un cliente sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Codigo deseado. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente deseado. Para cliente 99999, 0 calcula siguiente subcliente.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para rangos de numeracion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>no</td><td>Campos CLI_* o alias de cliente para superponer a los defaults.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_buscar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Busca clientes por codigo, nombre, razon social, CIF, telefono o email.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">texto</td><td>string</td><td>si</td><td>Texto a buscar.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">incluir_baja</td><td>boolean</td><td>no</td><td>Incluye clientes con CLI_FEBAJA informada.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_completo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Clientes. Obtiene CLIEN y todas sus tablas relacionadas en una sola respuesta.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Codigo de cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">limite_detalle</td><td>integer</td><td>no</td><td>Maximo de filas por tabla relacionada.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Obtiene ficha de CLIEN con informacion adicional CLIENI.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Codigo de cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_relacion_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Clientes. Lista filas de una tabla relacionada con clientes.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada permitida: CLIEN, CLIENI, CLIFAM, CLIART, CLIACT, CLIAGR, CLITAR o CLIDIR3.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Codigo de cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0 cuando la tabla lo tiene.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">filtros</td><td>object</td><td>no</td><td>Filtros exactos adicionales por columna.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Busqueda textual opcional en columnas de texto.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_relacion_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Clientes. Obtiene una fila relacionada por clave primaria real.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada permitida.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>si</td><td>Valores de clave primaria por columna.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cliente_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Clientes. Lista las tablas relacionadas con clientes, columnas y claves primarias.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>cliente_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Clientes. ESCRITURA. Da de alta un cliente replicando numeracion y defaults principales del mantenimiento Delphi.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Codigo deseado. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente deseado. Para cliente 99999, 0 calcula siguiente subcliente.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para rangos de numeracion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos del cliente. Requiere nombre o CLI_NOMCLI; razon_social usa nombre si se omite.</td></tr><tr><td class="param-name">informacion_adicional</td><td>object</td><td>no</td><td>Mapa CODINF -&gt; valor para crear CLIENI.</td></tr><tr><td class="param-name">heredar_actividades</td><td>boolean</td><td>no</td><td>Si es subcliente, copia CLIACT del subcliente 0.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>cliente_relacion_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Clientes. ESCRITURA. Crea o actualiza una fila relacionada usando su clave primaria real.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada permitida.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>no</td><td>Valores de clave primaria por columna.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos a guardar. Puede incluir tambien claves.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-proveedores" class="group">
+              <div class="group-head">
+                <h2>Proveedores</h2>
+                <div class="group-counts">
+                  <span>8 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Proveedores. Calcula codigo y defaults para dar de alta un proveedor sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Codigo deseado. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para usuario de modificacion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>no</td><td>Campos PRO_* o alias de proveedor para superponer a los defaults.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_articulos_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Lista referencias ARTICULP de un proveedor con ficha basica del articulo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Codigo de proveedor.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro opcional por articulo, referencia o descripcion.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_buscar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Busca proveedores por codigo, nombre fiscal, nombre comercial, abreviado, CIF o email.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">texto</td><td>string</td><td>si</td><td>Texto a buscar.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">incluir_baja</td><td>boolean</td><td>no</td><td>Incluye proveedores con PRO_FEBAJA informada.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_completo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Proveedores. Devuelve ficha PROVEE y tablas relacionadas principales.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Codigo de proveedor.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">limite_detalle</td><td>integer</td><td>no</td><td>Maximo de filas por tabla relacionada.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Obtiene ficha de PROVEE con informacion adicional PROVEEI.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Codigo de proveedor.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_relacion_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Proveedores. Lista registros de una tabla relacionada filtrando por proveedor, empresa, texto o columnas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada: PROVEE, PROVEEI, ARTICULP, CABDOCM, CABORC o ELIMP.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Codigo de proveedor para aplicar al campo *_CODPRO.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro de texto sobre columnas alfanumericas.</td></tr><tr><td class="param-name">filtros</td><td>object</td><td>no</td><td>Filtros exactos por columna real.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_relacion_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Proveedores. Obtiene un registro relacionado usando la clave primaria real de la tabla.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>si</td><td>Valores de clave primaria por columna real.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedor_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Proveedores. Lista tablas relacionadas, claves reales y columnas disponibles.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>proveedor_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Proveedores. ESCRITURA. Da de alta un proveedor replicando numeracion y defaults principales del mantenimiento Delphi.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Codigo deseado. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para usuario de modificacion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos del proveedor. Requiere nombre, PRO_NOMCOR o PRO_NOMFIS.</td></tr><tr><td class="param-name">informacion_adicional</td><td>object</td><td>no</td><td>Mapa CODINF -&gt; valor para crear PROVEEI.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>proveedor_relacion_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Proveedores. ESCRITURA. Crea o actualiza PROVEE, PROVEEI o ARTICULP usando su clave primaria real.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada escribible: PROVEE, PROVEEI o ARTICULP.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>no</td><td>Claves primarias por columna real.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Columnas a insertar/actualizar.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-articulos" class="group">
+              <div class="group-head">
+                <h2>Articulos</h2>
+                <div class="group-counts">
+                  <span>8 consultas</span>
+                  <span>3 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Calcula defaults para dar de alta un articulo sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para usuario de modificacion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>no</td><td>Campos ART_* o alias de articulo para superponer a los defaults.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_buscar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Busca articulos por codigo, descripcion, EAN o referencia de proveedor.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">texto</td><td>string</td><td>si</td><td>Texto a buscar.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">incluir_baja</td><td>boolean</td><td>no</td><td>Incluye articulos con ART_FEBAJA informada.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_completo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Devuelve ficha ARTICUL y tablas relacionadas principales.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo del articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">limite_detalle</td><td>integer</td><td>no</td><td>Maximo de filas por tabla relacionada.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Obtiene ficha basica de ARTICUL con codigos de barras, stock por centro y proveedores.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo del articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_relacion_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Lista registros de una tabla relacionada filtrando por articulo, empresa, texto o columnas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada: ARTICUL, ARTICULC, ARTICULE, ARTICULP, ARTICULI, ARTICULA, ARTICULB o ELIMA.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo para aplicar al campo *_CODART.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro de texto sobre columnas alfanumericas.</td></tr><tr><td class="param-name">filtros</td><td>object</td><td>no</td><td>Filtros exactos por columna real.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_relacion_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Obtiene un registro relacionado usando la clave primaria real de la tabla.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>si</td><td>Valores de clave primaria por columna real.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Lista tablas relacionadas, claves reales y columnas disponibles.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_tarifa_excel_previsualizar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Lee una tarifa .xlsx y devuelve el plan de altas/actualizaciones sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">archivo</td><td>string</td><td>si</td><td>Ruta local del .xlsx.</td></tr><tr><td class="param-name">hoja</td><td>string</td><td>no</td><td>Nombre de hoja opcional; por defecto la activa.</td></tr><tr><td class="param-name">fila_cabecera</td><td>integer</td><td>no</td><td>Fila de cabecera. Por defecto 1.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor por defecto si no viene en la hoja.</td></tr><tr><td class="param-name">seccion</td><td>string</td><td>no</td><td>Seccion por defecto para altas/generacion de codigo.</td></tr><tr><td class="param-name">mapeo</td><td>object</td><td>no</td><td>Mapa canonico -&gt; cabecera Excel. Ej: articulo-&gt;Codigo, descripcion-&gt;Descripcion.</td></tr><tr><td class="param-name">generar_codigos</td><td>boolean</td><td>no</td><td>Genera ART_CODART si no viene en Excel usando seccion/proveedor/contador.</td></tr><tr><td class="param-name">numero_inicial</td><td>integer</td><td>no</td><td>Contador inicial para generar codigos. Por defecto 1.</td></tr><tr><td class="param-name">digitos</td><td>integer</td><td>no</td><td>Longitud total del codigo generado. Por defecto 13.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas a analizar.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA. Da de alta un articulo con ficha de compra, codigos de barras, stock inicial e informacion adicional opcional.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para stock inicial y usuario de modificacion.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Campos del articulo. Requiere descripcion o ART_DESCRI.</td></tr><tr><td class="param-name">compra</td><td>object</td><td>no</td><td>Datos ARTP_* o alias de ficha de compra.</td></tr><tr><td class="param-name">codigos_barras</td><td>array</td><td>no</td><td>Codigos de barras o objetos {codigo,cantidad}.</td></tr><tr><td class="param-name">stock</td><td>object</td><td>no</td><td>Stock inicial opcional: existencias, minimo, maximo, centro.</td></tr><tr><td class="param-name">informacion_adicional</td><td>object</td><td>no</td><td>Mapa CODINF -&gt; valor para crear ARTICULI.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_relacion_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA. Crea o actualiza una tabla relacionada escribible usando su clave primaria real.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tabla</td><td>string</td><td>si</td><td>Tabla relacionada escribible.</td></tr><tr><td class="param-name">claves</td><td>object</td><td>no</td><td>Claves primarias por columna real.</td></tr><tr><td class="param-name">datos</td><td>object</td><td>si</td><td>Columnas a insertar/actualizar.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_tarifa_excel_importar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA. Importa tarifa .xlsx creando/actualizando ARTICUL, ARTICULP, ARTICULC y ARTICULE.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">archivo</td><td>string</td><td>si</td><td>Ruta local del .xlsx.</td></tr><tr><td class="param-name">hoja</td><td>string</td><td>no</td><td>Nombre de hoja opcional; por defecto la activa.</td></tr><tr><td class="param-name">fila_cabecera</td><td>integer</td><td>no</td><td>Fila de cabecera. Por defecto 1.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor por defecto si no viene en la hoja.</td></tr><tr><td class="param-name">seccion</td><td>string</td><td>no</td><td>Seccion por defecto para altas/generacion de codigo.</td></tr><tr><td class="param-name">mapeo</td><td>object</td><td>no</td><td>Mapa canonico -&gt; cabecera Excel.</td></tr><tr><td class="param-name">generar_codigos</td><td>boolean</td><td>no</td><td>Genera ART_CODART si no viene en Excel usando seccion/proveedor/contador.</td></tr><tr><td class="param-name">numero_inicial</td><td>integer</td><td>no</td><td>Contador inicial para generar codigos. Por defecto 1.</td></tr><tr><td class="param-name">digitos</td><td>integer</td><td>no</td><td>Longitud total del codigo generado. Por defecto 13.</td></tr><tr><td class="param-name">crear_articulos</td><td>boolean</td><td>no</td><td>Permite altas de ARTICUL. Por defecto true.</td></tr><tr><td class="param-name">actualizar_articulos</td><td>boolean</td><td>no</td><td>Permite actualizar ARTICUL existente. Por defecto true.</td></tr><tr><td class="param-name">crear_barras</td><td>boolean</td><td>no</td><td>Permite crear codigos de barras. Por defecto true.</td></tr><tr><td class="param-name">actualizar_barras</td><td>boolean</td><td>no</td><td>Permite reasignar codigos de barras existentes. Por defecto false.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas a procesar.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-articulos---stock" class="group">
+              <div class="group-head">
+                <h2>Articulos / stock</h2>
+                <div class="group-counts">
+                  <span>4 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>inventario_valorar_articulos</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Stock. Valora existencias a coste respetando PARAMETROS.RENTAB: PBASE, PMEDIO o ULTIMO.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro; usa -1 para todos. Por defecto KOFEDAS_CENTRO.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha YYYY-MM-DD para coste medio/ultimo y stock historico. Por defecto hoy.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo exacto de articulo.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por codigo o descripcion.</td></tr><tr><td class="param-name">familia</td><td>string</td><td>no</td><td>Filtro por ART_CODFAM.</td></tr><tr><td class="param-name">subfamilia</td><td>string</td><td>no</td><td>Filtro por ART_SUBFAM.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por ART_CODPRO.</td></tr><tr><td class="param-name">modo_coste</td><td>string</td><td>no</td><td>Opcional. Fuerza PBASE, PMEDIO, ULTIMO, ART_PRECOS, COSTE_MEDIO o ULTIMO_PRECIO.</td></tr><tr><td class="param-name">solo_con_stock</td><td>boolean</td><td>no</td><td>Si true, excluye articulos sin stock. Por defecto true.</td></tr><tr><td class="param-name">incluir_no_inventariables</td><td>boolean</td><td>no</td><td>Si true, incluye ART_INDINV=&#x27;N&#x27;. Por defecto false.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos devueltos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>stock_a_fecha</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Stock. Calcula stock de un articulo a fecha usando ARTICULE y movimientos posteriores, segun UTL_STOCK.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro; usa -1 para todos. Por defecto KOFEDAS_CENTRO.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha YYYY-MM-DD. Omitida devuelve stock actual.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>stock_consultar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Consulta existencias actuales desde ARTICULE y, opcionalmente, historico STOCKS.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo o fragmento de articulo.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">incluir_historico</td><td>boolean</td><td>no</td><td>Incluye ultimas filas de STOCKS.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>stock_por_almacen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Stock. Muestra stock actual de un articulo por almacen/centro desde ARTICULE.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro opcional por centro.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-ofertas" class="group">
+              <div class="group-head">
+                <h2>Ofertas</h2>
+                <div class="group-counts">
+                  <span>5 consultas</span>
+                  <span>1 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>oferta_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ofertas. Calcula numero, cabecera y lineas para dar de alta una oferta sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para usuario de modificacion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año actual.</td></tr><tr><td class="param-name">oferta</td><td>integer</td><td>no</td><td>Numero de oferta. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Proveedor de la oferta.</td></tr><tr><td class="param-name">descripcion</td><td>string</td><td>si</td><td>Descripcion de la oferta.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de oferta. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_inicio</td><td>string</td><td>no</td><td>Inicio de vigencia. Por defecto fecha.</td></tr><tr><td class="param-name">fecha_fin</td><td>string</td><td>no</td><td>Fin de vigencia. Por defecto fecha_inicio.</td></tr><tr><td class="param-name">gastos</td><td>number</td><td>no</td><td>Gastos de la oferta. Por defecto 0.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto E.</td></tr><tr><td class="param-name">tipo</td><td>string</td><td>no</td><td>Tipo de oferta. Por defecto T.</td></tr><tr><td class="param-name">articulos</td><td>array</td><td>si</td><td>Lineas: string codigo o objeto {articulo,codigo_barras,referencia,pvp,precio,precos,dto1,dto2}.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>oferta_articulos_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ofertas. Lista articulos en oferta, opcionalmente solo vigentes, con datos de articulo y proveedor.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">oferta</td><td>integer</td><td>no</td><td>Filtro por numero de oferta.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por codigo de articulo.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por articulo o descripcion.</td></tr><tr><td class="param-name">solo_vigentes</td><td>boolean</td><td>no</td><td>Si true, filtra DOF_FECINI/DOF_FECFIN por fecha_consulta u hoy.</td></tr><tr><td class="param-name">fecha_consulta</td><td>string</td><td>no</td><td>Fecha para vigencia. Por defecto hoy.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>oferta_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ofertas. Lista cabeceras de OFERTAS por fechas, proveedor, texto o articulo incluido.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo incluido en DETOFER.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de inicio/fecha oferta en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de fin/fecha oferta en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">solo_vigentes</td><td>boolean</td><td>no</td><td>Si true, solo ofertas vigentes a fecha_consulta o hoy.</td></tr><tr><td class="param-name">fecha_consulta</td><td>string</td><td>no</td><td>Fecha para vigencia. Por defecto hoy.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por descripcion.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>oferta_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ofertas. Obtiene cabecera OFERTAS y lineas DETOFER.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>OFE_EJERCI.</td></tr><tr><td class="param-name">oferta</td><td>integer</td><td>si</td><td>OFE_NUMOFE.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>oferta_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ofertas. Lista tablas relacionadas, claves reales y columnas disponibles.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>oferta_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Ofertas. ESCRITURA. Da de alta OFERTAS y DETOFER a partir de una lista de articulos.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro para usuario de modificacion. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año actual.</td></tr><tr><td class="param-name">oferta</td><td>integer</td><td>no</td><td>Numero de oferta. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Proveedor de la oferta.</td></tr><tr><td class="param-name">descripcion</td><td>string</td><td>si</td><td>Descripcion de la oferta.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de oferta. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_inicio</td><td>string</td><td>no</td><td>Inicio de vigencia. Por defecto fecha.</td></tr><tr><td class="param-name">fecha_fin</td><td>string</td><td>no</td><td>Fin de vigencia. Por defecto fecha_inicio.</td></tr><tr><td class="param-name">gastos</td><td>number</td><td>no</td><td>Gastos de la oferta. Por defecto 0.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto E.</td></tr><tr><td class="param-name">tipo</td><td>string</td><td>no</td><td>Tipo de oferta. Por defecto T.</td></tr><tr><td class="param-name">articulos</td><td>array</td><td>si</td><td>Lineas: string codigo o objeto {articulo,codigo_barras,referencia,pvp,precio,precos,dto1,dto2}.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-ordenes-de-compra" class="group">
+              <div class="group-head">
+                <h2>Ordenes de Compra</h2>
+                <div class="group-counts">
+                  <span>5 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>orden_compra_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ordenes de Compra. Calcula numero, cabecera y lineas para dar de alta un pedido sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año actual.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto vacia.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero de pedido. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Proveedor del pedido.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha del pedido. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_envio</td><td>string</td><td>no</td><td>Fecha de envio al proveedor.</td></tr><tr><td class="param-name">fecha_entrega</td><td>string</td><td>no</td><td>Fecha prevista de entrega.</td></tr><tr><td class="param-name">forma_pago</td><td>integer</td><td>no</td><td>Forma de pago. Por defecto la del proveedor.</td></tr><tr><td class="param-name">representante</td><td>integer</td><td>no</td><td>Representante. Por defecto 0.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto proveedor o E.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones de cabecera.</td></tr><tr><td class="param-name">articulos</td><td>array</td><td>si</td><td>Lineas: string codigo o objeto {articulo,codigo_barras,referencia,cantidad,precio,dto1..dto6,unidad,descripcion,observaciones}.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>orden_compra_lineas_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ordenes de Compra. Lista lineas DETORC con filtros por pedido, estado, proveedor, articulo o texto.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por COC/DOC_NUMDOC.</td></tr><tr><td class="param-name">estado</td><td>string</td><td>no</td><td>Estado de linea: abierto/pendiente/cerrado o A/P/C.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor de cabecera.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por codigo de articulo.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por articulo, referencia o descripcion.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>orden_compra_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ordenes de Compra. Lista pedidos por estado: abierto, pendiente o cerrado, con filtros de proveedor, fechas, serie, numero o texto.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro. Por defecto sin filtrar.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por COC_NUMDOC.</td></tr><tr><td class="param-name">estado</td><td>string</td><td>no</td><td>abierto/pendiente/cerrado o A/P/C. Omitido devuelve todos.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de pedido en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de pedido en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por nombre proveedor, observaciones o articulo incluido.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>orden_compra_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ordenes de Compra. Obtiene cabecera CABORC y lineas DETORC de un pedido.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>COC_CENTRO. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>COC_EJERCI.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>si</td><td>COC_SERIE.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>si</td><td>COC_NUMDOC.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>orden_compra_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ordenes de Compra. Describe las tablas CABORC, DETORC y ELIMOC.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>orden_compra_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Ordenes de Compra. ESCRITURA. Da de alta CABORC y DETORC a partir de cabecera y lista de articulos.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año actual.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto vacia.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero de pedido. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>si</td><td>Proveedor del pedido.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha del pedido. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_envio</td><td>string</td><td>no</td><td>Fecha de envio al proveedor.</td></tr><tr><td class="param-name">fecha_entrega</td><td>string</td><td>no</td><td>Fecha prevista de entrega.</td></tr><tr><td class="param-name">forma_pago</td><td>integer</td><td>no</td><td>Forma de pago. Por defecto la del proveedor.</td></tr><tr><td class="param-name">representante</td><td>integer</td><td>no</td><td>Representante. Por defecto 0.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto proveedor o E.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones de cabecera.</td></tr><tr><td class="param-name">articulos</td><td>array</td><td>si</td><td>Lineas: string codigo o objeto {articulo,codigo_barras,referencia,cantidad,precio,dto1..dto6,unidad,descripcion,observaciones}.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>orden_compra_cerrar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Ordenes de Compra. ESCRITURA. Cierra un pedido de compra, marcando lineas cerradas y pendiente a cero.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>COC_CENTRO. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>COC_EJERCI.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>si</td><td>COC_SERIE.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>si</td><td>COC_NUMDOC.</td></tr><tr><td class="param-name">usuario</td><td>string</td><td>no</td><td>Usuario de modificacion. Por defecto &#x27;&lt;centro&gt; MCP&#x27;.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve las sentencias previstas sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-entradas-de-almacen" class="group">
+              <div class="group-head">
+                <h2>Entradas de Almacen</h2>
+                <div class="group-counts">
+                  <span>8 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Calcula cabecera, lineas, IVA y totales para alta de CABDOCM/DETMOVM sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año de fecha.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto parametro E o E&lt;centro&gt;.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor.</td></tr><tr><td class="param-name">cif</td><td>string</td><td>no</td><td>CIF para resolver proveedor si no se informa proveedor.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha entrada. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_recepcion</td><td>string</td><td>no</td><td>Fecha recepcion. Por defecto fecha.</td></tr><tr><td class="param-name">albaran</td><td>string</td><td>no</td><td>Albaran proveedor.</td></tr><tr><td class="param-name">factura</td><td>string</td><td>no</td><td>Factura proveedor. Si se informa, situacion F.</td></tr><tr><td class="param-name">fecha_factura</td><td>string</td><td>no</td><td>Fecha factura.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto proveedor o E.</td></tr><tr><td class="param-name">descuento</td><td>number</td><td>no</td><td>Descuento de cabecera.</td></tr><tr><td class="param-name">portes</td><td>number</td><td>no</td><td>Portes/importe adicional.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo|referencia|codigo_barras,cantidad,precio,dto1..dto6,iva,recargo,descripcion,unidad,pedido_*}.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_lineas_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Lista lineas DETMOVM con filtros por documento, proveedor, articulo o texto.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por documento.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor de cabecera.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por articulo, referencia o descripcion.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Lista CABDOCM con filtros por situacion, proveedor, fechas, serie, numero, albaran o factura.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por CBM_NUMDOC.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>P/F/C/H o pendiente_facturar/pendiente_contabilizar/contabilizada.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de entrada en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de entrada en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">albaran</td><td>string</td><td>no</td><td>Filtro por albaran de proveedor.</td></tr><tr><td class="param-name">factura</td><td>string</td><td>no</td><td>Filtro por factura de proveedor.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por proveedor, observaciones o articulo incluido.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Obtiene cabecera CABDOCM y lineas DETMOVM.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>CBM_CENTRO. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>CBM_EJERCI.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>si</td><td>CBM_SERIE.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>si</td><td>CBM_NUMDOC.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_pdf_previsualizar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Extrae texto de un PDF de proveedor y propone cabecera/lineas para revisar antes del alta.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">ruta_pdf</td><td>string</td><td>no</td><td>Ruta local del PDF.</td></tr><tr><td class="param-name">content_base64</td><td>string</td><td>no</td><td>Contenido PDF en Base64 si no se usa ruta_pdf.</td></tr><tr><td class="param-name">nombre_fichero</td><td>string</td><td>no</td><td>Nombre del PDF cuando se usa content_base64.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor esperado para resolver referencias.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha entrada por defecto.</td></tr><tr><td class="param-name">limite_lineas</td><td>integer</td><td>no</td><td>Maximo de lineas candidatas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_pendientes_contabilizar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Lista y resume documentos facturados pendientes de contabilizar: CBM_SITUAC=&#x27;F&#x27;.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de entrada.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de entrada.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_pendientes_facturar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Lista y resume documentos pendientes de facturar: CBM_SITUAC=&#x27;P&#x27;.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de entrada.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de entrada.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>entrada_almacen_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Entradas de Almacen. Describe CABDOCM, DETMOVM y tablas auxiliares de stock relacionadas.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>entrada_almacen_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Entradas de Almacen. ESCRITURA. Crea CABDOCM y DETMOVM a partir de cabecera y lineas; actualiza stock existente.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año de fecha.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto parametro E o E&lt;centro&gt;.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero. 0/omitido calcula el siguiente.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor.</td></tr><tr><td class="param-name">cif</td><td>string</td><td>no</td><td>CIF para resolver proveedor si no se informa proveedor.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha entrada. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_recepcion</td><td>string</td><td>no</td><td>Fecha recepcion. Por defecto fecha.</td></tr><tr><td class="param-name">albaran</td><td>string</td><td>no</td><td>Albaran proveedor.</td></tr><tr><td class="param-name">factura</td><td>string</td><td>no</td><td>Factura proveedor. Si se informa, situacion F.</td></tr><tr><td class="param-name">fecha_factura</td><td>string</td><td>no</td><td>Fecha factura.</td></tr><tr><td class="param-name">moneda</td><td>string</td><td>no</td><td>Moneda. Por defecto proveedor o E.</td></tr><tr><td class="param-name">descuento</td><td>number</td><td>no</td><td>Descuento de cabecera.</td></tr><tr><td class="param-name">portes</td><td>number</td><td>no</td><td>Portes/importe adicional.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo|referencia|codigo_barras,cantidad,precio,dto1..dto6,iva,recargo,descripcion,unidad,pedido_*}.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>entrada_almacen_desde_pdf</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Entradas de Almacen. ESCRITURA. Crea una entrada a partir de un PDF y ajustes manuales sobre la propuesta extraida.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">ruta_pdf</td><td>string</td><td>no</td><td>Ruta local del PDF.</td></tr><tr><td class="param-name">content_base64</td><td>string</td><td>no</td><td>Contenido PDF en Base64 si no se usa ruta_pdf.</td></tr><tr><td class="param-name">nombre_fichero</td><td>string</td><td>no</td><td>Nombre del PDF cuando se usa content_base64.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor esperado para resolver referencias.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha entrada por defecto.</td></tr><tr><td class="param-name">cabecera</td><td>object</td><td>no</td><td>Campos de cabecera que sustituyen lo extraido del PDF.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>no</td><td>Lineas revisadas; si se omite se usan candidatas resueltas del PDF.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-regularizaciones" class="group">
+              <div class="group-head">
+                <h2>Regularizaciones</h2>
+                <div class="group-counts">
+                  <span>3 consultas</span>
+                  <span>4 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>recuento_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Recuentos. Lista recuentos pendientes en RECUENTO por centro/articulo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>regularizacion_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Regularizaciones. Lista documentos CABDOCR y lineas DETMOVR por tipo, centro, articulo o fecha.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipo</td><td>string</td><td>no</td><td>Tipo CBR_TIPO: R regularizacion, S salida trasvase, E entrada trasvase.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo incluido.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>regularizacion_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Regularizaciones. Describe CABDOCR, DETMOVR, RECUENTO, ARTICULE y STOCKS.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_regularizar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Regularizaciones. ESCRITURA. Ajusta el stock actual de un articulo a una cantidad objetivo y graba DETMOVR.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">cantidad</td><td>number</td><td>si</td><td>Stock objetivo final.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha del documento. Por defecto ayer, como Kronos.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie regularizacion. Por defecto parametro R&lt;centro&gt; o R.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones de cabecera.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>recuento_borrar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Recuentos. ESCRITURA. Borra un recuento pendiente de RECUENTO.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>recuento_grabar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Recuentos. ESCRITURA. Crea o actualiza un recuento en RECUENTO; no regulariza stock.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">cantidad</td><td>number</td><td>si</td><td>Cantidad contada.</td></tr><tr><td class="param-name">aumentar</td><td>boolean</td><td>no</td><td>Si true suma a un recuento existente; si false sustituye.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de recuento. Por defecto hoy.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>trasvase_generar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Regularizaciones. ESCRITURA. Genera trasvase entre tiendas: salida en origen y entrada espejo en destino.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro_origen</td><td>integer</td><td>si</td><td>Centro origen.</td></tr><tr><td class="param-name">centro_destino</td><td>integer</td><td>si</td><td>Centro destino.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha del trasvase. Por defecto hoy.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto parametro R&lt;origen&gt; o R.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo,cantidad,descripcion,unidad}.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-ventas" class="group">
+              <div class="group-head">
+                <h2>Ventas</h2>
+                <div class="group-counts">
+                  <span>6 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_documento_alta_preparar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Calcula cabecera, lineas, IVA y totales para alta de CABDOCV/DETMOV sin escribir.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Tipo: P pedido, R presupuesto, A albaran, F factura. Por defecto P.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>CBV_TIPAC. Por defecto 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año de fecha.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto CLIENI SERIE o parametro &lt;tipo&gt;&lt;centro&gt;/&lt;tipo&gt;, o PM para pedidos.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero. 0/omitido calcula desde NUMERA.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha documento. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_entrega</td><td>string</td><td>no</td><td>Fecha entrega/emision. Por defecto fecha.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">referencia_cliente</td><td>string</td><td>no</td><td>Referencia de cliente.</td></tr><tr><td class="param-name">retira</td><td>string</td><td>no</td><td>Persona o texto de retirada.</td></tr><tr><td class="param-name">descuento</td><td>number</td><td>no</td><td>Descuento de cabecera. Por defecto CLI_DTOESP.</td></tr><tr><td class="param-name">portes</td><td>number</td><td>no</td><td>Portes/importe adicional.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo|codigo_barras|codigo_cliente,cantidad,precio,dto1,dto2,descripcion,unidad,tipo_linea}. Si no hay precio se calcula.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_lineas_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Lista lineas DETMOV con filtros por documento, cliente, articulo, fechas o texto.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro DMV_TIPDOC.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>Filtro DMV_TIPAC.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por numero.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente de cabecera.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Filtro por subcliente de cabecera.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima de movimiento.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima de movimiento.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por articulo, descripcion o cliente.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Lista cabeceras CABDOCV con filtros por documento, cliente, fechas, estado, serie, numero o articulo incluido.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>CBV_TIPDOC: P pedido, R presupuesto, A albaran, F factura, T ticket, C credito, S cerrado.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>CBV_TIPAC. Por defecto sin filtrar.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por numero de documento.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Filtro por subcliente.</td></tr><tr><td class="param-name">estado</td><td>string</td><td>no</td><td>Filtro CBV_SITUAC.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha minima en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha maxima en formato YYYY-MM-DD.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por articulo incluido en DETMOV.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por nombre cliente, referencia, observaciones o descripcion de linea.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_obtener</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Obtiene cabecera CABDOCV y lineas DETMOV de un documento.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>si</td><td>CBV_TIPDOC.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>CBV_TIPAC. Por defecto 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>CBV_EJERCI.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>si</td><td>CBV_SERIE.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>si</td><td>CBV_NUMDOC.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_precio_articulo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Calcula precio de venta de un articulo para cliente, fecha y cantidad usando CLIART, ofertas, CLIFAM, tarifa de cliente e IVA.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Codigo de cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">codigo_barras</td><td>string</td><td>no</td><td>EAN/codigo de barras para resolver articulo.</td></tr><tr><td class="param-name">codigo_cliente</td><td>string</td><td>no</td><td>Codigo propio del cliente en CLIART.CLIA_CODARTC.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de venta YYYY-MM-DD. Por defecto hoy.</td></tr><tr><td class="param-name">cantidad</td><td>number</td><td>no</td><td>Cantidad solicitada. Por defecto 1.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Tipo de documento para reglas de precio. Por defecto P.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>venta_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas. Describe CABDOCV, DETMOV y tablas comerciales relacionadas usadas por pedidos/precios.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>venta_documento_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Ventas. ESCRITURA. Crea CABDOCV y DETMOV a partir de datos de cabecera y lineas; para pedidos no toca stock.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Tipo: P pedido, R presupuesto, A albaran, F factura. Por defecto P.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>CBV_TIPAC. Por defecto 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año de fecha.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto CLIENI SERIE o parametro &lt;tipo&gt;&lt;centro&gt;/&lt;tipo&gt;, o PM para pedidos.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero. 0/omitido calcula desde NUMERA.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha documento. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_entrega</td><td>string</td><td>no</td><td>Fecha entrega/emision. Por defecto fecha.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">referencia_cliente</td><td>string</td><td>no</td><td>Referencia de cliente.</td></tr><tr><td class="param-name">retira</td><td>string</td><td>no</td><td>Persona o texto de retirada.</td></tr><tr><td class="param-name">descuento</td><td>number</td><td>no</td><td>Descuento de cabecera. Por defecto CLI_DTOESP.</td></tr><tr><td class="param-name">portes</td><td>number</td><td>no</td><td>Portes/importe adicional.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo|codigo_barras|codigo_cliente,cantidad,precio,dto1,dto2,descripcion,unidad,tipo_linea}. Si no hay precio se calcula.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>venta_pedido_alta</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Ventas. ESCRITURA. Atajo para crear un pedido de cliente (CBV_TIPDOC=&#x27;P&#x27;) con cabecera y lineas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio. Por defecto año de fecha.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Serie. Por defecto CLIENI SERIE, parametro P&lt;centro&gt;/P o PM.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Numero. 0/omitido calcula desde NUMERA.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto 0.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha documento. Por defecto hoy.</td></tr><tr><td class="param-name">fecha_entrega</td><td>string</td><td>no</td><td>Fecha entrega. Por defecto fecha.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">referencia_cliente</td><td>string</td><td>no</td><td>Referencia de cliente.</td></tr><tr><td class="param-name">retira</td><td>string</td><td>no</td><td>Persona o texto de retirada.</td></tr><tr><td class="param-name">lineas</td><td>array</td><td>si</td><td>Lineas {articulo|codigo_barras|codigo_cliente,cantidad,precio,dto1,dto2,descripcion,unidad}. Si no hay precio se calcula.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-ventas---rentabilidad" class="group">
+              <div class="group-head">
+                <h2>Ventas / rentabilidad</h2>
+                <div class="group-counts">
+                  <span>2 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>rentabilidad_articulo_ventas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas/Rentabilidad. Muestra ventas de un articulo en un periodo y calcula margen segun ANAVEN/RENTABILIDAD_LINEA.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo de articulo.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Filtro por subcliente.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero_desde</td><td>integer</td><td>no</td><td>Numero documento inicial.</td></tr><tr><td class="param-name">numero_hasta</td><td>integer</td><td>no</td><td>Numero documento final.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,A,C,T.</td></tr><tr><td class="param-name">incluir_pedidos</td><td>boolean</td><td>no</td><td>Si true no fuerza DMV_SIGNO=&#x27;1&#x27;. Por defecto false.</td></tr><tr><td class="param-name">modo_coste</td><td>string</td><td>no</td><td>Opcional. Fuerza PBASE, PMEDIO, ULTIMO o PREBAS.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de lineas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>rentabilidad_articulos_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas/Rentabilidad. Resume unidades, ventas, coste, margen y porcentaje de rentabilidad por articulo en un periodo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Filtro por codigo exacto de articulo.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Filtro por codigo o descripcion.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor principal ART_CODPRO.</td></tr><tr><td class="param-name">familia</td><td>string</td><td>no</td><td>Filtro por ART_CODFAM.</td></tr><tr><td class="param-name">subfamilia</td><td>string</td><td>no</td><td>Filtro por ART_SUBFAM.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Filtro por subcliente.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">representante</td><td>integer</td><td>no</td><td>Filtro por CBV_CODREP.</td></tr><tr><td class="param-name">en_oferta</td><td>boolean</td><td>no</td><td>Si true, solo lineas con DMV_EJEOFE &gt; 0.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,A,C,T.</td></tr><tr><td class="param-name">incluir_pedidos</td><td>boolean</td><td>no</td><td>Si true no fuerza DMV_SIGNO=&#x27;1&#x27;. Por defecto false.</td></tr><tr><td class="param-name">modo_coste</td><td>string</td><td>no</td><td>Opcional. Fuerza PBASE, PMEDIO, ULTIMO o PREBAS.</td></tr><tr><td class="param-name">orden</td><td>string</td><td>no</td><td>Orden: margen, ventas, rentabilidad, unidades. Por defecto margen.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos.</td></tr><tr><td class="param-name">limite_lineas</td><td>integer</td><td>no</td><td>Maximo de lineas DETMOV a analizar antes de agregar. Por defecto 1000.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-ventas---dashboard" class="group">
+              <div class="group-head">
+                <h2>Ventas / dashboard</h2>
+                <div class="group-counts">
+                  <span>2 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>ventas_documentos_detalle</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas/ANADOC. Lista documentos de venta de un periodo con importes, cobros, forma de pago, agente, poblacion y vencimiento.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos CBV_TIPDOC a incluir. Por defecto T,A,F,C.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>Filtro CBV_TIPAC. Usa 9 o vacio para todos.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>Filtro CBV_SITUAC.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">subcliente_desde</td><td>integer</td><td>no</td><td>Subcliente inicial.</td></tr><tr><td class="param-name">subcliente_hasta</td><td>integer</td><td>no</td><td>Subcliente final.</td></tr><tr><td class="param-name">representante</td><td>integer</td><td>no</td><td>Filtro CBV_CODREP.</td></tr><tr><td class="param-name">serie_desde</td><td>string</td><td>no</td><td>Serie inicial.</td></tr><tr><td class="param-name">serie_hasta</td><td>string</td><td>no</td><td>Serie final.</td></tr><tr><td class="param-name">numero_desde</td><td>integer</td><td>no</td><td>Numero documento inicial.</td></tr><tr><td class="param-name">numero_hasta</td><td>integer</td><td>no</td><td>Numero documento final.</td></tr><tr><td class="param-name">tarjeta</td><td>string</td><td>no</td><td>Filtro CBV_CODTAR.</td></tr><tr><td class="param-name">importe_pendiente_min</td><td>number</td><td>no</td><td>Importe pendiente minimo.</td></tr><tr><td class="param-name">importe_pendiente_max</td><td>number</td><td>no</td><td>Importe pendiente maximo.</td></tr><tr><td class="param-name">tipo_factura</td><td>string</td><td>no</td><td>Para CBV_TIPDOC=&#x27;F&#x27;: contado, tickets, albaran o todas. Por defecto todas.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de documentos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>ventas_documentos_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Ventas/ANADOC. Agrupa documentos de venta por tipo, cliente, forma de pago, forma de cobro, agente, poblacion, etc.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>tipo_documento, cliente, forma_pago, forma_cobro, agente, poblacion, centro, serie, mes, dia_semana, hora, situacion, tarjeta.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos CBV_TIPDOC a incluir. Por defecto T,A,F,C.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>Filtro CBV_TIPAC. Usa 9 o vacio para todos.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>Filtro CBV_SITUAC.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">subcliente_desde</td><td>integer</td><td>no</td><td>Subcliente inicial.</td></tr><tr><td class="param-name">subcliente_hasta</td><td>integer</td><td>no</td><td>Subcliente final.</td></tr><tr><td class="param-name">representante</td><td>integer</td><td>no</td><td>Filtro CBV_CODREP.</td></tr><tr><td class="param-name">serie_desde</td><td>string</td><td>no</td><td>Serie inicial.</td></tr><tr><td class="param-name">serie_hasta</td><td>string</td><td>no</td><td>Serie final.</td></tr><tr><td class="param-name">numero_desde</td><td>integer</td><td>no</td><td>Numero documento inicial.</td></tr><tr><td class="param-name">numero_hasta</td><td>integer</td><td>no</td><td>Numero documento final.</td></tr><tr><td class="param-name">tarjeta</td><td>string</td><td>no</td><td>Filtro CBV_CODTAR.</td></tr><tr><td class="param-name">importe_pendiente_min</td><td>number</td><td>no</td><td>Importe pendiente minimo.</td></tr><tr><td class="param-name">importe_pendiente_max</td><td>number</td><td>no</td><td>Importe pendiente maximo.</td></tr><tr><td class="param-name">tipo_factura</td><td>string</td><td>no</td><td>Para CBV_TIPDOC=&#x27;F&#x27;: contado, tickets, albaran o todas. Por defecto todas.</td></tr><tr><td class="param-name">orden</td><td>string</td><td>no</td><td>Orden: total, base, pendiente, documentos. Por defecto total.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-cartera" class="group">
+              <div class="group-head">
+                <h2>Cartera</h2>
+                <div class="group-counts">
+                  <span>6 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_deuda_cliente</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Consulta deuda de un cliente, con totales y detalle de efectos pendientes/vencidos/remesados.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente. Por defecto todos los subclientes.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>pendiente, vencido, cobrado, impagado o todos. Por defecto pendiente.</td></tr><tr><td class="param-name">remesado</td><td>string</td><td>no</td><td>S/N.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos devueltos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_deuda_por_cliente</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Resume deuda por cliente con pendiente, vencido, remesado y no remesado.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>pendiente, vencido, cobrado, impagado o todos. Por defecto pendiente.</td></tr><tr><td class="param-name">remesado</td><td>string</td><td>no</td><td>S/N.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos leidos.</td></tr><tr><td class="param-name">limite_clientes</td><td>integer</td><td>no</td><td>Maximo de clientes devueltos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_deuda_por_tipo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Resume deuda por tipo de documento, tipo de efecto, situacion y remesado.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>pendiente, vencido, cobrado, impagado o todos. Por defecto pendiente.</td></tr><tr><td class="param-name">remesado</td><td>string</td><td>no</td><td>S/N.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos leidos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_efectos_detalle</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Lista efectos/vencimientos CABDOCVE con filtros por cliente, documento, tipo, situacion, remesa y fechas.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC: F factura, T ticket, C credito, etc.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>Filtro CBVE_TIPAC.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Filtro por subcliente.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio documento.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>no</td><td>Filtro por serie.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>no</td><td>Filtro por documento.</td></tr><tr><td class="param-name">orden</td><td>integer</td><td>no</td><td>Filtro por numero de efecto.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>pendiente, vencido, cobrado/ cancelado, impagado o todos.</td></tr><tr><td class="param-name">remesado</td><td>string</td><td>no</td><td>S/N para efectos remesados o pendientes de remesar.</td></tr><tr><td class="param-name">remesa_ejercicio</td><td>integer</td><td>no</td><td>Filtro CBVE_EJEREM.</td></tr><tr><td class="param-name">remesa_codigo</td><td>integer</td><td>no</td><td>Filtro CBVE_CODREM.</td></tr><tr><td class="param-name">fecha_desde</td><td>string</td><td>no</td><td>Fecha emision desde.</td></tr><tr><td class="param-name">fecha_hasta</td><td>string</td><td>no</td><td>Fecha emision hasta.</td></tr><tr><td class="param-name">vencimiento_desde</td><td>string</td><td>no</td><td>Vencimiento desde.</td></tr><tr><td class="param-name">vencimiento_hasta</td><td>string</td><td>no</td><td>Vencimiento hasta.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos. Por defecto hoy.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_pendiente_remesar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Lista efectos pendientes no remesados: CBVE_FECCAN IS NULL y CBVE_EJEREM/CBVE_CODREM a cero.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">vencimiento_hasta</td><td>string</td><td>no</td><td>Vencimiento maximo.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_tablas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Describe CABDOCVE y tablas relacionadas para deuda, vencimientos y remesas.</p>
+        <p class="empty">Sin parametros.</p>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+            <section id="grupo-dashboard" class="group">
+              <div class="group-head">
+                <h2>Dashboard</h2>
+                <div class="group-counts">
+                  <span>6 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+                  
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>compras_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Resume compras/entradas por periodo agrupando por mes, año, proveedor, articulo, familia, centro o situacion.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>mes, anio, proveedor, articulo, familia, centro o situacion. Por defecto mes.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_evolucion_anual</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Evolucion por años de ventas, compras, documentos y margen aproximado.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">anio_desde</td><td>integer</td><td>no</td><td>Año inicial. Por defecto año actual - 4.</td></tr><tr><td class="param-name">anio_hasta</td><td>integer</td><td>no</td><td>Año final. Por defecto año actual.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_rankings</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Rankings de clientes, proveedores y articulos de venta/compra del periodo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas por ranking.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Resume ventas, compras, cartera, pedidos de compra y entradas pendientes para un periodo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD. Por defecto inicio del año actual.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD. Por defecto hoy.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_series_temporales</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Series temporales de ventas y compras agrupadas por mes o año.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>mes o anio. Por defecto mes.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr></tbody></table></details>
+      </article>
+    
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>ventas_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. Resume ventas por periodo con agrupacion opcional por mes, año, cliente, articulo, familia, centro o tipo_documento.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>mes, anio, cliente, articulo, familia, centro o tipo_documento. Por defecto mes.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
+      </article>
+    
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+            
+  </main>
+</body>
+</html>
