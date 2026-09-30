@@ -37,6 +37,12 @@ GROUP_LABELS = {
     "rentabilidad": "Ventas / rentabilidad",
     "pedido": "Pedidos",
     "cartera": "Cartera",
+    "remesa": "Cartera / tesoreria",
+    "vencimientos": "Cartera / tesoreria",
+    "efecto": "Cartera / tesoreria",
+    "caja": "Cartera / tesoreria",
+    "tesoreria": "Cartera / tesoreria",
+    "descuadre": "Cartera / tesoreria",
     "dashboard": "Dashboard",
     "compras": "Dashboard",
 }
@@ -58,11 +64,13 @@ GROUP_ORDER = [
     "Ventas / dashboard",
     "Pedidos",
     "Cartera",
+    "Cartera / tesoreria",
     "Dashboard",
 ]
 
 WRITE_HINTS = (
     "ESCRITURA",
+    "CRITICA",
     "Crea ",
     "Crea o actualiza",
     "Da de alta",
@@ -76,9 +84,11 @@ WRITE_HINTS = (
 WRITE_NAME_PARTS = (
     "_guardar",
     "_alta",
+    "_crear",
     "_importar",
     "_cerrar",
     "_borrar",
+    "_cambiar_estado",
     "_regularizar",
     "trasvase_generar",
     "recuento_grabar",

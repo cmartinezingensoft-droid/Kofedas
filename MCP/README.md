@@ -114,6 +114,21 @@ lectura/escritura controlada:
 - `cartera_deuda_por_cliente`
 - `cartera_pendiente_remesar`
 - `cartera_deuda_por_tipo`
+- `cartera_efectos_pendientes_resumen`
+- `cartera_efectos_por_cliente`
+- `vencimientos_listar`
+- `cartera_remesas_resumen`
+- `remesa_detalle`
+- `remesa_crear`
+- `efecto_cambiar_estado`
+- `cartera_riesgo_cliente`
+- `cartera_riesgo_clientes_resumen`
+- `caja_movimientos_listar`
+- `caja_cierre_resumen`
+- `caja_arqueo`
+- `descuadre`
+- `tesoreria_resumen`
+- `tesoreria_acciones_recomendadas`
 - `dashboard_resumen`
 - `ventas_resumen`
 - `compras_resumen`
@@ -252,6 +267,14 @@ lista efectos pendientes no remesados; y `cartera_deuda_por_tipo` agrupa por
 tipo de documento, tipo de efecto, situacion y remesado. En la base Kofedas
 actual no existen tablas `REMESAS/DETREM/COBROS` con esos nombres, por lo que
 este grupo se centra en la informacion de cartera disponible en `CABDOCVE`.
+El bloque avanzado anade los alias Kronos `cartera_efectos_pendientes_resumen`,
+`cartera_efectos_por_cliente` y `vencimientos_listar`, resumen/detalle de
+remesas con `REMESA` cuando existe y fallback sobre `CABDOCVE`, gestion critica
+de efectos con `efecto_cambiar_estado`, riesgo de cliente desde deuda pendiente
+y limite disponible en `CLIEN`, y consultas defensivas de caja/tesoreria sobre
+`OPECAJ`. Si `REMESA` u `OPECAJ` no estan disponibles o tienen columnas no
+reconocidas, las funciones devuelven una respuesta explicativa en lugar de
+fallar de forma opaca.
 
 El grupo Dashboard recoge consultas de cuadro de mando similares a Kronos,
 adaptadas a las tablas Kofedas disponibles. `dashboard_resumen` consolida

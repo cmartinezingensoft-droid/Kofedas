@@ -61,14 +61,14 @@
         <div class="sub">Generado desde <code>kofedas_mcp.tool_definitions()</code> · servidor 0.1.0</div>
       </div>
       <div class="stats">
-        <div class="stat"><b>121</b><span>Total funciones</span></div>
-        <div class="stat"><b>89</b><span>Consultas</span></div>
-        <div class="stat"><b>32</b><span>Escritura</span></div>
+        <div class="stat"><b>136</b><span>Total funciones</span></div>
+        <div class="stat"><b>102</b><span>Consultas</span></div>
+        <div class="stat"><b>34</b><span>Escritura</span></div>
       </div>
     </div>
   </header>
   <main class="wrap">
-    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>11</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>6</span></a><a href="#grupo-dashboard">Dashboard <span>6</span></a></nav>
+    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>11</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>11</span></a><a href="#grupo-cartera---tesoreria">Cartera / tesoreria <span>8</span></a><a href="#grupo-dashboard">Dashboard <span>8</span></a></nav>
 
             <section id="grupo-sistema" class="group">
               <div class="group-head">
@@ -1355,7 +1355,7 @@
               <div class="group-head">
                 <h2>Cartera</h2>
                 <div class="group-counts">
-                  <span>6 consultas</span>
+                  <span>11 consultas</span>
                   <span>0 escrituras</span>
                 </div>
               </div>
@@ -1401,11 +1401,56 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>cartera_efectos_pendientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Resume efectos pendientes/vencidos por tipo, situacion y estado de remesa usando CABDOCVE.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">vencimiento_hasta</td><td>string</td><td>no</td><td>Vencimiento maximo.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos leidos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_efectos_por_cliente</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. Agrupa efectos pendientes de CABDOCVE por cliente/subcliente con vencido, remesado y no remesado.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos leidos.</td></tr><tr><td class="param-name">limite_clientes</td><td>integer</td><td>no</td><td>Maximo de clientes devueltos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>cartera_pendiente_remesar</code>
           <span class="pill read">Consulta</span>
         </div>
         <p>Cartera. Lista efectos pendientes no remesados: CBVE_FECCAN IS NULL y CBVE_EJEREM/CBVE_CODREM a cero.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">vencimiento_hasta</td><td>string</td><td>no</td><td>Vencimiento maximo.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_remesas_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. LECTURA. Resume remesas desde REMESA cuando existe y sus efectos vinculados en CABDOCVE.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Filtro por ejercicio de remesa.</td></tr><tr><td class="param-name">codigo</td><td>integer</td><td>no</td><td>Filtro por codigo de remesa.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha de remesa desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha de remesa hasta.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de remesas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_riesgo_cliente</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. LECTURA. Calcula riesgo actual de credito de un cliente desde deuda pendiente y limite disponible en CLIEN.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>si</td><td>Cliente.</td></tr><tr><td class="param-name">subcliente</td><td>integer</td><td>no</td><td>Subcliente opcional.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>cartera_riesgo_clientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cartera. LECTURA. Calcula riesgo actual de credito para clientes, ordenando primero los excedidos.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">cliente_desde</td><td>integer</td><td>no</td><td>Cliente inicial.</td></tr><tr><td class="param-name">cliente_hasta</td><td>integer</td><td>no</td><td>Cliente final.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de clientes.</td></tr></tbody></table></details>
       </article>
 
       <article class="tool-card read">
@@ -1425,11 +1470,103 @@
               </div>
             </section>
 
+            <section id="grupo-cartera---tesoreria" class="group">
+              <div class="group-head">
+                <h2>Cartera / tesoreria</h2>
+                <div class="group-counts">
+                  <span>6 consultas</span>
+                  <span>2 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>caja_arqueo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Calcula arqueo de efectivo de caja desde OPECAJ cuando existe la tabla.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro.</td></tr><tr><td class="param-name">caja</td><td>integer</td><td>no</td><td>Caja.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de arqueo. Por defecto hoy.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>caja_cierre_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Resume movimientos y cierres de caja por fecha, centro y caja desde OPECAJ.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">caja</td><td>integer</td><td>no</td><td>Filtro por caja.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha hasta.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>caja_movimientos_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Lista movimientos de caja desde OPECAJ cuando existe la tabla.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">caja</td><td>integer</td><td>no</td><td>Filtro por caja.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha hasta.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>descuadre</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Detecta posibles descuadres de caja cruzando OPECAJ y CABDOCV, sin ejecutar correcciones.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">caja</td><td>integer</td><td>no</td><td>Filtro por caja.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha hasta.</td></tr><tr><td class="param-name">tolerancia</td><td>number</td><td>no</td><td>Importe minimo de diferencia. Por defecto 0.01.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>remesa_detalle</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Devuelve una remesa y los efectos CABDOCVE vinculados por ejercicio/codigo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio de remesa. Tambien acepta remesa_ejercicio.</td></tr><tr><td class="param-name">remesa_ejercicio</td><td>integer</td><td>no</td><td>Alias de ejercicio.</td></tr><tr><td class="param-name">codigo</td><td>integer</td><td>no</td><td>Codigo de remesa. Tambien acepta remesa_codigo.</td></tr><tr><td class="param-name">remesa_codigo</td><td>integer</td><td>no</td><td>Alias de codigo.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de efectos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>vencimientos_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Tesoreria operativa. LECTURA. Lista vencimientos reales desde CABDOCVE con importes, cobro, pendiente, remesa y situacion.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">cliente</td><td>integer</td><td>no</td><td>Filtro por cliente.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>no</td><td>Filtro CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_efecto</td><td>string</td><td>no</td><td>Filtro CBVE_TIPOEF.</td></tr><tr><td class="param-name">situacion</td><td>string</td><td>no</td><td>pendiente, vencido, cobrado, impagado o todos.</td></tr><tr><td class="param-name">remesado</td><td>string</td><td>no</td><td>S/N.</td></tr><tr><td class="param-name">vencimiento_desde</td><td>string</td><td>no</td><td>Vencimiento desde.</td></tr><tr><td class="param-name">vencimiento_hasta</td><td>string</td><td>no</td><td>Vencimiento hasta.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>efecto_cambiar_estado</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Tesoreria operativa. CRITICA. Cambia estado practico de un efecto CABDOCVE: cobrar/cancelar, impagar, limpiar impagado, asignar o quitar remesa.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>si</td><td>CBVE_CENTRO.</td></tr><tr><td class="param-name">tipo_documento</td><td>string</td><td>si</td><td>CBVE_TIPDOC.</td></tr><tr><td class="param-name">tipo_accion</td><td>string</td><td>no</td><td>CBVE_TIPAC. Por defecto 0.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>si</td><td>CBVE_EJERCI.</td></tr><tr><td class="param-name">serie</td><td>string</td><td>si</td><td>CBVE_SERIE.</td></tr><tr><td class="param-name">numero</td><td>integer</td><td>si</td><td>CBVE_NUMDOC.</td></tr><tr><td class="param-name">orden</td><td>integer</td><td>si</td><td>CBVE_NUMORD.</td></tr><tr><td class="param-name">accion</td><td>string</td><td>si</td><td>cobrar, cancelar, impagar, limpiar_impagado, asignar_remesa o quitar_remesa.</td></tr><tr><td class="param-name">importe_cobrado</td><td>number</td><td>no</td><td>Importe cobrado para cobrar/cancelar.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de accion. Por defecto hoy.</td></tr><tr><td class="param-name">remesa_ejercicio</td><td>integer</td><td>no</td><td>Ejercicio remesa para asignar_remesa.</td></tr><tr><td class="param-name">remesa_codigo</td><td>integer</td><td>no</td><td>Codigo remesa para asignar_remesa.</td></tr><tr><td class="param-name">observaciones</td><td>string</td><td>no</td><td>Observaciones.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe y devuelve el plan.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>remesa_crear</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Tesoreria operativa. CRITICA. Crea REMESA si existe la tabla y asigna explicitamente los vencimientos CABDOCVE indicados.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">ejercicio</td><td>integer</td><td>no</td><td>Ejercicio de remesa. Por defecto año de fecha.</td></tr><tr><td class="param-name">codigo</td><td>integer</td><td>no</td><td>Codigo de remesa. 0/omitido calcula siguiente si es posible.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha de remesa. Por defecto hoy.</td></tr><tr><td class="param-name">descripcion</td><td>string</td><td>no</td><td>Descripcion/observaciones de remesa.</td></tr><tr><td class="param-name">efectos</td><td>array</td><td>si</td><td>Lista de efectos {centro,tipo_documento,tipo_accion,ejercicio,serie,numero,orden}.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr></tbody></table></details>
+      </article>
+
+                </div>
+              </div>
+            </section>
+
             <section id="grupo-dashboard" class="group">
               <div class="group-head">
                 <h2>Dashboard</h2>
                 <div class="group-counts">
-                  <span>6 consultas</span>
+                  <span>8 consultas</span>
                   <span>0 escrituras</span>
                 </div>
               </div>
@@ -1480,6 +1617,24 @@
         </div>
         <p>Dashboard ERP. Series temporales de ventas y compras agrupadas por mes o año.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>mes o anio. Por defecto mes.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>tesoreria_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones sobre vencimientos, remesas y cierres de caja revisables.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">fecha_referencia</td><td>string</td><td>no</td><td>Fecha para decidir vencidos.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>tesoreria_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume operaciones de caja/tesoreria desde OPECAJ y vencimientos pendientes desde CABDOCVE.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha hasta.</td></tr></tbody></table></details>
       </article>
 
       <article class="tool-card read">

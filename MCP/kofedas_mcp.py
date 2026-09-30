@@ -1995,6 +1995,202 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
             "limite": _int_schema("Maximo de efectos leidos."),
         },
     ),
+    "cartera_efectos_pendientes_resumen": _tool(
+        "cartera_efectos_pendientes_resumen",
+        "Cartera. Resume efectos pendientes/vencidos por tipo, situacion y estado de remesa usando CABDOCVE.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "cliente": _int_schema("Filtro por cliente."),
+            "tipo_documento": _string_schema("Filtro CBVE_TIPDOC."),
+            "tipo_efecto": _string_schema("Filtro CBVE_TIPOEF."),
+            "vencimiento_hasta": _string_schema("Vencimiento maximo."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+            "limite": _int_schema("Maximo de efectos leidos."),
+        },
+    ),
+    "cartera_efectos_por_cliente": _tool(
+        "cartera_efectos_por_cliente",
+        "Cartera. Agrupa efectos pendientes de CABDOCVE por cliente/subcliente con vencido, remesado y no remesado.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "cliente_desde": _int_schema("Cliente inicial."),
+            "cliente_hasta": _int_schema("Cliente final."),
+            "tipo_documento": _string_schema("Filtro CBVE_TIPDOC."),
+            "tipo_efecto": _string_schema("Filtro CBVE_TIPOEF."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+            "limite": _int_schema("Maximo de efectos leidos."),
+            "limite_clientes": _int_schema("Maximo de clientes devueltos."),
+        },
+    ),
+    "vencimientos_listar": _tool(
+        "vencimientos_listar",
+        "Tesoreria operativa. LECTURA. Lista vencimientos reales desde CABDOCVE con importes, cobro, pendiente, remesa y situacion.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "cliente": _int_schema("Filtro por cliente."),
+            "tipo_documento": _string_schema("Filtro CBVE_TIPDOC."),
+            "tipo_efecto": _string_schema("Filtro CBVE_TIPOEF."),
+            "situacion": _string_schema("pendiente, vencido, cobrado, impagado o todos."),
+            "remesado": _string_schema("S/N."),
+            "vencimiento_desde": _string_schema("Vencimiento desde."),
+            "vencimiento_hasta": _string_schema("Vencimiento hasta."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+            "limite": _int_schema("Maximo de filas."),
+        },
+    ),
+    "cartera_remesas_resumen": _tool(
+        "cartera_remesas_resumen",
+        "Cartera. LECTURA. Resume remesas desde REMESA cuando existe y sus efectos vinculados en CABDOCVE.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "ejercicio": _int_schema("Filtro por ejercicio de remesa."),
+            "codigo": _int_schema("Filtro por codigo de remesa."),
+            "desde": _string_schema("Fecha de remesa desde."),
+            "hasta": _string_schema("Fecha de remesa hasta."),
+            "limite": _int_schema("Maximo de remesas."),
+        },
+    ),
+    "remesa_detalle": _tool(
+        "remesa_detalle",
+        "Tesoreria operativa. LECTURA. Devuelve una remesa y los efectos CABDOCVE vinculados por ejercicio/codigo.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "ejercicio": _int_schema("Ejercicio de remesa. Tambien acepta remesa_ejercicio."),
+            "remesa_ejercicio": _int_schema("Alias de ejercicio."),
+            "codigo": _int_schema("Codigo de remesa. Tambien acepta remesa_codigo."),
+            "remesa_codigo": _int_schema("Alias de codigo."),
+            "limite": _int_schema("Maximo de efectos."),
+        },
+        [],
+    ),
+    "remesa_crear": _tool(
+        "remesa_crear",
+        "Tesoreria operativa. CRITICA. Crea REMESA si existe la tabla y asigna explicitamente los vencimientos CABDOCVE indicados.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "ejercicio": _int_schema("Ejercicio de remesa. Por defecto año de fecha."),
+            "codigo": _int_schema("Codigo de remesa. 0/omitido calcula siguiente si es posible."),
+            "fecha": _string_schema("Fecha de remesa. Por defecto hoy."),
+            "descripcion": _string_schema("Descripcion/observaciones de remesa."),
+            "efectos": {"type": "array", "description": "Lista de efectos {centro,tipo_documento,tipo_accion,ejercicio,serie,numero,orden}.", "items": {"type": "object"}},
+            "simular": {"type": "boolean", "description": "Si true, devuelve el plan sin escribir."},
+        },
+        ["efectos"],
+    ),
+    "efecto_cambiar_estado": _tool(
+        "efecto_cambiar_estado",
+        "Tesoreria operativa. CRITICA. Cambia estado practico de un efecto CABDOCVE: cobrar/cancelar, impagar, limpiar impagado, asignar o quitar remesa.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBVE_CENTRO."),
+            "tipo_documento": _string_schema("CBVE_TIPDOC."),
+            "tipo_accion": _string_schema("CBVE_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBVE_EJERCI."),
+            "serie": _string_schema("CBVE_SERIE."),
+            "numero": _int_schema("CBVE_NUMDOC."),
+            "orden": _int_schema("CBVE_NUMORD."),
+            "accion": _string_schema("cobrar, cancelar, impagar, limpiar_impagado, asignar_remesa o quitar_remesa."),
+            "importe_cobrado": {"type": "number", "description": "Importe cobrado para cobrar/cancelar."},
+            "fecha": _string_schema("Fecha de accion. Por defecto hoy."),
+            "remesa_ejercicio": _int_schema("Ejercicio remesa para asignar_remesa."),
+            "remesa_codigo": _int_schema("Codigo remesa para asignar_remesa."),
+            "observaciones": _string_schema("Observaciones."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["centro", "tipo_documento", "ejercicio", "serie", "numero", "orden", "accion"],
+    ),
+    "cartera_riesgo_cliente": _tool(
+        "cartera_riesgo_cliente",
+        "Cartera. LECTURA. Calcula riesgo actual de credito de un cliente desde deuda pendiente y limite disponible en CLIEN.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "cliente": _int_schema("Cliente."),
+            "subcliente": _int_schema("Subcliente opcional."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+        },
+        ["cliente"],
+    ),
+    "cartera_riesgo_clientes_resumen": _tool(
+        "cartera_riesgo_clientes_resumen",
+        "Cartera. LECTURA. Calcula riesgo actual de credito para clientes, ordenando primero los excedidos.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "cliente_desde": _int_schema("Cliente inicial."),
+            "cliente_hasta": _int_schema("Cliente final."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+            "limite": _int_schema("Maximo de clientes."),
+        },
+    ),
+    "caja_movimientos_listar": _tool(
+        "caja_movimientos_listar",
+        "Tesoreria operativa. LECTURA. Lista movimientos de caja desde OPECAJ cuando existe la tabla.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "caja": _int_schema("Filtro por caja."),
+            "desde": _string_schema("Fecha desde."),
+            "hasta": _string_schema("Fecha hasta."),
+            "limite": _int_schema("Maximo de filas."),
+        },
+    ),
+    "caja_cierre_resumen": _tool(
+        "caja_cierre_resumen",
+        "Tesoreria operativa. LECTURA. Resume movimientos y cierres de caja por fecha, centro y caja desde OPECAJ.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "caja": _int_schema("Filtro por caja."),
+            "desde": _string_schema("Fecha desde."),
+            "hasta": _string_schema("Fecha hasta."),
+            "limite": _int_schema("Maximo de grupos."),
+        },
+    ),
+    "caja_arqueo": _tool(
+        "caja_arqueo",
+        "Tesoreria operativa. LECTURA. Calcula arqueo de efectivo de caja desde OPECAJ cuando existe la tabla.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Centro."),
+            "caja": _int_schema("Caja."),
+            "fecha": _string_schema("Fecha de arqueo. Por defecto hoy."),
+        },
+    ),
+    "descuadre": _tool(
+        "descuadre",
+        "Tesoreria operativa. LECTURA. Detecta posibles descuadres de caja cruzando OPECAJ y CABDOCV, sin ejecutar correcciones.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "caja": _int_schema("Filtro por caja."),
+            "desde": _string_schema("Fecha desde."),
+            "hasta": _string_schema("Fecha hasta."),
+            "tolerancia": {"type": "number", "description": "Importe minimo de diferencia. Por defecto 0.01."},
+            "limite": _int_schema("Maximo de filas."),
+        },
+    ),
+    "tesoreria_resumen": _tool(
+        "tesoreria_resumen",
+        "Dashboard ERP. LECTURA. Resume operaciones de caja/tesoreria desde OPECAJ y vencimientos pendientes desde CABDOCVE.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "desde": _string_schema("Fecha desde."),
+            "hasta": _string_schema("Fecha hasta."),
+        },
+    ),
+    "tesoreria_acciones_recomendadas": _tool(
+        "tesoreria_acciones_recomendadas",
+        "Dashboard ERP. LECTURA. Recomienda acciones sobre vencimientos, remesas y cierres de caja revisables.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro."),
+            "fecha_referencia": _string_schema("Fecha para decidir vencidos."),
+            "limite": _int_schema("Maximo de acciones."),
+        },
+    ),
     "dashboard_resumen": _tool(
         "dashboard_resumen",
         "Dashboard ERP. Resume ventas, compras, cartera, pedidos de compra y entradas pendientes para un periodo.",
@@ -2314,6 +2510,21 @@ class KofedasToolRuntime:
             "cartera_deuda_por_cliente": self.cartera_deuda_por_cliente,
             "cartera_pendiente_remesar": self.cartera_pendiente_remesar,
             "cartera_deuda_por_tipo": self.cartera_deuda_por_tipo,
+            "cartera_efectos_pendientes_resumen": self.cartera_efectos_pendientes_resumen,
+            "cartera_efectos_por_cliente": self.cartera_efectos_por_cliente,
+            "vencimientos_listar": self.vencimientos_listar,
+            "cartera_remesas_resumen": self.cartera_remesas_resumen,
+            "remesa_detalle": self.remesa_detalle,
+            "remesa_crear": self.remesa_crear,
+            "efecto_cambiar_estado": self.efecto_cambiar_estado,
+            "cartera_riesgo_cliente": self.cartera_riesgo_cliente,
+            "cartera_riesgo_clientes_resumen": self.cartera_riesgo_clientes_resumen,
+            "caja_movimientos_listar": self.caja_movimientos_listar,
+            "caja_cierre_resumen": self.caja_cierre_resumen,
+            "caja_arqueo": self.caja_arqueo,
+            "descuadre": self.descuadre,
+            "tesoreria_resumen": self.tesoreria_resumen,
+            "tesoreria_acciones_recomendadas": self.tesoreria_acciones_recomendadas,
             "dashboard_resumen": self.dashboard_resumen,
             "ventas_resumen": self.ventas_resumen,
             "compras_resumen": self.compras_resumen,
@@ -2476,6 +2687,18 @@ class KofedasToolRuntime:
         if not columns:
             raise KofedasError("No se encontraron columnas para " + table)
         return columns
+
+    def _optional_table_columns(self, table: str) -> list[str]:
+        try:
+            return self._table_columns(table)
+        except Exception:
+            return []
+
+    def _first_existing_column(self, columns: set[str], *candidates: str) -> str | None:
+        for candidate in candidates:
+            if candidate in columns:
+                return candidate
+        return None
 
     def _table_pk(self, table: str) -> list[str]:
         keys = self.db.primary_key(table)
@@ -8751,6 +8974,354 @@ class KofedasToolRuntime:
             items.append(group)
         items.sort(key=lambda item: self._to_float(item.get("pendiente"), 0), reverse=True)
         return {**meta, "resumen": items}
+
+    def cartera_efectos_pendientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        payload = {**args, "situacion": args.get("situacion") or "pendiente", "limite": args.get("limite") or 5000}
+        return self.cartera_deuda_por_tipo(payload)
+
+    def cartera_efectos_por_cliente(self, args: dict[str, Any]) -> dict[str, Any]:
+        payload = {**args, "situacion": args.get("situacion") or "pendiente", "limite": args.get("limite") or 5000}
+        return self.cartera_deuda_por_cliente(payload)
+
+    def vencimientos_listar(self, args: dict[str, Any]) -> dict[str, Any]:
+        effects, meta = self._cartera_effect_rows(args)
+        return {"filtros": args, **meta, "vencimientos": effects}
+
+    def cartera_remesas_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        columns = self._optional_table_columns("REMESA")
+        if not columns:
+            effects, meta = self._cartera_effect_rows({**args, "remesado": "S", "limite": args.get("limite") or 5000})
+            groups: dict[tuple[int, int], dict[str, Any]] = {}
+            for effect in effects:
+                remesa = effect["remesa"]
+                key = (int(remesa["ejercicio"] or 0), int(remesa["codigo"] or 0))
+                group = groups.setdefault(key, {"ejercicio": key[0], "codigo": key[1], "efectos": 0, "nominal": 0.0, "pendiente": 0.0, "cobrado": 0.0})
+                group["efectos"] += 1
+                group["nominal"] += self._to_float(effect.get("nominal"), 0)
+                group["pendiente"] += self._to_float(effect.get("pendiente"), 0)
+                group["cobrado"] += self._to_float(effect.get("cobrado"), 0)
+            items = []
+            for group in groups.values():
+                for field in ("nominal", "pendiente", "cobrado"):
+                    group[field] = round(group[field], 2)
+                items.append(group)
+            items.sort(key=lambda item: (item["ejercicio"], item["codigo"]), reverse=True)
+            return {"fuente": "CABDOCVE", "aviso": "Tabla REMESA no disponible; resumen calculado desde efectos remesados.", **meta, "remesas": items}
+        column_set = set(columns)
+        empresa = self._empresa(args)
+        limit = _positive_limit(args.get("limite"), 100)
+        year_col = self._first_existing_column(column_set, "REM_EJERCI", "REM_EJEREM", "REM_EJERCICIO")
+        code_col = self._first_existing_column(column_set, "REM_CODIGO", "REM_CODREM", "REM_NUMREM")
+        date_col = self._first_existing_column(column_set, "REM_FECHA", "REM_FECREM")
+        desc_col = self._first_existing_column(column_set, "REM_DESCRI", "REM_OBSERV", "REM_NOMBRE")
+        emp_col = self._first_existing_column(column_set, "REM_NUMEMP")
+        if not year_col or not code_col:
+            return {"fuente": "REMESA", "aviso": "REMESA existe pero no se reconocen columnas de ejercicio/codigo.", "columnas": columns, "remesas": []}
+        where: list[str] = []
+        params: list[Any] = []
+        if emp_col:
+            where.append(f"R.{emp_col} = ?")
+            params.append(empresa)
+        if args.get("ejercicio") not in (None, "", 0):
+            where.append(f"R.{year_col} = ?")
+            params.append(int(args["ejercicio"]))
+        if args.get("codigo") not in (None, "", 0):
+            where.append(f"R.{code_col} = ?")
+            params.append(int(args["codigo"]))
+        if date_col and args.get("desde"):
+            where.append(f"R.{date_col} >= ?")
+            params.append(self._date_arg(args.get("desde")))
+        if date_col and args.get("hasta"):
+            where.append(f"R.{date_col} <= ?")
+            params.append(self._date_arg(args.get("hasta")))
+        select_date = f"R.{date_col}" if date_col else "CAST(NULL AS DATE)"
+        select_desc = f"R.{desc_col}" if desc_col else "''"
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   R.{year_col} AS EJERCICIO, R.{code_col} AS CODIGO,
+                   {select_date} AS FECHA, {select_desc} AS DESCRIPCION,
+                   COUNT(E.CBVE_NUMORD) AS EFECTOS,
+                   SUM(COALESCE(E.CBVE_IMPORT,0) + COALESCE(E.CBVE_IMPGAS,0)) AS NOMINAL,
+                   SUM(COALESCE(E.CBVE_IMPCOB,0)) AS COBRADO,
+                   SUM(CASE WHEN E.CBVE_FECCAN IS NULL THEN COALESCE(E.CBVE_IMPORT,0) + COALESCE(E.CBVE_IMPGAS,0) - COALESCE(E.CBVE_IMPCOB,0) ELSE 0 END) AS PENDIENTE
+            FROM REMESA R
+            LEFT JOIN CABDOCVE E ON E.CBVE_EJEREM = R.{year_col} AND E.CBVE_CODREM = R.{code_col}
+                                AND E.CBVE_NUMEMP = ?
+            WHERE {' AND '.join(where) if where else '1=1'}
+            GROUP BY R.{year_col}, R.{code_col}, {select_date}, {select_desc}
+            ORDER BY R.{year_col} DESC, R.{code_col} DESC
+            """,
+            (empresa, *params),
+            limit,
+        )
+        return {"fuente": "REMESA/CABDOCVE", "remesas": rows}
+
+    def remesa_detalle(self, args: dict[str, Any]) -> dict[str, Any]:
+        year = self._to_int(args.get("ejercicio", args.get("remesa_ejercicio")), 0)
+        code = self._to_int(args.get("codigo", args.get("remesa_codigo")), 0)
+        if not year or not code:
+            raise KofedasError("Debe informar ejercicio/codigo de remesa")
+        effects, meta = self._cartera_effect_rows({**args, "remesa_ejercicio": year, "remesa_codigo": code, "limite": args.get("limite") or 5000})
+        header = None
+        columns = self._optional_table_columns("REMESA")
+        if columns:
+            column_set = set(columns)
+            year_col = self._first_existing_column(column_set, "REM_EJERCI", "REM_EJEREM", "REM_EJERCICIO")
+            code_col = self._first_existing_column(column_set, "REM_CODIGO", "REM_CODREM", "REM_NUMREM")
+            emp_col = self._first_existing_column(column_set, "REM_NUMEMP")
+            if year_col and code_col:
+                where = [f"{year_col} = ?", f"{code_col} = ?"]
+                params: list[Any] = [year, code]
+                if emp_col:
+                    where.insert(0, f"{emp_col} = ?")
+                    params.insert(0, self._empresa(args))
+                header = self.db.one("SELECT FIRST 1 * FROM REMESA WHERE " + " AND ".join(where), tuple(params))
+        return {"remesa": header or {"ejercicio": year, "codigo": code}, **meta, "efectos": effects}
+
+    def remesa_crear(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        effects_arg = args.get("efectos")
+        if not isinstance(effects_arg, list) or not effects_arg:
+            raise KofedasError("efectos debe ser una lista no vacia")
+        empresa = self._empresa(args)
+        remesa_columns = self._optional_table_columns("REMESA")
+        year = self._to_int(args.get("ejercicio"), int(self._date_arg(args.get("fecha"))[:4]))
+        code = self._to_int(args.get("codigo"), 0)
+        if not code:
+            if remesa_columns:
+                colset = set(remesa_columns)
+                year_col = self._first_existing_column(colset, "REM_EJERCI", "REM_EJEREM", "REM_EJERCICIO")
+                code_col = self._first_existing_column(colset, "REM_CODIGO", "REM_CODREM", "REM_NUMREM")
+                emp_col = self._first_existing_column(colset, "REM_NUMEMP")
+                if year_col and code_col:
+                    where = [f"{year_col} = ?"]
+                    params: list[Any] = [year]
+                    if emp_col:
+                        where.insert(0, f"{emp_col} = ?")
+                        params.insert(0, empresa)
+                    row = self.db.one(f"SELECT MAX({code_col}) AS MAXIMO FROM REMESA WHERE {' AND '.join(where)}", tuple(params))
+                    code = self._to_int((row or {}).get("maximo"), 0) + 1
+            if not code:
+                code = 1
+        statements: list[tuple[str, tuple[Any, ...]]] = []
+        if remesa_columns:
+            colset = set(remesa_columns)
+            year_col = self._first_existing_column(colset, "REM_EJERCI", "REM_EJEREM", "REM_EJERCICIO")
+            code_col = self._first_existing_column(colset, "REM_CODIGO", "REM_CODREM", "REM_NUMREM")
+            emp_col = self._first_existing_column(colset, "REM_NUMEMP")
+            date_col = self._first_existing_column(colset, "REM_FECHA", "REM_FECREM")
+            desc_col = self._first_existing_column(colset, "REM_DESCRI", "REM_OBSERV", "REM_NOMBRE")
+            situac_col = self._first_existing_column(colset, "REM_SITUAC")
+            data: dict[str, Any] = {}
+            if emp_col:
+                data[emp_col] = empresa
+            if year_col:
+                data[year_col] = year
+            if code_col:
+                data[code_col] = code
+            if date_col:
+                data[date_col] = self._date_arg(args.get("fecha"))
+            if desc_col:
+                data[desc_col] = str(args.get("descripcion") or "Remesa MCP")[:60]
+            if situac_col:
+                data[situac_col] = "P"
+            if year_col and code_col:
+                fields = [column for column in remesa_columns if column in data]
+                statements.append(("INSERT INTO REMESA (" + ", ".join(fields) + ") VALUES (" + ", ".join("?" for _ in fields) + ")", tuple(data[column] for column in fields)))
+        for effect in effects_arg:
+            if not isinstance(effect, dict):
+                raise KofedasError("Cada efecto debe ser un objeto")
+            statements.append((
+                """
+                UPDATE CABDOCVE SET CBVE_EJEREM = ?, CBVE_CODREM = ?
+                WHERE CBVE_NUMEMP = ? AND CBVE_CENTRO = ? AND CBVE_TIPDOC = ? AND CBVE_TIPAC = ?
+                  AND CBVE_EJERCI = ? AND CBVE_SERIE = ? AND CBVE_NUMDOC = ? AND CBVE_NUMORD = ?
+                """,
+                (
+                    year, code, empresa, self._to_int(effect.get("centro", args.get("centro")), self.centro),
+                    str(effect.get("tipo_documento", effect.get("tipdoc")) or "F").strip().upper()[:1],
+                    str(effect.get("tipo_accion", effect.get("tipac")) or "0").strip()[:1],
+                    self._to_int(effect.get("ejercicio", effect.get("ejerci")), 0),
+                    str(effect.get("serie") or "").strip(),
+                    self._to_int(effect.get("numero", effect.get("numdoc")), 0),
+                    self._to_int(effect.get("orden"), 0),
+                ),
+            ))
+        if args.get("simular"):
+            return {"simulado": True, "remesa": {"ejercicio": year, "codigo": code}, "sentencias": [sql for sql, _ in statements], "aviso": None if remesa_columns else "Tabla REMESA no disponible; solo se asignarian efectos."}
+        counts = self.db.execute_transaction(statements)
+        return {"simulado": False, "remesa": {"ejercicio": year, "codigo": code}, "filas_afectadas": counts}
+
+    def efecto_cambiar_estado(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        action = str(args.get("accion") or "").strip().lower()
+        today = self._date_arg(args.get("fecha"))
+        updates: dict[str, Any]
+        if action in {"cobrar", "cancelar"}:
+            updates = {"CBVE_FECCAN": today, "CBVE_IMPCOB": self._to_float(args.get("importe_cobrado"), 0)}
+        elif action == "impagar":
+            updates = {"CBVE_FECIMP": today}
+        elif action == "limpiar_impagado":
+            updates = {"CBVE_FECIMP": None}
+        elif action == "asignar_remesa":
+            updates = {"CBVE_EJEREM": self._to_int(args.get("remesa_ejercicio"), 0), "CBVE_CODREM": self._to_int(args.get("remesa_codigo"), 0)}
+            if not updates["CBVE_EJEREM"] or not updates["CBVE_CODREM"]:
+                raise KofedasError("asignar_remesa requiere remesa_ejercicio y remesa_codigo")
+        elif action == "quitar_remesa":
+            updates = {"CBVE_EJEREM": 0, "CBVE_CODREM": 0}
+        else:
+            raise KofedasError("accion no valida")
+        columns = set(self._table_columns("CABDOCVE"))
+        if args.get("observaciones") not in (None, "") and "CBVE_OBSERV" in columns:
+            updates["CBVE_OBSERV"] = str(args.get("observaciones"))[:60]
+        applied = {column: value for column, value in updates.items() if column in columns}
+        where = """
+            CBVE_NUMEMP = ? AND CBVE_CENTRO = ? AND CBVE_TIPDOC = ? AND CBVE_TIPAC = ?
+            AND CBVE_EJERCI = ? AND CBVE_SERIE = ? AND CBVE_NUMDOC = ? AND CBVE_NUMORD = ?
+        """
+        params = (
+            self._empresa(args), self._to_int(args.get("centro"), self.centro),
+            str(args.get("tipo_documento") or "F").strip().upper()[:1],
+            str(args.get("tipo_accion") or "0").strip()[:1],
+            self._to_int(args.get("ejercicio"), 0), str(args.get("serie") or "").strip(),
+            self._to_int(args.get("numero"), 0), self._to_int(args.get("orden"), 0),
+        )
+        sql = "UPDATE CABDOCVE SET " + ", ".join(f"{column}=?" for column in applied) + " WHERE " + where
+        if args.get("simular"):
+            return {"simulado": True, "accion": action, "actualiza": applied, "sentencias": [sql]}
+        count = self.db.execute(sql, tuple(applied.values()) + params)
+        return {"simulado": False, "accion": action, "filas_afectadas": count}
+
+    def cartera_riesgo_cliente(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        cliente = int(args["cliente"])
+        subcliente = args.get("subcliente")
+        debt_args = {"empresa": empresa, "cliente": cliente, "situacion": "pendiente", "fecha_referencia": args.get("fecha_referencia"), "limite": 5000}
+        if subcliente not in (None, ""):
+            debt_args["subcliente"] = int(subcliente)
+        debt = self.cartera_deuda_cliente(debt_args)
+        columns = set(self._table_columns("CLIEN"))
+        risk_col = self._first_existing_column(columns, "CLI_RIESGO", "CLI_RIESCR", "CLI_LIMCRE", "CLI_RIESG")
+        row = self.db.one(
+            "SELECT FIRST 1 * FROM CLIEN WHERE CLI_NUMEMP = ? AND CLI_CODCLI = ?" + (" AND CLI_SUBCLI = ?" if subcliente not in (None, "") else ""),
+            (empresa, cliente, int(subcliente)) if subcliente not in (None, "") else (empresa, cliente),
+        ) or {}
+        limit = self._to_float(row.get(risk_col.lower()) if risk_col else 0, 0)
+        pending = self._to_float(debt.get("totales", {}).get("pendiente"), 0)
+        return {
+            "cliente": {"codigo": cliente, "subcliente": subcliente, "nombre": row.get("cli_razsoc") or row.get("cli_nomcli")},
+            "limite_riesgo": round(limit, 2),
+            "riesgo_actual": round(pending, 2),
+            "disponible": round(limit - pending, 2) if limit else None,
+            "excedido": bool(limit and pending > limit),
+            "campo_limite": risk_col,
+            "deuda": debt.get("totales", {}),
+        }
+
+    def cartera_riesgo_clientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        debt = self.cartera_deuda_por_cliente({**args, "situacion": "pendiente", "limite": args.get("limite") or 5000, "limite_clientes": args.get("limite") or 100})
+        items = []
+        for item in debt.get("clientes", []):
+            cli = item["cliente"]
+            risk = self.cartera_riesgo_cliente({"empresa": self._empresa(args), "cliente": cli["codigo"], "subcliente": cli["subcliente"], "fecha_referencia": args.get("fecha_referencia")})
+            items.append({**risk, "pendiente": item.get("pendiente"), "vencido": item.get("vencido")})
+        items.sort(key=lambda item: (not item.get("excedido"), -self._to_float(item.get("riesgo_actual"), 0)))
+        return {"referencia": debt.get("referencia"), "clientes": items[:_positive_limit(args.get("limite"), 100)]}
+
+    def _opecaj_available(self) -> tuple[list[str], dict[str, str]]:
+        columns = self._optional_table_columns("OPECAJ")
+        colset = set(columns)
+        mapping = {
+            "empresa": self._first_existing_column(colset, "OPC_NUMEMP", "OPE_NUMEMP"),
+            "centro": self._first_existing_column(colset, "OPC_CENTRO", "OPE_CENTRO"),
+            "caja": self._first_existing_column(colset, "OPC_CAJA", "OPE_CAJA"),
+            "fecha": self._first_existing_column(colset, "OPC_FECHA", "OPE_FECHA", "OPC_FECMOV"),
+            "tipo": self._first_existing_column(colset, "OPC_TIPO", "OPE_TIPO", "OPC_TIPMOV"),
+            "importe": self._first_existing_column(colset, "OPC_IMPORT", "OPE_IMPORT", "OPC_IMPORTE", "OPC_IMPMOV"),
+            "cierre": self._first_existing_column(colset, "OPC_CIERRE", "OPE_CIERRE", "OPC_INDCIE"),
+        }
+        return columns, {key: value for key, value in mapping.items() if value}
+
+    def caja_movimientos_listar(self, args: dict[str, Any]) -> dict[str, Any]:
+        columns, col = self._opecaj_available()
+        if not columns or "fecha" not in col:
+            return {"disponible": False, "tabla": "OPECAJ", "columnas": columns, "movimientos": []}
+        limit = _positive_limit(args.get("limite"), 500)
+        where: list[str] = []
+        params: list[Any] = []
+        if "empresa" in col:
+            where.append(f"{col['empresa']} = ?")
+            params.append(self._empresa(args))
+        if args.get("centro") not in (None, "") and "centro" in col:
+            where.append(f"{col['centro']} = ?")
+            params.append(int(args["centro"]))
+        if args.get("caja") not in (None, "") and "caja" in col:
+            where.append(f"{col['caja']} = ?")
+            params.append(int(args["caja"]))
+        if args.get("desde"):
+            where.append(f"{col['fecha']} >= ?")
+            params.append(self._date_arg(args.get("desde")))
+        if args.get("hasta"):
+            where.append(f"{col['fecha']} <= ?")
+            params.append(self._date_arg(args.get("hasta")))
+        rows = self.db.query(f"SELECT FIRST {limit} * FROM OPECAJ WHERE {' AND '.join(where) if where else '1=1'} ORDER BY {col['fecha']} DESC", tuple(params), limit)
+        return {"disponible": True, "columnas_detectadas": col, "movimientos": rows}
+
+    def caja_cierre_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        data = self.caja_movimientos_listar({**args, "limite": args.get("limite") or 5000})
+        if not data.get("disponible"):
+            return data
+        col = data["columnas_detectadas"]
+        groups: dict[tuple[Any, Any, Any], dict[str, Any]] = {}
+        for row in data["movimientos"]:
+            key = (row.get((col.get("fecha") or "").lower()), row.get((col.get("centro") or "").lower()), row.get((col.get("caja") or "").lower()))
+            group = groups.setdefault(key, {"fecha": key[0], "centro": key[1], "caja": key[2], "movimientos": 0, "importe": 0.0, "cierres": 0})
+            group["movimientos"] += 1
+            group["importe"] += self._to_float(row.get((col.get("importe") or "").lower()), 0)
+            cierre_val = row.get((col.get("cierre") or "").lower()) if col.get("cierre") else None
+            if str(cierre_val or "").strip().upper() in {"S", "1", "C"}:
+                group["cierres"] += 1
+        items = list(groups.values())
+        for item in items:
+            item["importe"] = round(item["importe"], 2)
+        return {"disponible": True, "resumen": sorted(items, key=lambda item: str(item.get("fecha")), reverse=True)}
+
+    def caja_arqueo(self, args: dict[str, Any]) -> dict[str, Any]:
+        day = self._date_arg(args.get("fecha"))
+        data = self.caja_movimientos_listar({**args, "desde": day, "hasta": day, "limite": 5000})
+        if not data.get("disponible"):
+            return data
+        col = data["columnas_detectadas"]
+        total = sum(self._to_float(row.get((col.get("importe") or "").lower()), 0) for row in data["movimientos"])
+        return {"fecha": day, "centro": args.get("centro"), "caja": args.get("caja"), "movimientos": len(data["movimientos"]), "saldo_calculado": round(total, 2)}
+
+    def descuadre(self, args: dict[str, Any]) -> dict[str, Any]:
+        treasury = self.caja_cierre_resumen(args)
+        if not treasury.get("disponible"):
+            return treasury
+        tolerance = self._to_float(args.get("tolerancia"), 0.01)
+        issues = [item for item in treasury.get("resumen", []) if abs(self._to_float(item.get("importe"), 0)) > tolerance and item.get("cierres")]
+        return {"tolerancia": tolerance, "totales": {"descuadres": len(issues)}, "descuadres": issues[:_positive_limit(args.get("limite"), 100)]}
+
+    def tesoreria_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        effects = self.cartera_deuda_por_tipo({**args, "situacion": "pendiente", "limite": 5000})
+        cash = self.caja_cierre_resumen(args)
+        return {"cartera": effects.get("totales", {}), "efectos_por_tipo": effects.get("resumen", []), "caja": cash}
+
+    def tesoreria_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 50)
+        actions: list[dict[str, Any]] = []
+        overdue = self.vencimientos_listar({**args, "situacion": "vencido", "remesado": "N", "limite": limit})
+        for effect in overdue.get("vencimientos", [])[:limit]:
+            actions.append({"prioridad": "alta", "tipo": "vencimiento_vencido_no_remesado", "mensaje": "Revisar cobro o remesa de efecto vencido", "efecto": effect})
+        pending = self.cartera_pendiente_remesar({**args, "limite": limit})
+        if pending.get("totales", {}).get("pendiente"):
+            actions.append({"prioridad": "media", "tipo": "pendiente_remesar", "mensaje": "Hay efectos pendientes no remesados", "totales": pending.get("totales")})
+        cash = self.descuadre({**args, "limite": limit})
+        for issue in cash.get("descuadres", [])[:limit]:
+            actions.append({"prioridad": "media", "tipo": "caja_revisable", "mensaje": "Revisar cierre o saldo de caja", "caja": issue})
+        return {"acciones": actions[:limit], "total": min(len(actions), limit)}
 
     def dashboard_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
         start, end = self._dashboard_period(args)
