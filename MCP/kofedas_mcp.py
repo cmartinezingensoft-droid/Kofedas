@@ -6404,12 +6404,141 @@ class KofedasToolRuntime:
     def _article_price_table_values(self, empresa: int, article: dict[str, Any], table_code: int) -> dict[str, Any]:
         result = {"ART_TABPREC": table_code}
         row = self.db.one("SELECT FIRST 1 * FROM TABPREC WHERE TPR_NUMEMP = ? AND TPR_CODTAB = ?", (empresa, table_code))
-        base = self._to_float(article.get("art_prebas"), 0)
-        if row:
-            for index in range(1, 5):
-                increase = self._to_float(row.get(f"tpr_poraum{index}"), 0)
-                result[f"ART_PREVEN{index}"] = round(base * (1 + increase / 100), 4)
+        if not row:
+            return result
+
+        decimals = self._to_int(self._parameter_value("NUMDEC", "2", empresa), 2)
+        tippre_param = str(self._parameter_value("TIPPRE", "", empresa) or "").strip()
+        price_type = str(article.get("art_tippre") or "").strip().upper()
+        currency = str(article.get("art_codmon") or "E").strip().upper()
+
+        cost = self._to_float(article.get("art_prebas"), 0)
+        for index in range(1, 8):
+            cost *= 1 + self._to_float(article.get(f"art_dtoaum{index}"), 0) / 100
+        fixed_amount = self._to_float(article.get("art_impfij"), 0)
+        if price_type == "V":
+            cost += fixed_amount
+        cost = self._round_half_up(cost, decimals)
+        result["ART_PRECOS"] = cost
+
+        canpre = self._to_float(article.get("art_canpre"), 0)
+        if canpre:
+            unit_cost = cost / canpre
+        else:
+            purchase = self.db.one(
+                "SELECT FIRST 1 ARTP_CANCON, ARTP_CANVEN FROM ARTICULP "
+                "WHERE ARTP_NUMEMP = ? AND ARTP_CODART = ? AND ARTP_CODPRO = ?",
+                (empresa, article.get("art_codart"), article.get("art_codpro")),
+            )
+            cancon = self._to_float((purchase or {}).get("artp_cancon"), 1) or 1
+            canven = self._to_float((purchase or {}).get("artp_canven"), 1) or 1
+            unit_cost = cost * cancon / canven
+
+        tax = self.db.one(
+            "SELECT FIRST 1 TIV_PORIVA FROM TIPIVA WHERE TIV_NUMEMP = ? AND TIV_TIPIVA = ?",
+            (empresa, article.get("art_tipiva")),
+        )
+        tax_percent = self._to_float((tax or {}).get("tiv_poriva"), 0)
+
+        if (price_type[:1] if price_type else "") in ("V", "C"):
+            if tippre_param == "2":
+                increase4 = self._to_float(row.get("tpr_poraum4"), 0)
+                if increase4:
+                    preven4 = unit_cost * (1 + increase4 / 100)
+                else:
+                    preven4 = self._to_float(article.get("art_prebas"), 0)
+                    if canpre:
+                        preven4 = self._round_article_price(preven4 / canpre, currency, "P", decimals)
+                if price_type == "C":
+                    preven4 += fixed_amount
+                pvp = self._adjust_article_price(
+                    preven4 * (1 + tax_percent / 100),
+                    self._to_float(row.get("tpr_ajustep" if currency == "P" else "tpr_ajustee"), 0),
+                    currency,
+                    empresa,
+                )
+                increases = {
+                    index: (self._to_float(row.get(f"tpr_poraum{index}"), 0) / 100)
+                    / (1 + self._to_float(row.get(f"tpr_poraum{index}"), 0) / 100)
+                    for index in range(1, 4)
+                }
+                result["ART_PREVEN1"] = preven4 * (1 - increases[3])
+                result["ART_PREVEN2"] = preven4 * (1 - increases[2])
+                result["ART_PREVEN3"] = preven4 * (1 - increases[1])
+                result["ART_PREVEN4"] = preven4
+                result["ART_PVP"] = pvp
+            else:
+                for index in range(1, 5):
+                    result[f"ART_PREVEN{index}"] = unit_cost * (
+                        1 + self._to_float(row.get(f"tpr_poraum{index}"), 0) / 100
+                    )
+                    if price_type == "C":
+                        result[f"ART_PREVEN{index}"] += fixed_amount
+                result["ART_PVP"] = self._adjust_article_price(
+                    result["ART_PREVEN4"] * (1 + tax_percent / 100),
+                    self._to_float(row.get("tpr_ajustep" if currency == "P" else "tpr_ajustee"), 0),
+                    currency,
+                    empresa,
+                )
+        else:
+            pvp = self._to_float(article.get("art_pvp"), 0)
+            preven4 = self._to_float(article.get("art_preven4"), 0)
+            if pvp:
+                preven4 = pvp / (1 + tax_percent / 100)
+            elif preven4:
+                pvp = preven4 * (1 + tax_percent / 100)
+            preven4 = self._round_article_price(preven4, currency, "P", decimals)
+            result["ART_PREVEN4"] = preven4
+            for index in range(1, 4):
+                denominator = 1 + self._to_float(row.get("tpr_poraum4"), 0) / 100
+                factor = (1 + self._to_float(row.get(f"tpr_poraum{index}"), 0) / 100) / denominator if denominator else 1
+                result[f"ART_PREVEN{index}"] = preven4 * factor
+            result["ART_PVP"] = pvp
+
+        for index in range(1, 5):
+            result[f"ART_PREVEN{index}"] = self._round_article_price(result.get(f"ART_PREVEN{index}", 0), currency, "P", decimals)
+        result["ART_PVP"] = self._round_article_price(result.get("ART_PVP", 0), currency, "I", decimals)
         return result
+
+    def _round_half_up(self, value: float, decimals: int) -> float:
+        quant = Decimal("1") if decimals <= 0 else Decimal("1").scaleb(-decimals)
+        return float(Decimal(str(value)).quantize(quant, rounding="ROUND_HALF_UP"))
+
+    def _round_article_price(self, value: float, currency: str, kind: str, decimals: int) -> float:
+        if not value:
+            return 0.0
+        if kind == "P":
+            return self._round_half_up(value, decimals)
+        if currency == "P":
+            return self._round_half_up(value, 0)
+        return self._round_half_up(value, 2)
+
+    def _adjust_article_price(self, value: float, adjustment: float, currency: str, empresa: int) -> float:
+        if not value or not adjustment:
+            return value
+        currency = (currency or "E").upper()
+        if currency == "E":
+            canmin = self._to_float(self._parameter_value("CANMIN", "0", empresa), 0)
+            if value <= canmin:
+                return value
+            canmax = self._to_float(self._parameter_value("CANMAX", "", empresa), 0)
+            if canmax and canmin < value <= canmax:
+                adjustment = 0.02
+            return self._adjust_article_price(
+                self._round_half_up(value, 2) * 100,
+                self._round_half_up(adjustment, 2) * 100,
+                "P",
+                empresa,
+            ) / 100
+        integer_value = int(self._round_half_up(value, 0))
+        integer_adjustment = int(self._round_half_up(adjustment, 0))
+        if not integer_adjustment:
+            return float(integer_value)
+        quotient, remainder = divmod(integer_value, integer_adjustment)
+        if str(self._parameter_value("AJUSUP", "", empresa) or "").strip().upper() == "S":
+            return float((quotient + 1) * integer_adjustment)
+        half = integer_adjustment / 2
+        return float(quotient * integer_adjustment if remainder < half else (quotient + 1) * integer_adjustment)
 
     def articulo_cambiar_tabla_precio(self, args: dict[str, Any]) -> dict[str, Any]:
         empresa = self._empresa(args)
