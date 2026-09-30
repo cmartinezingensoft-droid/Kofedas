@@ -413,10 +413,14 @@ class WriteSmoke:
         if oferta:
             self.generated["oferta"] = {"ejercicio": oferta["ejercicio"], "oferta": oferta["oferta"]}
 
-        order = self.add("orden_compra_alta", ["CABORC", "DETORC"], {"proveedor": proveedor}, lambda: self.rt.orden_compra_alta({"empresa": empresa, "centro": centro, "proveedor": proveedor, "fecha": self.today, "articulos": [self.line(8)], "observaciones": f"MCP {self.stamp}", "simular": False}))
+        order = self.add("orden_compra_alta", ["CABORC", "DETORC"], {"proveedor": proveedor}, lambda: self.rt.orden_compra_alta({"empresa": empresa, "centro": centro, "proveedor": proveedor, "fecha": self.today, "articulos": [self.line(8)], "observaciones": f"MCP ABIERTA {self.stamp}", "simular": False}))
         if order:
-            self.generated["orden_compra"] = {"ejercicio": order["ejercicio"], "serie": order["serie"], "numero": order["numero"]}
-            self.add("orden_compra_cerrar", ["CABORC", "DETORC"], self.generated["orden_compra"], lambda: self.rt.orden_compra_cerrar({"empresa": empresa, "centro": centro, **self.generated["orden_compra"], "simular": False}))
+            self.generated["orden_compra_abierta"] = {"ejercicio": order["ejercicio"], "serie": order["serie"], "numero": order["numero"]}
+
+        order_to_close = self.add("orden_compra_alta:para_cierre", ["CABORC", "DETORC"], {"proveedor": proveedor}, lambda: self.rt.orden_compra_alta({"empresa": empresa, "centro": centro, "proveedor": proveedor, "fecha": self.today, "articulos": [self.line(8)], "observaciones": f"MCP CIERRE {self.stamp}", "simular": False}))
+        if order_to_close:
+            self.generated["orden_compra_cerrada"] = {"ejercicio": order_to_close["ejercicio"], "serie": order_to_close["serie"], "numero": order_to_close["numero"]}
+            self.add("orden_compra_cerrar", ["CABORC", "DETORC"], self.generated["orden_compra_cerrada"], lambda: self.rt.orden_compra_cerrar({"empresa": empresa, "centro": centro, **self.generated["orden_compra_cerrada"], "simular": False}))
 
         entry_args = {"empresa": empresa, "centro": centro, "proveedor": proveedor, "fecha": self.today, "albaran": f"ALB{self.short}", "lineas": [self.line(8)], "observaciones": f"MCP {self.stamp}", "simular": False}
         entry = self.add("entrada_almacen_alta", ["CABDOCM", "DETMOVM", "ARTICULE"], entry_args, lambda: self.rt.entrada_almacen_alta(entry_args))
