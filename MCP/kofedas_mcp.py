@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import configparser
 import json
+import mimetypes
 import os
 import re
 import base64
@@ -19,6 +21,7 @@ DEFAULT_CENTRO = 0
 MAX_ROWS_DEFAULT = 100
 MAX_ROWS_LIMIT = 1000
 ACCESS_LEVELS = {"read": 0, "write": 1, "critical": 2}
+KOFEDAS_INI_PATH = Path(__file__).resolve().parents[1] / "kofedas.ini"
 
 
 class KofedasError(Exception):
@@ -33,6 +36,33 @@ def _env_int(name: str, default: int) -> int:
         return int(raw)
     except ValueError as exc:
         raise KofedasError(f"{name} debe ser entero") from exc
+
+
+def _load_kofedas_ini() -> configparser.ConfigParser:
+    config = configparser.ConfigParser()
+    if KOFEDAS_INI_PATH.exists():
+        config.read(KOFEDAS_INI_PATH, encoding="utf-8")
+    return config
+
+
+def _kofedas_ini_value(config: configparser.ConfigParser, *names: str) -> str:
+    for section in ("rutas", "paths", "kofedas", "kronos"):
+        if not config.has_section(section):
+            continue
+        for name in names:
+            if config.has_option(section, name):
+                return config.get(section, name).strip()
+    for name in names:
+        if name in config.defaults():
+            return config.defaults()[name].strip()
+    return ""
+
+
+def _configured_main_dir(config: configparser.ConfigParser | None = None) -> str:
+    if "KOFEDAS_MAIN_DIR" in os.environ:
+        return os.environ["KOFEDAS_MAIN_DIR"]
+    config = config if config is not None else _load_kofedas_ini()
+    return _kofedas_ini_value(config, "directorio", "main_dir", "raiz") or r"C:\KronosCRM"
 
 
 def _normalize(value: Any) -> Any:
@@ -959,13 +989,14 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
     ),
     "articulo_imagen_gestion": _tool(
         "articulo_imagen_gestion",
-        "Articulos. ESCRITURA opcional. Obtiene o guarda referencia/imagen Base64 del articulo usando ARTICULI codigos IMAGE/IMAGE2.",
+        "Articulos. ESCRITURA opcional. Obtiene o guarda imagenes usando ARTICULI/IMAGE y el directorio Datos/Fotos configurado en kofedas.ini.",
         {
             "accion": _string_schema("obtener o guardar."),
             "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
             "codart": _string_schema("Alias Kronos de articulo."),
             "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
             "content_base64": _string_schema("Contenido imagen en Base64 para guardar."),
+            "source_path": _string_schema("Ruta local alternativa de origen para guardar."),
             "nombre_fichero": _string_schema("Nombre o referencia de fichero."),
             "mime_type": _string_schema("Tipo MIME opcional."),
             "simular": {"type": "boolean", "description": "Si true, no escribe."},
@@ -974,13 +1005,14 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
     ),
     "articulo_documento_gestion": _tool(
         "articulo_documento_gestion",
-        "Articulos. ESCRITURA opcional. Obtiene o guarda referencia/documento Base64 del articulo usando ARTICULI codigos FILE/FILE2.",
+        "Articulos. ESCRITURA opcional. Obtiene o guarda PDFs usando ARTICULI/FILE y el directorio Documentos/Articulos configurado en kofedas.ini.",
         {
             "accion": _string_schema("obtener o guardar."),
             "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
             "codart": _string_schema("Alias Kronos de articulo."),
             "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
             "content_base64": _string_schema("Contenido documento en Base64 para guardar."),
+            "source_path": _string_schema("Ruta local alternativa de origen para guardar."),
             "nombre_fichero": _string_schema("Nombre o referencia de fichero."),
             "mime_type": _string_schema("Tipo MIME opcional."),
             "simular": {"type": "boolean", "description": "Si true, no escribe."},
@@ -2553,6 +2585,10 @@ class KofedasToolRuntime:
         self.centro = _env_int("KOFEDAS_CENTRO", DEFAULT_CENTRO)
         self.tool_profile = os.getenv("KOFEDAS_MCP_TOOL_PROFILE", "core").strip().lower() or "core"
         self.access_level = os.getenv("KOFEDAS_MCP_ACCESS_LEVEL", "critical").strip().lower() or "critical"
+        ini = _load_kofedas_ini()
+        self.main_dir = _configured_main_dir(ini)
+        self.documents_dir = os.getenv("KOFEDAS_DOCUMENTS_DIR", _kofedas_ini_value(ini, "documentos", "documents_dir"))
+        self.images_dir = os.getenv("KOFEDAS_IMAGES_DIR", _kofedas_ini_value(ini, "imagenes", "images_dir"))
         self._handlers: dict[str, Callable[[dict[str, Any]], Any]] = {
             "sistema_estado": self.sistema_estado,
             "empresa_listar": self.empresa_listar,
@@ -6466,26 +6502,326 @@ class KofedasToolRuntime:
         counts = self.db.execute_transaction(statements)
         return {"simulado": False, "articulo": article["art_codart"], "filas_afectadas": counts}
 
+    def _main_root(self) -> Path:
+        return Path(self.main_dir or r"C:\KronosCRM")
+
+    def _documents_root(self) -> Path:
+        configured = str(self.documents_dir or "").strip()
+        return Path(configured) if configured else self._main_root() / "Documentos"
+
+    def _images_root(self) -> Path:
+        configured = str(self.images_dir or "").strip()
+        return Path(configured) if configured else self._main_root() / "Imagenes"
+
+    def _article_photos_root(self) -> Path:
+        configured = os.getenv("KOFEDAS_ARTICLE_PHOTOS_DIR", "").strip()
+        if not configured:
+            ini = _load_kofedas_ini()
+            configured = _kofedas_ini_value(ini, "fotos", "article_photos_dir").strip()
+        return Path(configured) if configured else self._main_root() / "Datos" / "Fotos"
+
+    def _article_documents_root(self) -> Path:
+        configured = os.getenv("KOFEDAS_ARTICLE_DOCUMENTS_DIR", "").strip()
+        if not configured:
+            ini = _load_kofedas_ini()
+            configured = _kofedas_ini_value(ini, "documentos_articulos", "article_documents_dir").strip()
+        return Path(configured) if configured else self._documents_root() / "Articulos"
+
+    @staticmethod
+    def _path_inside(path: Path, root: Path) -> bool:
+        try:
+            path.resolve().relative_to(root.resolve())
+            return True
+        except (ValueError, OSError):
+            return False
+
+    def _allowed_file_roots(self) -> list[Path]:
+        roots = [
+            self._main_root(),
+            self._documents_root(),
+            self._images_root(),
+            self._article_photos_root(),
+            self._article_documents_root(),
+        ]
+        extra = os.getenv("KOFEDAS_FILE_ROOTS", "").strip()
+        if extra:
+            roots.extend(Path(item.strip()) for item in extra.split(os.pathsep) if item.strip())
+        unique: list[Path] = []
+        seen: set[str] = set()
+        for root in roots:
+            key = str(root)
+            if key not in seen:
+                seen.add(key)
+                unique.append(root)
+        return unique
+
+    def _safe_child(self, root: Path, relative_name: str) -> Path:
+        normalized = str(relative_name or "").replace("\\", os.sep).replace("/", os.sep)
+        candidate = root / normalized
+        if not self._path_inside(candidate, root):
+            raise KofedasError("Ruta fuera del directorio permitido.")
+        return candidate
+
+    def _file_payload(self, path: Path) -> dict[str, Any]:
+        if not path.exists() or not path.is_file():
+            return {
+                "exists": False,
+                "path": str(path),
+                "size": 0,
+                "content_base64": "",
+                "mime_type": mimetypes.guess_type(path.name)[0] or "application/octet-stream",
+            }
+        data = path.read_bytes()
+        return {
+            "exists": True,
+            "path": str(path),
+            "size": len(data),
+            "content_base64": base64.b64encode(data).decode("ascii"),
+            "mime_type": mimetypes.guess_type(path.name)[0] or "application/octet-stream",
+        }
+
+    @staticmethod
+    def _image_extension(nombre_fichero: str, mime_type: str, content_base64: str) -> str:
+        suffix = Path(str(nombre_fichero or "")).suffix.lower()
+        if suffix in {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"}:
+            return ".jpg" if suffix == ".jpeg" else suffix
+        mime = str(mime_type or "").strip().lower()
+        if mime in {"image/jpeg", "image/jpg"}:
+            return ".jpg"
+        if mime == "image/png":
+            return ".png"
+        if mime == "image/gif":
+            return ".gif"
+        if mime == "image/bmp":
+            return ".bmp"
+        if mime == "image/webp":
+            return ".webp"
+        try:
+            header = base64.b64decode(str(content_base64 or "")[:32] + "==", validate=False)
+        except Exception:
+            header = b""
+        if header.startswith(b"\x89PNG"):
+            return ".png"
+        if header.startswith(b"GIF"):
+            return ".gif"
+        if header.startswith(b"BM"):
+            return ".bmp"
+        if header.startswith(b"RIFF") and b"WEBP" in header[:16]:
+            return ".webp"
+        return ".jpg"
+
+    @staticmethod
+    def _clean_relative_file_name(name: str, default_name: str) -> str:
+        value = str(name or default_name or "").strip().replace("/", "\\")
+        parts = [part for part in value.split("\\") if part]
+        cleaned_parts: list[str] = []
+        for part in parts:
+            safe = re.sub(r"[^A-Za-z0-9._ -]", "_", part).strip(" .")
+            if not safe or safe in {".", ".."}:
+                raise KofedasError("Nombre de fichero no valido.")
+            cleaned_parts.append(safe)
+        if not cleaned_parts:
+            raise KofedasError("Nombre de fichero no valido.")
+        return os.path.join(*cleaned_parts)
+
+    def _unique_sibling_name(self, root: Path, relative_name: str) -> str:
+        path = self._safe_child(root, relative_name)
+        if not path.exists():
+            return relative_name
+        stem = path.stem
+        suffix = path.suffix
+        parent = str(Path(relative_name).parent)
+        prefix = "" if parent in {"", "."} else parent + os.sep
+        stamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        for index in range(1, 1000):
+            candidate = f"{prefix}{stem}_{stamp}_{index:02d}{suffix}"
+            if not self._safe_child(root, candidate).exists():
+                return candidate
+        raise KofedasError("No se pudo generar un nombre unico para el fichero.")
+
+    def _rename_existing_file(self, root: Path, relative_name: str) -> dict[str, Any] | None:
+        path = self._safe_child(root, relative_name)
+        if not path.exists() or not path.is_file():
+            return None
+        new_name = self._unique_sibling_name(root, relative_name)
+        new_path = self._safe_child(root, new_name)
+        new_path.parent.mkdir(parents=True, exist_ok=True)
+        path.rename(new_path)
+        return {"from": relative_name, "to": new_name, "from_path": str(path), "to_path": str(new_path)}
+
+    def _read_binary_source(self, args: dict[str, Any]) -> tuple[bytes, str]:
+        if args.get("content_base64"):
+            try:
+                return base64.b64decode(str(args.get("content_base64")), validate=True), str(args.get("nombre_fichero") or "")
+            except Exception as exc:
+                raise KofedasError("content_base64 no es Base64 valido") from exc
+        if args.get("source_path"):
+            source = Path(str(args.get("source_path"))).expanduser()
+            if not source.exists() or not source.is_file():
+                raise KofedasError("source_path no existe o no es un fichero")
+            return source.read_bytes(), str(args.get("nombre_fichero") or source.name)
+        raise KofedasError("Debe informar content_base64 o source_path")
+
+    def _legacy_json_payload(self, value: str) -> dict[str, Any] | None:
+        try:
+            payload = json.loads(value)
+        except Exception:
+            return None
+        if not isinstance(payload, dict) or "content_base64" not in payload:
+            return None
+        content = str(payload.get("content_base64") or "")
+        return {
+            "exists": bool(content),
+            "path": "",
+            "size": len(content),
+            "content_base64": content,
+            "mime_type": str(payload.get("mime_type") or "application/octet-stream"),
+            "nombre": str(payload.get("nombre_fichero") or ""),
+            "origen": "articuli_json_legacy",
+        }
+
+    def _article_image_rows(self, empresa: int, articulo: str) -> list[dict[str, Any]]:
+        return self._article_info_rows(empresa, articulo, ["IMAGE", "IMAGE2"])
+
+    def _article_document_rows(self, empresa: int, articulo: str) -> list[dict[str, Any]]:
+        return self._article_info_rows(empresa, articulo, ["FILE", "FILE2"])
+
+    def _article_image_payloads(self, empresa: int, articulo: str, tamano: Any = "") -> dict[str, Any]:
+        rows = self._article_image_rows(empresa, articulo)
+        images: list[dict[str, Any]] = []
+        root = self._article_photos_root()
+        if str(tamano or "").strip().upper() == "P":
+            path = self._safe_child(root, os.path.join("resized", f"{articulo}.jpg"))
+            payload = self._file_payload(path)
+            return {
+                "articulo": articulo,
+                "directorio": str(root),
+                "tamano": str(tamano),
+                "imagenes": [{"origen": "resized", "nombre": os.path.join("resized", f"{articulo}.jpg"), **payload}],
+                "count": 1 if payload.get("exists") else 0,
+                "transport": "base64",
+            }
+        for row in rows:
+            name = str(row.get("arti_descri") or "").strip()
+            if not name:
+                continue
+            legacy = self._legacy_json_payload(name)
+            if legacy:
+                images.append({"tipo": row.get("arti_codinf"), "numlin": row.get("arti_numlin"), **legacy})
+                continue
+            path = self._safe_child(root, name)
+            images.append({"origen": "articuli", "tipo": row.get("arti_codinf"), "numlin": row.get("arti_numlin"), "nombre": name, **self._file_payload(path)})
+        if not images:
+            candidates = [
+                self._safe_child(root, f"{articulo}.jpg"),
+                self._safe_child(root, os.path.join(str(articulo)[:1], f"{articulo}.jpg")),
+            ]
+            for path in candidates:
+                if path.exists() and path.is_file():
+                    relative = os.path.relpath(path, root)
+                    images.append({"origen": "fallback", "nombre": relative, **self._file_payload(path)})
+                    break
+        return {"articulo": articulo, "directorio": str(root), "imagenes": images, "count": len([item for item in images if item.get("exists")]), "transport": "base64"}
+
+    def _clean_article_document_suffix(self, articulo: str, name: str) -> str:
+        value = str(name or "").strip().replace("/", "\\")
+        if not value:
+            value = datetime.now().strftime("%Y%m%d%H%M%S") + ".pdf"
+        prefix = f"{articulo}."
+        if value.lower().startswith(prefix.lower()):
+            value = value[len(prefix):]
+        safe = re.sub(r"[^A-Za-z0-9._ -]", "_", value.split("\\")[-1]).strip(" .")
+        if not safe or safe in {".", ".."}:
+            raise KofedasError("Nombre de documento no valido.")
+        if Path(safe).suffix.lower() != ".pdf":
+            safe = f"{Path(safe).stem or safe}.pdf"
+        return safe
+
+    def _article_document_payloads(self, empresa: int, articulo: str) -> dict[str, Any]:
+        rows = self._article_document_rows(empresa, articulo)
+        documents: list[dict[str, Any]] = []
+        root = self._article_documents_root()
+        for row in rows:
+            code = str(row.get("arti_codinf") or "").strip().upper()
+            value = str(row.get("arti_descri") or "").strip()
+            if not value:
+                continue
+            legacy = self._legacy_json_payload(value)
+            if legacy:
+                documents.append({"tipo": code, "numlin": row.get("arti_numlin"), **legacy})
+                continue
+            if code == "FILE":
+                suffix = self._clean_article_document_suffix(articulo, value)
+                path = self._safe_child(root, f"{articulo}.{suffix}")
+                documents.append({"origen": "articuli", "tipo": code, "numlin": row.get("arti_numlin"), "nombre": suffix, **self._file_payload(path)})
+            else:
+                path = Path(value)
+                allowed = path.is_absolute() and any(self._path_inside(path, allowed_root) for allowed_root in self._allowed_file_roots())
+                payload = self._file_payload(path) if allowed else {
+                    "exists": path.exists() and path.is_file(),
+                    "path": str(path),
+                    "size": path.stat().st_size if path.exists() and path.is_file() else 0,
+                    "content_base64": "",
+                    "mime_type": mimetypes.guess_type(path.name)[0] or "application/octet-stream",
+                }
+                documents.append({"origen": "articuli", "tipo": code, "numlin": row.get("arti_numlin"), "nombre": path.name, "read_allowed": allowed, **payload})
+        return {"articulo": articulo, "directorio": str(root), "documentos": documents, "count": len([item for item in documents if item.get("exists")]), "transport": "base64"}
+
+    def _save_article_image_file(self, empresa: int, articulo: str, args: dict[str, Any]) -> dict[str, Any]:
+        data, source_name = self._read_binary_source(args)
+        if not data:
+            raise KofedasError("La imagen esta vacia")
+        content_b64 = str(args.get("content_base64") or "")
+        extension = self._image_extension(str(args.get("nombre_fichero") or source_name), str(args.get("mime_type") or ""), content_b64)
+        target_name = self._clean_relative_file_name(str(args.get("nombre_fichero") or source_name), f"{articulo}{extension}")
+        if not Path(target_name).suffix:
+            target_name += extension
+        root = self._article_photos_root()
+        target = self._safe_child(root, target_name)
+        if args.get("simular"):
+            rename_to = self._unique_sibling_name(root, target_name) if target.exists() else ""
+            return {"simulado": True, "articulo": articulo, "codigo": "IMAGE", "nombre": target_name, "path": str(target), "renombraria": {"from": target_name, "to": rename_to} if rename_to else None}
+        renamed = self._rename_existing_file(root, target_name)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        statement = self._article_info_save(empresa, articulo, "IMAGE", target_name)
+        count = self.db.execute(statement[0], statement[1])
+        return {"simulado": False, "articulo": articulo, "codigo": "IMAGE", "nombre": target_name, "path": str(target), "size": len(data), "renombrada": renamed, "filas_afectadas": count, "imagen": self._file_payload(target)}
+
+    def _save_article_document_file(self, empresa: int, articulo: str, args: dict[str, Any]) -> dict[str, Any]:
+        data, source_name = self._read_binary_source(args)
+        if not data:
+            raise KofedasError("El documento esta vacio")
+        if not data.startswith(b"%PDF"):
+            raise KofedasError("El documento debe ser un PDF valido")
+        suffix = self._clean_article_document_suffix(articulo, str(args.get("nombre_fichero") or source_name))
+        root = self._article_documents_root()
+        relative = f"{articulo}.{suffix}"
+        target = self._safe_child(root, relative)
+        if args.get("simular"):
+            rename_to = self._unique_sibling_name(root, relative) if target.exists() else ""
+            return {"simulado": True, "articulo": articulo, "codigo": "FILE", "nombre": suffix, "path": str(target), "renombraria": {"from": relative, "to": rename_to} if rename_to else None}
+        renamed = self._rename_existing_file(root, relative)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        statement = self._article_info_save(empresa, articulo, "FILE", suffix)
+        count = self.db.execute(statement[0], statement[1])
+        return {"simulado": False, "articulo": articulo, "codigo": "FILE", "nombre": suffix, "path": str(target), "size": len(data), "renombrado": renamed, "filas_afectadas": count, "documento": self._file_payload(target)}
+
     def _article_binary_info_gestion(self, args: dict[str, Any], codes: list[str], label: str) -> dict[str, Any]:
         empresa = self._empresa(args)
         article = self._article_row(empresa, self._article_code_arg(args))
         action = str(args.get("accion") or "obtener").strip().lower()
         if action == "obtener":
-            return {"articulo": article["art_codart"], label: self._article_info_rows(empresa, article["art_codart"], codes)}
+            if label == "imagenes":
+                return self._article_image_payloads(empresa, article["art_codart"], args.get("tamano_imagen"))
+            return self._article_document_payloads(empresa, article["art_codart"])
         if action != "guardar":
             raise KofedasError("accion debe ser obtener o guardar")
         self._require_write()
-        payload = {
-            "nombre_fichero": str(args.get("nombre_fichero") or ""),
-            "mime_type": str(args.get("mime_type") or ""),
-            "content_base64": str(args.get("content_base64") or ""),
-        }
-        value = json.dumps(payload, ensure_ascii=False)
-        statement = self._article_info_save(empresa, article["art_codart"], codes[0], value)
-        if args.get("simular"):
-            return {"simulado": True, "articulo": article["art_codart"], "codigo": codes[0], "sentencias": [statement[0]]}
-        count = self.db.execute(statement[0], statement[1])
-        return {"simulado": False, "articulo": article["art_codart"], "codigo": codes[0], "filas_afectadas": count}
+        if label == "imagenes":
+            return self._save_article_image_file(empresa, article["art_codart"], args)
+        return self._save_article_document_file(empresa, article["art_codart"], args)
 
     def articulo_imagen_gestion(self, args: dict[str, Any]) -> dict[str, Any]:
         return self._article_binary_info_gestion(args, ["IMAGE", "IMAGE2"], "imagenes")

@@ -199,8 +199,13 @@ El bloque avanzado anade catalogos de articulo (`FAMILI`, `SUBFAM`, `SSUBFAM`,
 por proveedor, coste unitario directo segun `PARAMETROS.RENTAB`, cambio de
 tabla de precios con recalculo desde `TABPREC`, cambios de familia/subfamilia,
 familia NCC en `ARTICULI`, tecnica en `ARTCAR` o `ARTICULI`, e imagenes/PDFs
-como metadatos Base64 en `ARTICULI` (`IMAGE`/`FILE`). Las funciones de cambio
-admiten `simular=true` para revisar el plan antes de escribir.
+en los directorios fisicos del ERP, dejando en `ARTICULI` la referencia
+`IMAGE`/`FILE` igual que Delphi. La ruta raiz se lee de `kofedas.ini`
+(`[rutas] directorio`) o de `KOFEDAS_MAIN_DIR`; por defecto usa
+`C:\KronosCRM`. Las fotos de articulos se guardan bajo `Datos\Fotos` y los PDF
+de articulos bajo `Documentos\Articulos`, con overrides
+`KOFEDAS_ARTICLE_PHOTOS_DIR` y `KOFEDAS_ARTICLE_DOCUMENTS_DIR`. Las funciones
+de cambio admiten `simular=true` para revisar el plan antes de escribir.
 
 El grupo Clientes cubre `CLIEN`, `CLIENI`, `CLIFAM`, `CLIART`, `CLIACT`,
 `CLIAGR`, `CLITAR` y `CLIDIR3`. `CLIPRO` existe en los fuentes Delphi, pero no
