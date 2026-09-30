@@ -61,14 +61,14 @@
         <div class="sub">Generado desde <code>kofedas_mcp.tool_definitions()</code> · servidor 0.1.0</div>
       </div>
       <div class="stats">
-        <div class="stat"><b>136</b><span>Total funciones</span></div>
-        <div class="stat"><b>102</b><span>Consultas</span></div>
-        <div class="stat"><b>34</b><span>Escritura</span></div>
+        <div class="stat"><b>145</b><span>Total funciones</span></div>
+        <div class="stat"><b>106</b><span>Consultas</span></div>
+        <div class="stat"><b>39</b><span>Escritura</span></div>
       </div>
     </div>
   </header>
   <main class="wrap">
-    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>11</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>11</span></a><a href="#grupo-cartera---tesoreria">Cartera / tesoreria <span>8</span></a><a href="#grupo-dashboard">Dashboard <span>8</span></a></nav>
+    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>20</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>11</span></a><a href="#grupo-cartera---tesoreria">Cartera / tesoreria <span>8</span></a><a href="#grupo-dashboard">Dashboard <span>8</span></a></nav>
 
             <section id="grupo-sistema" class="group">
               <div class="group-head">
@@ -534,8 +534,8 @@
               <div class="group-head">
                 <h2>Articulos</h2>
                 <div class="group-counts">
-                  <span>8 consultas</span>
-                  <span>3 escrituras</span>
+                  <span>12 consultas</span>
+                  <span>8 escrituras</span>
                 </div>
               </div>
               <div class="columns">
@@ -562,6 +562,24 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>articulo_cambiar_tabla_precio</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos/precios. Simula o aplica un cambio de tabla de precio y recalcula precios de venta.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">tabla_precio</td><td>integer</td><td>no</td><td>Nueva ART_TABPREC. Tambien acepta new_table.</td></tr><tr><td class="param-name">new_table</td><td>integer</td><td>no</td><td>Alias Kronos de tabla_precio.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe. Por defecto true.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_catalogo_listar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Articulos. Lista catalogos auxiliares: marcas, familias ERP, familias web o tablas de precio.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">tipo</td><td>string</td><td>no</td><td>marcas, familias, familias_web, tablas_precio, agrupaciones. Por defecto familias.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">padre</td><td>string</td><td>no</td><td>Codigo padre para subniveles cuando aplique.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>articulo_completo</code>
           <span class="pill read">Consulta</span>
         </div>
@@ -571,11 +589,29 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>articulo_compra_consultar</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Compras. Sin proveedor lista proveedores asociados al articulo; con proveedor devuelve ficha de compra y coste calculado.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor. Tambien acepta codpro.</td></tr><tr><td class="param-name">codpro</td><td>integer</td><td>no</td><td>Alias Kronos de proveedor.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha para coste. Por defecto hoy.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>articulo_obtener</code>
           <span class="pill read">Consulta</span>
         </div>
         <p>Obtiene ficha basica de ARTICUL con codigos de barras, stock por centro y proveedores.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>si</td><td>Codigo del articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>articulo_precio_coste</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Rentabilidad. Calcula el precio de coste de un articulo en una fecha segun PARAMETROS.RENTAB.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">fecha</td><td>string</td><td>no</td><td>Fecha YYYY-MM-DD. Por defecto hoy.</td></tr><tr><td class="param-name">modo_coste</td><td>string</td><td>no</td><td>Opcional: PBASE, PMEDIO, ULTIMO.</td></tr></tbody></table></details>
       </article>
 
       <article class="tool-card read">
@@ -629,6 +665,42 @@
 
       <article class="tool-card write">
         <div class="tool-title">
+          <code>articulo_documento_gestion</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA opcional. Obtiene o guarda referencia/documento Base64 del articulo usando ARTICULI codigos FILE/FILE2.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">accion</td><td>string</td><td>no</td><td>obtener o guardar.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">content_base64</td><td>string</td><td>no</td><td>Contenido documento en Base64 para guardar.</td></tr><tr><td class="param-name">nombre_fichero</td><td>string</td><td>no</td><td>Nombre o referencia de fichero.</td></tr><tr><td class="param-name">mime_type</td><td>string</td><td>no</td><td>Tipo MIME opcional.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_familia_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA. Cambia familia, subfamilia, tercer nivel y tabla de precio de un articulo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">familia</td><td>integer</td><td>no</td><td>ART_CODFAM. Tambien acepta codfam.</td></tr><tr><td class="param-name">codfam</td><td>integer</td><td>no</td><td>Alias Kronos de familia.</td></tr><tr><td class="param-name">subfamilia</td><td>integer</td><td>no</td><td>ART_SUBFAM. Tambien acepta subfam.</td></tr><tr><td class="param-name">subfam</td><td>integer</td><td>no</td><td>Alias Kronos de subfamilia.</td></tr><tr><td class="param-name">ssubfamilia</td><td>integer</td><td>no</td><td>Tercer nivel en ART_NORMA/ARTICULI si aplica. Tambien acepta ssubfam.</td></tr><tr><td class="param-name">ssubfam</td><td>integer</td><td>no</td><td>Alias Kronos de tercer nivel.</td></tr><tr><td class="param-name">tabla_precio</td><td>integer</td><td>no</td><td>ART_TABPREC opcional. Tambien acepta new_table.</td></tr><tr><td class="param-name">new_table</td><td>integer</td><td>no</td><td>Alias Kronos de tabla_precio.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe y devuelve el plan.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_familiancc_tabla_guardar</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA. Cambia familia NCC informativa y la tabla de precio de un articulo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">famncc</td><td>string</td><td>no</td><td>Familia NCC a guardar en ARTICULI.</td></tr><tr><td class="param-name">tabla_precio</td><td>integer</td><td>no</td><td>ART_TABPREC opcional. Tambien acepta new_table.</td></tr><tr><td class="param-name">new_table</td><td>integer</td><td>no</td><td>Alias Kronos de tabla_precio.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe y devuelve el plan.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_imagen_gestion</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA opcional. Obtiene o guarda referencia/imagen Base64 del articulo usando ARTICULI codigos IMAGE/IMAGE2.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">accion</td><td>string</td><td>no</td><td>obtener o guardar.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">content_base64</td><td>string</td><td>no</td><td>Contenido imagen en Base64 para guardar.</td></tr><tr><td class="param-name">nombre_fichero</td><td>string</td><td>no</td><td>Nombre o referencia de fichero.</td></tr><tr><td class="param-name">mime_type</td><td>string</td><td>no</td><td>Tipo MIME opcional.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
           <code>articulo_relacion_guardar</code>
           <span class="pill write">Escritura</span>
         </div>
@@ -643,6 +715,15 @@
         </div>
         <p>Articulos. ESCRITURA. Importa tarifa .xlsx creando/actualizando ARTICUL, ARTICULP, ARTICULC y ARTICULE.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">archivo</td><td>string</td><td>si</td><td>Ruta local del .xlsx.</td></tr><tr><td class="param-name">hoja</td><td>string</td><td>no</td><td>Nombre de hoja opcional; por defecto la activa.</td></tr><tr><td class="param-name">fila_cabecera</td><td>integer</td><td>no</td><td>Fila de cabecera. Por defecto 1.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Centro. Por defecto KOFEDAS_CENTRO o 0.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Proveedor por defecto si no viene en la hoja.</td></tr><tr><td class="param-name">seccion</td><td>string</td><td>no</td><td>Seccion por defecto para altas/generacion de codigo.</td></tr><tr><td class="param-name">mapeo</td><td>object</td><td>no</td><td>Mapa canonico -&gt; cabecera Excel.</td></tr><tr><td class="param-name">generar_codigos</td><td>boolean</td><td>no</td><td>Genera ART_CODART si no viene en Excel usando seccion/proveedor/contador.</td></tr><tr><td class="param-name">numero_inicial</td><td>integer</td><td>no</td><td>Contador inicial para generar codigos. Por defecto 1.</td></tr><tr><td class="param-name">digitos</td><td>integer</td><td>no</td><td>Longitud total del codigo generado. Por defecto 13.</td></tr><tr><td class="param-name">crear_articulos</td><td>boolean</td><td>no</td><td>Permite altas de ARTICUL. Por defecto true.</td></tr><tr><td class="param-name">actualizar_articulos</td><td>boolean</td><td>no</td><td>Permite actualizar ARTICUL existente. Por defecto true.</td></tr><tr><td class="param-name">crear_barras</td><td>boolean</td><td>no</td><td>Permite crear codigos de barras. Por defecto true.</td></tr><tr><td class="param-name">actualizar_barras</td><td>boolean</td><td>no</td><td>Permite reasignar codigos de barras existentes. Por defecto false.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, devuelve el plan sin escribir.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas a procesar.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card write">
+        <div class="tool-title">
+          <code>articulo_tecnica_gestion</code>
+          <span class="pill write">Escritura</span>
+        </div>
+        <p>Articulos. ESCRITURA opcional. Obtiene o guarda caracteristicas tecnicas del articulo en ARTCAR o ARTICULI.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">accion</td><td>string</td><td>no</td><td>obtener o guardar.</td></tr><tr><td class="param-name">articulo</td><td>string</td><td>no</td><td>Codigo de articulo. Tambien acepta codart.</td></tr><tr><td class="param-name">codart</td><td>string</td><td>no</td><td>Alias Kronos de articulo.</td></tr><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">texto</td><td>string</td><td>no</td><td>Texto completo; se reparte en bloques si se usa ARTCAR.</td></tr><tr><td class="param-name">texto1</td><td>string</td><td>no</td><td>Texto tecnico 1.</td></tr><tr><td class="param-name">texto2</td><td>string</td><td>no</td><td>Texto tecnico 2.</td></tr><tr><td class="param-name">texto3</td><td>string</td><td>no</td><td>Texto tecnico 3.</td></tr><tr><td class="param-name">texto4</td><td>string</td><td>no</td><td>Texto tecnico 4.</td></tr><tr><td class="param-name">simular</td><td>boolean</td><td>no</td><td>Si true, no escribe.</td></tr></tbody></table></details>
       </article>
 
                 </div>

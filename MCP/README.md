@@ -42,6 +42,15 @@ lectura/escritura controlada:
 - `articulo_alta`
 - `articulo_tarifa_excel_previsualizar`
 - `articulo_tarifa_excel_importar`
+- `articulo_catalogo_listar`
+- `articulo_compra_consultar`
+- `articulo_precio_coste`
+- `articulo_cambiar_tabla_precio`
+- `articulo_familia_guardar`
+- `articulo_familiancc_tabla_guardar`
+- `articulo_tecnica_gestion`
+- `articulo_imagen_gestion`
+- `articulo_documento_gestion`
 - `cliente_buscar`
 - `cliente_obtener`
 - `cliente_tablas`
@@ -164,6 +173,13 @@ lee tarifas `.xlsx` con cabeceras flexibles; admite `mapeo`, `simular`,
 generacion de codigos por `seccion + proveedor + contador`, altas de articulo,
 ficha de compra `ARTICULP`, codigos de barras `ARTICULC` y stock `ARTICULE`.
 Antes de escribir se puede usar `articulo_tarifa_excel_previsualizar`.
+El bloque avanzado anade catalogos de articulo (`FAMILI`, `SUBFAM`, `SSUBFAM`,
+`TABPREC` y marcas/familias web desde `ARTICULI`), consulta de ficha de compra
+por proveedor, coste unitario directo segun `PARAMETROS.RENTAB`, cambio de
+tabla de precios con recalculo desde `TABPREC`, cambios de familia/subfamilia,
+familia NCC en `ARTICULI`, tecnica en `ARTCAR` o `ARTICULI`, e imagenes/PDFs
+como metadatos Base64 en `ARTICULI` (`IMAGE`/`FILE`). Las funciones de cambio
+admiten `simular=true` para revisar el plan antes de escribir.
 
 El grupo Clientes cubre `CLIEN`, `CLIENI`, `CLIFAM`, `CLIART`, `CLIACT`,
 `CLIAGR`, `CLITAR` y `CLIDIR3`. `CLIPRO` existe en los fuentes Delphi, pero no

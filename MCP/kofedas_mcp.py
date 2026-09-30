@@ -859,6 +859,134 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
         },
         ["archivo"],
     ),
+    "articulo_catalogo_listar": _tool(
+        "articulo_catalogo_listar",
+        "Articulos. Lista catalogos auxiliares: marcas, familias ERP, familias web o tablas de precio.",
+        {
+            "tipo": _string_schema("marcas, familias, familias_web, tablas_precio, agrupaciones. Por defecto familias."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "padre": _string_schema("Codigo padre para subniveles cuando aplique."),
+            "limite": _int_schema("Maximo de filas."),
+        },
+    ),
+    "articulo_compra_consultar": _tool(
+        "articulo_compra_consultar",
+        "Compras. Sin proveedor lista proveedores asociados al articulo; con proveedor devuelve ficha de compra y coste calculado.",
+        {
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "proveedor": _int_schema("Proveedor. Tambien acepta codpro."),
+            "codpro": _int_schema("Alias Kronos de proveedor."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "fecha": _string_schema("Fecha para coste. Por defecto hoy."),
+        },
+        [],
+    ),
+    "articulo_precio_coste": _tool(
+        "articulo_precio_coste",
+        "Rentabilidad. Calcula el precio de coste de un articulo en una fecha segun PARAMETROS.RENTAB.",
+        {
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "fecha": _string_schema("Fecha YYYY-MM-DD. Por defecto hoy."),
+            "modo_coste": _string_schema("Opcional: PBASE, PMEDIO, ULTIMO."),
+        },
+        [],
+    ),
+    "articulo_cambiar_tabla_precio": _tool(
+        "articulo_cambiar_tabla_precio",
+        "Articulos/precios. Simula o aplica un cambio de tabla de precio y recalcula precios de venta.",
+        {
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "tabla_precio": _int_schema("Nueva ART_TABPREC. Tambien acepta new_table."),
+            "new_table": _int_schema("Alias Kronos de tabla_precio."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe. Por defecto true."},
+        },
+        [],
+    ),
+    "articulo_familia_guardar": _tool(
+        "articulo_familia_guardar",
+        "Articulos. ESCRITURA. Cambia familia, subfamilia, tercer nivel y tabla de precio de un articulo.",
+        {
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "familia": _int_schema("ART_CODFAM. Tambien acepta codfam."),
+            "codfam": _int_schema("Alias Kronos de familia."),
+            "subfamilia": _int_schema("ART_SUBFAM. Tambien acepta subfam."),
+            "subfam": _int_schema("Alias Kronos de subfamilia."),
+            "ssubfamilia": _int_schema("Tercer nivel en ART_NORMA/ARTICULI si aplica. Tambien acepta ssubfam."),
+            "ssubfam": _int_schema("Alias Kronos de tercer nivel."),
+            "tabla_precio": _int_schema("ART_TABPREC opcional. Tambien acepta new_table."),
+            "new_table": _int_schema("Alias Kronos de tabla_precio."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        [],
+    ),
+    "articulo_familiancc_tabla_guardar": _tool(
+        "articulo_familiancc_tabla_guardar",
+        "Articulos. ESCRITURA. Cambia familia NCC informativa y la tabla de precio de un articulo.",
+        {
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "famncc": _string_schema("Familia NCC a guardar en ARTICULI."),
+            "tabla_precio": _int_schema("ART_TABPREC opcional. Tambien acepta new_table."),
+            "new_table": _int_schema("Alias Kronos de tabla_precio."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        [],
+    ),
+    "articulo_tecnica_gestion": _tool(
+        "articulo_tecnica_gestion",
+        "Articulos. ESCRITURA opcional. Obtiene o guarda caracteristicas tecnicas del articulo en ARTCAR o ARTICULI.",
+        {
+            "accion": _string_schema("obtener o guardar."),
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "texto": _string_schema("Texto completo; se reparte en bloques si se usa ARTCAR."),
+            "texto1": _string_schema("Texto tecnico 1."),
+            "texto2": _string_schema("Texto tecnico 2."),
+            "texto3": _string_schema("Texto tecnico 3."),
+            "texto4": _string_schema("Texto tecnico 4."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe."},
+        },
+        [],
+    ),
+    "articulo_imagen_gestion": _tool(
+        "articulo_imagen_gestion",
+        "Articulos. ESCRITURA opcional. Obtiene o guarda referencia/imagen Base64 del articulo usando ARTICULI codigos IMAGE/IMAGE2.",
+        {
+            "accion": _string_schema("obtener o guardar."),
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "content_base64": _string_schema("Contenido imagen en Base64 para guardar."),
+            "nombre_fichero": _string_schema("Nombre o referencia de fichero."),
+            "mime_type": _string_schema("Tipo MIME opcional."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe."},
+        },
+        [],
+    ),
+    "articulo_documento_gestion": _tool(
+        "articulo_documento_gestion",
+        "Articulos. ESCRITURA opcional. Obtiene o guarda referencia/documento Base64 del articulo usando ARTICULI codigos FILE/FILE2.",
+        {
+            "accion": _string_schema("obtener o guardar."),
+            "articulo": _string_schema("Codigo de articulo. Tambien acepta codart."),
+            "codart": _string_schema("Alias Kronos de articulo."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "content_base64": _string_schema("Contenido documento en Base64 para guardar."),
+            "nombre_fichero": _string_schema("Nombre o referencia de fichero."),
+            "mime_type": _string_schema("Tipo MIME opcional."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe."},
+        },
+        [],
+    ),
     "cliente_buscar": _tool(
         "cliente_buscar",
         "Busca clientes por codigo, nombre, razon social, CIF, telefono o email.",
@@ -2438,6 +2566,15 @@ class KofedasToolRuntime:
             "articulo_alta": self.articulo_alta,
             "articulo_tarifa_excel_previsualizar": self.articulo_tarifa_excel_previsualizar,
             "articulo_tarifa_excel_importar": self.articulo_tarifa_excel_importar,
+            "articulo_catalogo_listar": self.articulo_catalogo_listar,
+            "articulo_compra_consultar": self.articulo_compra_consultar,
+            "articulo_precio_coste": self.articulo_precio_coste,
+            "articulo_cambiar_tabla_precio": self.articulo_cambiar_tabla_precio,
+            "articulo_familia_guardar": self.articulo_familia_guardar,
+            "articulo_familiancc_tabla_guardar": self.articulo_familiancc_tabla_guardar,
+            "articulo_tecnica_gestion": self.articulo_tecnica_gestion,
+            "articulo_imagen_gestion": self.articulo_imagen_gestion,
+            "articulo_documento_gestion": self.articulo_documento_gestion,
             "cliente_buscar": self.cliente_buscar,
             "cliente_obtener": self.cliente_obtener,
             "cliente_tablas": self.cliente_tablas,
@@ -6026,6 +6163,293 @@ class KofedasToolRuntime:
         plan["simulado"] = False
         plan["filas_afectadas"] = counts
         return plan
+
+    def _article_code_arg(self, args: dict[str, Any]) -> str:
+        code = str(args.get("articulo") or args.get("codart") or "").strip()
+        if not code:
+            raise KofedasError("articulo es obligatorio")
+        return code
+
+    def _article_row(self, empresa: int, articulo: str) -> dict[str, Any]:
+        row = self.db.one(
+            "SELECT FIRST 1 * FROM ARTICUL WHERE ART_NUMEMP = ? AND (ART_CODART = ? OR UPPER(ART_CODART) LIKE ?) ORDER BY ART_CODART",
+            (empresa, articulo, _like(articulo)),
+        )
+        if not row:
+            raise KofedasError("Articulo no encontrado: " + articulo)
+        return row
+
+    def _article_info_rows(self, empresa: int, articulo: str, codes: list[str]) -> list[dict[str, Any]]:
+        placeholders = ", ".join("?" for _ in codes)
+        return self.db.query(
+            f"""
+            SELECT ARTI_NUMLIN, ARTI_CODINF, ARTI_DESCRI
+            FROM ARTICULI
+            WHERE ARTI_NUMEMP = ? AND ARTI_CODART = ? AND ARTI_CODINF IN ({placeholders})
+            ORDER BY ARTI_CODINF, ARTI_NUMLIN
+            """,
+            (empresa, articulo, *codes),
+            100,
+        )
+
+    def _article_info_save(self, empresa: int, articulo: str, code: str, value: str) -> tuple[str, tuple[Any, ...]]:
+        existing = self.db.one(
+            """
+            SELECT FIRST 1 ARTI_NUMLIN
+            FROM ARTICULI
+            WHERE ARTI_NUMEMP = ? AND ARTI_CODART = ? AND ARTI_CODINF = ?
+            ORDER BY ARTI_NUMLIN
+            """,
+            (empresa, articulo, code),
+        )
+        if existing:
+            return (
+                "UPDATE ARTICULI SET ARTI_DESCRI = ? WHERE ARTI_NUMEMP = ? AND ARTI_CODART = ? AND ARTI_NUMLIN = ?",
+                (value, empresa, articulo, existing["arti_numlin"]),
+            )
+        row = self.db.one(
+            "SELECT MAX(ARTI_NUMLIN) AS MAXIMO FROM ARTICULI WHERE ARTI_NUMEMP = ? AND ARTI_CODART = ?",
+            (empresa, articulo),
+        )
+        line = self._to_int((row or {}).get("maximo"), 0) + 1
+        return (
+            "INSERT INTO ARTICULI (ARTI_NUMEMP, ARTI_CODART, ARTI_NUMLIN, ARTI_CODINF, ARTI_DESCRI) VALUES (?, ?, ?, ?, ?)",
+            (empresa, articulo, line, code, value),
+        )
+
+    def articulo_catalogo_listar(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        tipo = str(args.get("tipo") or "familias").strip().lower()
+        limit = _positive_limit(args.get("limite"), 500)
+        if tipo in {"familia", "familias"}:
+            return {"tipo": "familias", "items": self.familia_listar({"empresa": empresa, "tipo": "familia", "limite": limit})}
+        if tipo in {"subfamilia", "subfamilias"}:
+            payload: dict[str, Any] = {"empresa": empresa, "tipo": "subfamilia", "limite": limit}
+            if args.get("padre") not in (None, ""):
+                payload["familia"] = self._to_int(args.get("padre"), 0)
+            return {"tipo": "subfamilias", "items": self.familia_listar(payload)}
+        if tipo in {"ssubfamilia", "ssubfamilias", "tercer_nivel"}:
+            payload = {"empresa": empresa, "tipo": "ssubfamilia", "limite": limit}
+            if args.get("padre") not in (None, ""):
+                parts = [part for part in re.split(r"[/,; ]+", str(args.get("padre"))) if part]
+                if parts:
+                    payload["familia"] = self._to_int(parts[0], 0)
+                if len(parts) > 1:
+                    payload["subfamilia"] = self._to_int(parts[1], 0)
+            return {"tipo": "ssubfamilias", "items": self.familia_listar(payload)}
+        if tipo in {"marcas", "marca"}:
+            rows = self.db.query(
+                """
+                SELECT DISTINCT ARTI_DESCRI AS MARCA
+                FROM ARTICULI
+                WHERE ARTI_NUMEMP = ? AND ARTI_CODINF IN ('MARCA', 'BRAND') AND COALESCE(ARTI_DESCRI, '') <> ''
+                ORDER BY ARTI_DESCRI
+                """,
+                (empresa,),
+                limit,
+            )
+            return {"tipo": "marcas", "items": rows}
+        if tipo in {"familias_web", "web"}:
+            rows = self.db.query(
+                """
+                SELECT DISTINCT ARTI_DESCRI AS FAMILIA_WEB
+                FROM ARTICULI
+                WHERE ARTI_NUMEMP = ? AND ARTI_CODINF IN ('FAMWEB', 'WEBFAM', 'CATWEB') AND COALESCE(ARTI_DESCRI, '') <> ''
+                ORDER BY ARTI_DESCRI
+                """,
+                (empresa,),
+                limit,
+            )
+            return {"tipo": "familias_web", "items": rows}
+        if tipo in {"tablas_precio", "tabla_precio", "tabprec"}:
+            return {
+                "tipo": "tablas_precio",
+                "items": self.db.query(
+                    "SELECT FIRST " + str(limit) + " * FROM TABPREC WHERE TPR_NUMEMP = ? ORDER BY TPR_CODTAB",
+                    (empresa,),
+                    limit,
+                ),
+            }
+        if tipo in {"agrupaciones", "agrupacion"}:
+            items: dict[str, Any] = {}
+            for table in ("AGRUP1", "AGRUP2", "AGRUP3"):
+                try:
+                    columns = self._table_columns(table)
+                    emp_col = self._empresa_column(columns)
+                    where = f"WHERE {emp_col} = ?" if emp_col else ""
+                    params = (empresa,) if emp_col else ()
+                    items[table.lower()] = self.db.query(f"SELECT FIRST {limit} * FROM {table} {where} ORDER BY 1", params, limit)
+                except Exception as exc:
+                    items[table.lower()] = {"error": str(exc)}
+            return {"tipo": "agrupaciones", "items": items}
+        raise KofedasError("tipo de catalogo no valido")
+
+    def articulo_compra_consultar(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        articulo = self._article_row(empresa, self._article_code_arg(args))["art_codart"]
+        proveedor = args.get("proveedor", args.get("codpro"))
+        if proveedor in (None, "", 0):
+            return {
+                "modo": "proveedores",
+                "articulo": articulo,
+                "proveedores": self.articulo_obtener({"empresa": empresa, "articulo": articulo})["proveedores"],
+            }
+        row = self.db.one(
+            """
+            SELECT FIRST 1 P.*, V.PRO_NOMCOR, V.PRO_NOMFIS
+            FROM ARTICULP P
+            LEFT JOIN PROVEE V ON V.PRO_NUMEMP = P.ARTP_NUMEMP AND V.PRO_CODPRO = P.ARTP_CODPRO
+            WHERE P.ARTP_NUMEMP = ? AND P.ARTP_CODART = ? AND P.ARTP_CODPRO = ?
+            """,
+            (empresa, articulo, int(proveedor)),
+        )
+        if not row:
+            raise KofedasError("Ficha de compra no encontrada")
+        cost = self.articulo_precio_coste({"empresa": empresa, "articulo": articulo, "fecha": args.get("fecha")})
+        return {"modo": "ficha", "articulo": articulo, "proveedor": int(proveedor), "ficha": row, "coste": cost}
+
+    def articulo_precio_coste(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        query_date = self._date_arg(args.get("fecha"))
+        mode_info = self._inventory_cost_mode(empresa, args.get("modo_coste"))
+        cost = self._article_inventory_cost(empresa, article, query_date, str(mode_info["modo"]))
+        return {
+            "articulo": article.get("art_codart"),
+            "descripcion": article.get("art_descri"),
+            "fecha": query_date,
+            "modo_coste": mode_info,
+            **cost,
+            "fuente_delphi": "ARTICUL_UB.PRECIO_COSTE_ARTICUL + PARAMETROS.RENTAB",
+        }
+
+    def _article_price_table_values(self, empresa: int, article: dict[str, Any], table_code: int) -> dict[str, Any]:
+        result = {"ART_TABPREC": table_code}
+        row = self.db.one("SELECT FIRST 1 * FROM TABPREC WHERE TPR_NUMEMP = ? AND TPR_CODTAB = ?", (empresa, table_code))
+        base = self._to_float(article.get("art_prebas"), 0)
+        if row:
+            for index in range(1, 5):
+                increase = self._to_float(row.get(f"tpr_poraum{index}"), 0)
+                result[f"ART_PREVEN{index}"] = round(base * (1 + increase / 100), 4)
+        return result
+
+    def articulo_cambiar_tabla_precio(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        table_code = self._to_int(args.get("tabla_precio", args.get("new_table")), 0)
+        if not table_code:
+            raise KofedasError("tabla_precio es obligatorio")
+        values = self._article_price_table_values(empresa, article, table_code)
+        if args.get("simular", True):
+            proposed = dict(article)
+            proposed.update({key.lower(): value for key, value in values.items()})
+            return {"simulado": True, "articulo": article, "propuesto": proposed, "cambios": values}
+        self._require_write()
+        columns = self._table_columns("ARTICUL")
+        fields = [column for column in values if column in columns]
+        sql = "UPDATE ARTICUL SET " + ", ".join(f"{field}=?" for field in fields) + " WHERE ART_NUMEMP = ? AND ART_CODART = ?"
+        count = self.db.execute(sql, tuple(values[field] for field in fields) + (empresa, article["art_codart"]))
+        return {"simulado": False, "articulo": article["art_codart"], "cambios": {field: values[field] for field in fields}, "filas_afectadas": count}
+
+    def articulo_familia_guardar(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        updates = {
+            "ART_CODFAM": self._to_int(args.get("familia", args.get("codfam")), self._to_int(article.get("art_codfam"), 0)),
+            "ART_SUBFAM": self._to_int(args.get("subfamilia", args.get("subfam")), self._to_int(article.get("art_subfam"), 0)),
+        }
+        third = args.get("ssubfamilia", args.get("ssubfam"))
+        if third not in (None, ""):
+            updates["ART_NORMA"] = str(third)[:20]
+        table_code = args.get("tabla_precio", args.get("new_table"))
+        if table_code not in (None, "", 0):
+            updates.update(self._article_price_table_values(empresa, article, self._to_int(table_code, 0)))
+        if args.get("simular"):
+            return {"simulado": True, "articulo": article["art_codart"], "cambios": updates}
+        self._require_write()
+        columns = self._table_columns("ARTICUL")
+        fields = [column for column in updates if column in columns]
+        sql = "UPDATE ARTICUL SET " + ", ".join(f"{field}=?" for field in fields) + " WHERE ART_NUMEMP = ? AND ART_CODART = ?"
+        count = self.db.execute(sql, tuple(updates[field] for field in fields) + (empresa, article["art_codart"]))
+        return {"simulado": False, "articulo": article["art_codart"], "cambios": {field: updates[field] for field in fields}, "filas_afectadas": count}
+
+    def articulo_familiancc_tabla_guardar(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        statements: list[tuple[str, tuple[Any, ...]]] = []
+        if args.get("famncc") not in (None, ""):
+            statements.append(self._article_info_save(empresa, article["art_codart"], "FAMNCC", str(args.get("famncc"))[:250]))
+        table_code = args.get("tabla_precio", args.get("new_table"))
+        changes: dict[str, Any] = {}
+        if table_code not in (None, "", 0):
+            changes = self._article_price_table_values(empresa, article, self._to_int(table_code, 0))
+            fields = [column for column in changes if column in self._table_columns("ARTICUL")]
+            statements.append(("UPDATE ARTICUL SET " + ", ".join(f"{field}=?" for field in fields) + " WHERE ART_NUMEMP = ? AND ART_CODART = ?", tuple(changes[field] for field in fields) + (empresa, article["art_codart"])))
+        if args.get("simular"):
+            return {"simulado": True, "articulo": article["art_codart"], "cambios": {"famncc": args.get("famncc"), **changes}, "sentencias": [sql for sql, _ in statements]}
+        self._require_write()
+        counts = self.db.execute_transaction(statements) if statements else []
+        return {"simulado": False, "articulo": article["art_codart"], "filas_afectadas": counts}
+
+    def articulo_tecnica_gestion(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        action = str(args.get("accion") or "obtener").strip().lower()
+        columns = self._optional_table_columns("ARTCAR")
+        if action == "obtener":
+            tech = None
+            if columns:
+                tech = self.db.one("SELECT FIRST 1 * FROM ARTCAR WHERE ARC_NUMEMP = ? AND ARC_CODART = ?", (empresa, article["art_codart"]))
+            info = self._article_info_rows(empresa, article["art_codart"], ["INFO", "TECNIC", "TECNICA"])
+            return {"articulo": article["art_codart"], "artcar_disponible": bool(columns), "artcar": tech, "informacion": info}
+        if action != "guardar":
+            raise KofedasError("accion debe ser obtener o guardar")
+        self._require_write()
+        text = str(args.get("texto") or "")
+        parts = [str(args.get(f"texto{i}") or "") for i in range(1, 5)]
+        if text and not any(parts):
+            parts = [text[i:i + 250] for i in range(0, min(len(text), 1000), 250)]
+            parts += [""] * (4 - len(parts))
+        statements: list[tuple[str, tuple[Any, ...]]] = []
+        if columns:
+            exists = self.db.one("SELECT FIRST 1 1 AS EXISTE FROM ARTCAR WHERE ARC_NUMEMP = ? AND ARC_CODART = ?", (empresa, article["art_codart"]))
+            if exists:
+                statements.append(("UPDATE ARTCAR SET ARC_TEXTO1=?, ARC_TEXTO2=?, ARC_TEXTO3=?, ARC_TEXTO4=? WHERE ARC_NUMEMP=? AND ARC_CODART=?", (*parts[:4], empresa, article["art_codart"])))
+            else:
+                statements.append(("INSERT INTO ARTCAR (ARC_NUMEMP, ARC_CODART, ARC_TEXTO1, ARC_TEXTO2, ARC_TEXTO3, ARC_TEXTO4) VALUES (?, ?, ?, ?, ?, ?)", (empresa, article["art_codart"], *parts[:4])))
+        else:
+            statements.append(self._article_info_save(empresa, article["art_codart"], "INFO", text or "\n".join(part for part in parts if part)))
+        if args.get("simular"):
+            return {"simulado": True, "articulo": article["art_codart"], "sentencias": [sql for sql, _ in statements]}
+        counts = self.db.execute_transaction(statements)
+        return {"simulado": False, "articulo": article["art_codart"], "filas_afectadas": counts}
+
+    def _article_binary_info_gestion(self, args: dict[str, Any], codes: list[str], label: str) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        article = self._article_row(empresa, self._article_code_arg(args))
+        action = str(args.get("accion") or "obtener").strip().lower()
+        if action == "obtener":
+            return {"articulo": article["art_codart"], label: self._article_info_rows(empresa, article["art_codart"], codes)}
+        if action != "guardar":
+            raise KofedasError("accion debe ser obtener o guardar")
+        self._require_write()
+        payload = {
+            "nombre_fichero": str(args.get("nombre_fichero") or ""),
+            "mime_type": str(args.get("mime_type") or ""),
+            "content_base64": str(args.get("content_base64") or ""),
+        }
+        value = json.dumps(payload, ensure_ascii=False)
+        statement = self._article_info_save(empresa, article["art_codart"], codes[0], value)
+        if args.get("simular"):
+            return {"simulado": True, "articulo": article["art_codart"], "codigo": codes[0], "sentencias": [statement[0]]}
+        count = self.db.execute(statement[0], statement[1])
+        return {"simulado": False, "articulo": article["art_codart"], "codigo": codes[0], "filas_afectadas": count}
+
+    def articulo_imagen_gestion(self, args: dict[str, Any]) -> dict[str, Any]:
+        return self._article_binary_info_gestion(args, ["IMAGE", "IMAGE2"], "imagenes")
+
+    def articulo_documento_gestion(self, args: dict[str, Any]) -> dict[str, Any]:
+        return self._article_binary_info_gestion(args, ["FILE", "FILE2"], "documentos")
 
     def _article_insert_statements(
         self,
