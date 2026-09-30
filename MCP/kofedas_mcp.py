@@ -2390,6 +2390,27 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
             "limite": _int_schema("Maximo de filas por ranking."),
         },
     ),
+    "dashboard_filtros": _tool("dashboard_filtros", "Dashboard ERP. LECTURA. Devuelve catalogos existentes para poblar filtros del dashboard.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "limite": _int_schema("Maximo de filas por catalogo.")}),
+    "dashboard_alertas": _tool("dashboard_alertas", "Dashboard ERP. LECTURA. Consolida alertas de rentabilidad, clientes, stock, pendientes y tesoreria.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de alertas.")}),
+    "dashboard_acciones_recomendadas": _tool("dashboard_acciones_recomendadas", "Dashboard ERP. LECTURA. Recomienda acciones priorizadas combinando ventas, clientes, stock, pendientes y tesoreria.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de acciones.")}),
+    "ventas_acciones_recomendadas": _tool("ventas_acciones_recomendadas", "Dashboard ERP. LECTURA. Recomienda acciones sobre lineas y articulos con margen negativo.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de acciones.")}),
+    "clientes_resumen": _tool("clientes_resumen", "Dashboard ERP. LECTURA. Resume clientes en riesgo, bajadas de venta y concentracion comercial.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de clientes.")}),
+    "clientes_acciones_recomendadas": _tool("clientes_acciones_recomendadas", "Dashboard ERP. LECTURA. Recomienda acciones comerciales sobre clientes que caen o deterioran deuda/margen.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de acciones.")}),
+    "stock_resumen": _tool("stock_resumen", "Dashboard ERP. LECTURA. Resume stock, valor inmovilizado y alertas de rotacion.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial ventas/compras."), "hasta": _string_schema("Fecha final ventas/compras."), "limite": _int_schema("Maximo de articulos.")}),
+    "stock_acciones_recomendadas": _tool("stock_acciones_recomendadas", "Dashboard ERP. LECTURA. Recomienda acciones sobre stock parado, sobrestock y compras sin salida.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de acciones.")}),
+    "pedidos_resumen": _tool("pedidos_resumen", "Dashboard ERP. LECTURA. Resume pedidos y presupuestos de venta desde documentos existentes.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de documentos.")}),
+    "pedidos_acciones_recomendadas": _tool("pedidos_acciones_recomendadas", "Dashboard ERP. LECTURA. Recomienda acciones sobre pedidos, presupuestos y documentos pendientes.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "limite": _int_schema("Maximo de acciones.")}),
+    "documentos_pendientes_resumen": _tool("documentos_pendientes_resumen", "Dashboard ERP. LECTURA. Resume albaranes, facturas y creditos pendientes usando documentos y cartera.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "limite": _int_schema("Maximo de filas.")}),
+    "proveedores_resumen": _tool("proveedores_resumen", "Dashboard ERP. LECTURA. Resume ventas y compras agrupadas por proveedor con funciones existentes.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de proveedores.")}),
+    "compras_pedidos_pendientes_resumen": _tool("compras_pedidos_pendientes_resumen", "Dashboard ERP. LECTURA. Resume ordenes de compra pendientes desde CABORC/DETORC.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "limite": _int_schema("Maximo de pedidos.")}),
+    "compras_documentos_pendientes_resumen": _tool("compras_documentos_pendientes_resumen", "Dashboard ERP. LECTURA. Resume documentos de proveedor pendientes desde CABDOCM.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "limite": _int_schema("Maximo de documentos.")}),
+    "compras_articulos_pendientes_recibir": _tool("compras_articulos_pendientes_recibir", "Dashboard ERP. LECTURA. Agrupa por articulo las cantidades pendientes de recibir desde pedidos de compra.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "proveedor": _int_schema("Filtro por proveedor."), "limite": _int_schema("Maximo de articulos.")}),
+    "negocio_cuadro_mando": _tool("negocio_cuadro_mando", "Cuadro de mando. LECTURA. Resume ventas, margen, rentabilidad, clientes en riesgo y stock/rotacion.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de filas por bloque.")}),
+    "negocio_tendencias": _tool("negocio_tendencias", "Cuadro de mando. LECTURA. Compara ventas y rentabilidad por dimension entre dos periodos.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Periodo actual desde."), "hasta": _string_schema("Periodo actual hasta."), "comparar_desde": _string_schema("Periodo comparativo desde."), "comparar_hasta": _string_schema("Periodo comparativo hasta."), "agrupar_por": _string_schema("articulo, familia, cliente, mes."), "limite": _int_schema("Maximo de grupos.")}),
+    "negocio_diagnostico_cambios": _tool("negocio_diagnostico_cambios", "Cuadro de mando. LECTURA. Diagnostica por que cambian ventas o margen entre dos periodos.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Periodo actual desde."), "hasta": _string_schema("Periodo actual hasta."), "comparar_desde": _string_schema("Periodo comparativo desde."), "comparar_hasta": _string_schema("Periodo comparativo hasta."), "limite": _int_schema("Maximo de elementos.")}),
+    "negocio_clientes_riesgo": _tool("negocio_clientes_riesgo", "Cuadro de mando. LECTURA. Analiza clientes en riesgo comparando ventas, deuda y rentabilidad.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de clientes.")}),
+    "negocio_stock_rotacion": _tool("negocio_stock_rotacion", "Cuadro de mando. LECTURA. Analiza stock actual, valor inmovilizado, ventas, compras y rotacion.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Fecha inicial."), "hasta": _string_schema("Fecha final."), "limite": _int_schema("Maximo de articulos.")}),
+    "negocio_stock_tendencias": _tool("negocio_stock_tendencias", "Cuadro de mando. LECTURA. Compara dos periodos de stock/ventas/compras para detectar deterioros.", {"empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."), "centro": _int_schema("Filtro por centro."), "desde": _string_schema("Periodo actual desde."), "hasta": _string_schema("Periodo actual hasta."), "comparar_desde": _string_schema("Periodo comparativo desde."), "comparar_hasta": _string_schema("Periodo comparativo hasta."), "limite": _int_schema("Maximo de articulos.")}),
     "regularizacion_tablas": _tool(
         "regularizacion_tablas",
         "Regularizaciones. Describe CABDOCR, DETMOVR, RECUENTO, ARTICULE y STOCKS.",
@@ -2668,6 +2689,27 @@ class KofedasToolRuntime:
             "dashboard_evolucion_anual": self.dashboard_evolucion_anual,
             "dashboard_series_temporales": self.dashboard_series_temporales,
             "dashboard_rankings": self.dashboard_rankings,
+            "dashboard_filtros": self.dashboard_filtros,
+            "dashboard_alertas": self.dashboard_alertas,
+            "dashboard_acciones_recomendadas": self.dashboard_acciones_recomendadas,
+            "ventas_acciones_recomendadas": self.ventas_acciones_recomendadas,
+            "clientes_resumen": self.clientes_resumen,
+            "clientes_acciones_recomendadas": self.clientes_acciones_recomendadas,
+            "stock_resumen": self.stock_resumen,
+            "stock_acciones_recomendadas": self.stock_acciones_recomendadas,
+            "pedidos_resumen": self.pedidos_resumen,
+            "pedidos_acciones_recomendadas": self.pedidos_acciones_recomendadas,
+            "documentos_pendientes_resumen": self.documentos_pendientes_resumen,
+            "proveedores_resumen": self.proveedores_resumen,
+            "compras_pedidos_pendientes_resumen": self.compras_pedidos_pendientes_resumen,
+            "compras_documentos_pendientes_resumen": self.compras_documentos_pendientes_resumen,
+            "compras_articulos_pendientes_recibir": self.compras_articulos_pendientes_recibir,
+            "negocio_cuadro_mando": self.negocio_cuadro_mando,
+            "negocio_tendencias": self.negocio_tendencias,
+            "negocio_diagnostico_cambios": self.negocio_diagnostico_cambios,
+            "negocio_clientes_riesgo": self.negocio_clientes_riesgo,
+            "negocio_stock_rotacion": self.negocio_stock_rotacion,
+            "negocio_stock_tendencias": self.negocio_stock_tendencias,
             "regularizacion_tablas": self.regularizacion_tablas,
             "regularizacion_listar": self.regularizacion_listar,
             "stock_por_almacen": self.stock_por_almacen,
@@ -9931,6 +9973,207 @@ class KofedasToolRuntime:
             "proveedores_compra": purchase_providers["items"],
             "articulos_compra": purchase_articles["items"],
         }
+
+    def _dashboard_action(self, priority: str, kind: str, message: str, tool: str, evidence: Any) -> dict[str, Any]:
+        weights = {"alta": 90, "media": 60, "baja": 30}
+        return {"prioridad": priority, "puntuacion": weights.get(priority, 50), "tipo": kind, "mensaje": message, "herramienta_origen": tool, "evidencia": evidence}
+
+    def _default_compare_period(self, args: dict[str, Any]) -> tuple[str, str, str, str]:
+        current_start, current_end = self._dashboard_period(args)
+        if args.get("comparar_desde") and args.get("comparar_hasta"):
+            return current_start, current_end, self._date_arg(args.get("comparar_desde")), self._date_arg(args.get("comparar_hasta"))
+        start_date = date.fromisoformat(current_start)
+        end_date = date.fromisoformat(current_end)
+        days = max((end_date - start_date).days + 1, 1)
+        prev_end = start_date - timedelta(days=1)
+        prev_start = prev_end - timedelta(days=days - 1)
+        return current_start, current_end, prev_start.isoformat(), prev_end.isoformat()
+
+    def dashboard_filtros(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 100)
+        empresa = self._empresa(args)
+        return {
+            "centros": self.centro_listar({"empresa": empresa, "limite": limit}),
+            "familias": self.familia_listar({"empresa": empresa, "tipo": "familia", "limite": limit}),
+            "proveedores": self.proveedor_buscar({"empresa": empresa, "texto": "", "limite": limit}) if False else self.db.query("SELECT FIRST " + str(limit) + " PRO_CODPRO, PRO_NOMCOR, PRO_NOMFIS FROM PROVEE WHERE PRO_NUMEMP = ? ORDER BY PRO_CODPRO", (empresa,), limit),
+            "formas_pago": self.auxiliar_listar({"tabla": "FORPAG", "empresa": empresa, "limite": limit}),
+            "representantes": self.auxiliar_listar({"tabla": "REPRESE", "empresa": empresa, "limite": limit}),
+            "tipos_documento_venta": SALES_DOCUMENT_TYPES,
+        }
+
+    def ventas_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 20)
+        profitability = self.rentabilidad_articulos_resumen({**args, "orden": "rentabilidad", "limite": limit, "limite_lineas": args.get("limite_lineas") or 2000})
+        actions = []
+        for item in profitability.get("items", []):
+            margin = self._to_float(item.get("margen"), 0)
+            rent = self._to_float(item.get("rentabilidad_pct"), 0)
+            if margin < 0 or rent < 0:
+                actions.append(self._dashboard_action("alta", "margen_negativo", "Revisar precio/coste de articulo con margen negativo", "rentabilidad_articulos_resumen", item))
+            elif rent < 10:
+                actions.append(self._dashboard_action("media", "margen_bajo", "Revisar condiciones comerciales de articulo con margen bajo", "rentabilidad_articulos_resumen", item))
+        return {"acciones": actions[:limit], "total": min(len(actions), limit)}
+
+    def clientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 50)
+        sales = self.ventas_resumen({**args, "agrupar_por": "cliente", "limite": limit})
+        debt = self.cartera_deuda_por_cliente({"empresa": self._empresa(args), "limite": 5000, "limite_clientes": limit})
+        debt_by_client = {(item["cliente"]["codigo"], item["cliente"]["subcliente"]): item for item in debt.get("clientes", [])}
+        items = []
+        for item in sales.get("items", []):
+            code = self._to_int(item.get("codigo"), 0)
+            debt_item = next((value for (cli, _sub), value in debt_by_client.items() if cli == code), None)
+            items.append({**item, "deuda": debt_item})
+        return {"periodo": sales.get("periodo"), "totales_ventas": sales.get("totales"), "totales_deuda": debt.get("totales"), "clientes": items}
+
+    def clientes_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 20)
+        summary = self.clientes_resumen({**args, "limite": limit})
+        actions = []
+        for item in summary.get("clientes", []):
+            debt = item.get("deuda") or {}
+            if self._to_float(debt.get("vencido"), 0) > 0:
+                actions.append(self._dashboard_action("alta", "cliente_deuda_vencida", "Contactar cliente con deuda vencida", "clientes_resumen", item))
+            elif self._to_float(debt.get("pendiente"), 0) > self._to_float(item.get("base"), 0) * 0.5 and self._to_float(debt.get("pendiente"), 0) > 0:
+                actions.append(self._dashboard_action("media", "cliente_riesgo_cobro", "Revisar riesgo de cliente con deuda alta frente a ventas", "clientes_resumen", item))
+        return {"acciones": actions[:limit], "total": min(len(actions), limit)}
+
+    def stock_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 100)
+        inventory = self.inventario_valorar_articulos({**args, "solo_con_stock": True, "limite": limit})
+        sales = self.ventas_resumen({**args, "agrupar_por": "articulo", "limite": limit})
+        sold = {str(item.get("codigo")): item for item in sales.get("items", [])}
+        items = []
+        for item in inventory.get("items", []):
+            art = str(item.get("articulo") or item.get("codigo") or "")
+            sale = sold.get(art)
+            stock_value = self._to_float(item.get("valor_coste"), 0)
+            sale_base = self._to_float((sale or {}).get("base"), 0)
+            rotation = round(sale_base / stock_value, 4) if stock_value else None
+            items.append({**item, "ventas_periodo": sale, "rotacion_valor": rotation})
+        return {"inventario": inventory.get("totales"), "periodo": sales.get("periodo"), "items": items}
+
+    def stock_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 20)
+        summary = self.stock_resumen({**args, "limite": max(limit, 50)})
+        actions = []
+        for item in summary.get("items", []):
+            stock_value = self._to_float(item.get("valor_coste"), 0)
+            sale_base = self._to_float((item.get("ventas_periodo") or {}).get("base"), 0)
+            if stock_value > 0 and sale_base == 0:
+                actions.append(self._dashboard_action("alta", "stock_sin_ventas", "Revisar stock con valor inmovilizado sin ventas en el periodo", "stock_resumen", item))
+            elif item.get("rotacion_valor") is not None and self._to_float(item.get("rotacion_valor"), 0) < 0.25:
+                actions.append(self._dashboard_action("media", "baja_rotacion", "Revisar articulo de baja rotacion", "stock_resumen", item))
+        return {"acciones": actions[:limit], "total": min(len(actions), limit)}
+
+    def pedidos_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 500)
+        orders = self.pedido_listar({**args, "tipo_documento": args.get("tipo_documento") or "P,R", "limite": limit})
+        totals = {"documentos": len(orders.get("items", [])), "base": 0.0, "total": 0.0}
+        by_type: dict[str, dict[str, Any]] = {}
+        for row in orders.get("items", []):
+            typ = str(row.get("cbv_tipdoc") or "")
+            group = by_type.setdefault(typ, {"tipo_documento": typ, "documentos": 0, "total": 0.0})
+            group["documentos"] += 1
+            group["total"] += self._to_float(row.get("cbv_totald"), 0)
+            totals["base"] += self._to_float(row.get("cbv_totals"), 0)
+            totals["total"] += self._to_float(row.get("cbv_totald"), 0)
+        for group in by_type.values():
+            group["total"] = round(group["total"], 2)
+        totals["base"] = round(totals["base"], 2)
+        totals["total"] = round(totals["total"], 2)
+        return {"totales": totals, "por_tipo": list(by_type.values()), "documentos": orders.get("items", [])}
+
+    def pedidos_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 20)
+        summary = self.pedidos_resumen({**args, "limite": max(limit, 100)})
+        actions = [self._dashboard_action("media", "pedido_pendiente", "Revisar pedido/presupuesto pendiente", "pedidos_resumen", item) for item in summary.get("documentos", [])[:limit]]
+        return {"acciones": actions, "total": len(actions)}
+
+    def documentos_pendientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        cartera = self.cartera_deuda_por_tipo({**args, "situacion": "pendiente", "limite": args.get("limite") or 5000})
+        entradas = self.entrada_almacen_pendientes_facturar({**args, "limite": args.get("limite") or 500})
+        return {"cartera": cartera, "entradas_pendientes_facturar": entradas}
+
+    def proveedores_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        purchases = self.compras_resumen({**args, "agrupar_por": "proveedor", "limite": args.get("limite") or 100})
+        sales_by_article_provider = self.ventas_resumen({**args, "agrupar_por": "familia", "limite": args.get("limite") or 100})
+        return {"compras_por_proveedor": purchases, "ventas_referencia": sales_by_article_provider}
+
+    def compras_pedidos_pendientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        rows = self.orden_compra_listar({**args, "estado": "pendiente", "limite": args.get("limite") or 500})
+        return {"totales": {"documentos": len(rows), "importe_pendiente": round(sum(self._to_float(row.get("coc_imppen"), 0) for row in rows), 2)}, "documentos": rows}
+
+    def compras_documentos_pendientes_resumen(self, args: dict[str, Any]) -> dict[str, Any]:
+        facturar = self.entrada_almacen_pendientes_facturar({**args, "limite": args.get("limite") or 500})
+        contabilizar = self.entrada_almacen_pendientes_contabilizar({**args, "limite": args.get("limite") or 500})
+        return {"pendientes_facturar": facturar, "pendientes_contabilizar": contabilizar}
+
+    def compras_articulos_pendientes_recibir(self, args: dict[str, Any]) -> dict[str, Any]:
+        rows = self.orden_compra_lineas_listar({**args, "estado": "pendiente", "limite": args.get("limite") or 1000})
+        groups: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            art = str(row.get("doc_codart") or "")
+            group = groups.setdefault(art, {"articulo": art, "descripcion": row.get("doc_descri") or row.get("art_descri_maestra"), "cantidad_pendiente": 0.0, "valor_pendiente": 0.0, "lineas": 0})
+            group["cantidad_pendiente"] += self._to_float(row.get("doc_canpen"), 0)
+            group["valor_pendiente"] += self._to_float(row.get("doc_valpen"), 0)
+            group["lineas"] += 1
+        items = list(groups.values())
+        for item in items:
+            item["cantidad_pendiente"] = round(item["cantidad_pendiente"], 4)
+            item["valor_pendiente"] = round(item["valor_pendiente"], 2)
+        items.sort(key=lambda item: item["valor_pendiente"], reverse=True)
+        return {"articulos": items[:_positive_limit(args.get("limite"), 100)]}
+
+    def dashboard_alertas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 50)
+        alerts = []
+        alerts.extend(self.ventas_acciones_recomendadas({**args, "limite": limit}).get("acciones", []))
+        alerts.extend(self.clientes_acciones_recomendadas({**args, "limite": limit}).get("acciones", []))
+        alerts.extend(self.stock_acciones_recomendadas({**args, "limite": limit}).get("acciones", []))
+        alerts.extend(self.tesoreria_acciones_recomendadas({**args, "limite": limit}).get("acciones", []))
+        alerts.sort(key=lambda item: self._to_int(item.get("puntuacion"), 0), reverse=True)
+        return {"alertas": alerts[:limit], "total": min(len(alerts), limit)}
+
+    def dashboard_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
+        limit = _positive_limit(args.get("limite"), 50)
+        actions = self.dashboard_alertas({**args, "limite": limit}).get("alertas", [])
+        actions.extend(self.pedidos_acciones_recomendadas({**args, "limite": limit}).get("acciones", []))
+        actions.sort(key=lambda item: self._to_int(item.get("puntuacion"), 0), reverse=True)
+        return {"acciones": actions[:limit], "total": min(len(actions), limit)}
+
+    def negocio_cuadro_mando(self, args: dict[str, Any]) -> dict[str, Any]:
+        return {"resumen": self.dashboard_resumen(args), "series": self.dashboard_series_temporales(args), "rankings": self.dashboard_rankings(args), "alertas": self.dashboard_alertas(args)}
+
+    def negocio_tendencias(self, args: dict[str, Any]) -> dict[str, Any]:
+        current_start, current_end, prev_start, prev_end = self._default_compare_period(args)
+        group = str(args.get("agrupar_por") or "articulo").strip().lower()
+        current = self.rentabilidad_articulos_resumen({**args, "desde": current_start, "hasta": current_end, "orden": "ventas", "limite": args.get("limite") or 100}) if group in {"articulo", "familia"} else self.ventas_resumen({**args, "desde": current_start, "hasta": current_end, "agrupar_por": group, "limite": args.get("limite") or 100})
+        previous = self.rentabilidad_articulos_resumen({**args, "desde": prev_start, "hasta": prev_end, "orden": "ventas", "limite": args.get("limite") or 100}) if group in {"articulo", "familia"} else self.ventas_resumen({**args, "desde": prev_start, "hasta": prev_end, "agrupar_por": group, "limite": args.get("limite") or 100})
+        prev_items = {str(item.get("articulo", item.get("codigo"))): item for item in previous.get("items", [])}
+        items = []
+        for item in current.get("items", []):
+            key = str(item.get("articulo", item.get("codigo")))
+            prev = prev_items.get(key, {})
+            current_value = self._to_float(item.get("ventas", item.get("base")), 0)
+            prev_value = self._to_float(prev.get("ventas", prev.get("base")), 0)
+            items.append({**item, "comparativo": prev, "variacion": round(current_value - prev_value, 2), "variacion_pct": round(((current_value - prev_value) * 100 / prev_value) if prev_value else 0, 2)})
+        items.sort(key=lambda row: abs(self._to_float(row.get("variacion"), 0)), reverse=True)
+        return {"periodo_actual": {"desde": current_start, "hasta": current_end}, "periodo_comparativo": {"desde": prev_start, "hasta": prev_end}, "agrupar_por": group, "items": items}
+
+    def negocio_diagnostico_cambios(self, args: dict[str, Any]) -> dict[str, Any]:
+        trends = self.negocio_tendencias({**args, "agrupar_por": args.get("agrupar_por") or "articulo"})
+        drivers = trends.get("items", [])[:_positive_limit(args.get("limite"), 20)]
+        return {"diagnostico": "Variaciones ordenadas por impacto absoluto en ventas/margen disponible.", "tendencias": trends, "principales_cambios": drivers}
+
+    def negocio_clientes_riesgo(self, args: dict[str, Any]) -> dict[str, Any]:
+        return {"clientes": self.clientes_resumen(args), "acciones": self.clientes_acciones_recomendadas(args)}
+
+    def negocio_stock_rotacion(self, args: dict[str, Any]) -> dict[str, Any]:
+        return self.stock_resumen(args)
+
+    def negocio_stock_tendencias(self, args: dict[str, Any]) -> dict[str, Any]:
+        return self.negocio_tendencias({**args, "agrupar_por": "articulo"})
 
     def regularizacion_tablas(self, args: dict[str, Any]) -> list[dict[str, Any]]:
         del args

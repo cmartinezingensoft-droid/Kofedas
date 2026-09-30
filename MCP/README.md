@@ -144,6 +144,27 @@ lectura/escritura controlada:
 - `dashboard_evolucion_anual`
 - `dashboard_series_temporales`
 - `dashboard_rankings`
+- `dashboard_filtros`
+- `dashboard_alertas`
+- `dashboard_acciones_recomendadas`
+- `ventas_acciones_recomendadas`
+- `clientes_resumen`
+- `clientes_acciones_recomendadas`
+- `stock_resumen`
+- `stock_acciones_recomendadas`
+- `pedidos_resumen`
+- `pedidos_acciones_recomendadas`
+- `documentos_pendientes_resumen`
+- `proveedores_resumen`
+- `compras_pedidos_pendientes_resumen`
+- `compras_documentos_pendientes_resumen`
+- `compras_articulos_pendientes_recibir`
+- `negocio_cuadro_mando`
+- `negocio_tendencias`
+- `negocio_diagnostico_cambios`
+- `negocio_clientes_riesgo`
+- `negocio_stock_rotacion`
+- `negocio_stock_tendencias`
 - `regularizacion_tablas`
 - `regularizacion_listar`
 - `stock_por_almacen`
@@ -300,6 +321,13 @@ articulo, familia, centro o tipo/situacion. `dashboard_evolucion_anual`
 compara ventas, compras y margen bruto aproximado por año; `dashboard_series_temporales`
 combina ventas y compras en una serie por mes/año; `dashboard_rankings` devuelve
 los principales clientes, proveedores y articulos de venta/compra del periodo.
+El bloque de recomendaciones anade filtros para UI, alertas consolidadas,
+acciones recomendadas por ventas/clientes/stock/pedidos/tesoreria, resumenes de
+clientes, proveedores, pedidos, documentos y compras pendientes, y funciones
+ejecutivas `negocio_*` para cuadro de mando, tendencias, diagnostico de cambios,
+clientes en riesgo y rotacion/tendencias de stock. Todas las recomendaciones
+incluyen herramienta origen y evidencia para poder navegar al dato que las
+justifica.
 Todas son consultas de solo lectura.
 
 El DSN ODBC por defecto es `Kronos`, tal como se usa para la base de datos ERP

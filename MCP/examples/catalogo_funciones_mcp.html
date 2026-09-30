@@ -61,14 +61,14 @@
         <div class="sub">Generado desde <code>kofedas_mcp.tool_definitions()</code> · servidor 0.1.0</div>
       </div>
       <div class="stats">
-        <div class="stat"><b>145</b><span>Total funciones</span></div>
-        <div class="stat"><b>106</b><span>Consultas</span></div>
+        <div class="stat"><b>166</b><span>Total funciones</span></div>
+        <div class="stat"><b>127</b><span>Consultas</span></div>
         <div class="stat"><b>39</b><span>Escritura</span></div>
       </div>
     </div>
   </header>
   <main class="wrap">
-    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>20</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>11</span></a><a href="#grupo-cartera---tesoreria">Cartera / tesoreria <span>8</span></a><a href="#grupo-dashboard">Dashboard <span>8</span></a></nav>
+    <nav><a href="#grupo-sistema">Sistema <span>1</span></a><a href="#grupo-configuracion">Configuracion <span>15</span></a><a href="#grupo-auxiliares">Auxiliares <span>5</span></a><a href="#grupo-clientes">Clientes <span>9</span></a><a href="#grupo-proveedores">Proveedores <span>10</span></a><a href="#grupo-articulos">Articulos <span>20</span></a><a href="#grupo-articulos---stock">Articulos / stock <span>4</span></a><a href="#grupo-ofertas">Ofertas <span>6</span></a><a href="#grupo-ordenes-de-compra">Ordenes de Compra <span>7</span></a><a href="#grupo-entradas-de-almacen">Entradas de Almacen <span>10</span></a><a href="#grupo-regularizaciones">Regularizaciones <span>7</span></a><a href="#grupo-ventas">Ventas <span>8</span></a><a href="#grupo-ventas---rentabilidad">Ventas / rentabilidad <span>2</span></a><a href="#grupo-ventas---dashboard">Ventas / dashboard <span>2</span></a><a href="#grupo-pedidos">Pedidos <span>12</span></a><a href="#grupo-cartera">Cartera <span>11</span></a><a href="#grupo-cartera---tesoreria">Cartera / tesoreria <span>8</span></a><a href="#grupo-dashboard">Dashboard <span>23</span></a><a href="#grupo-dashboard---negocio">Dashboard / negocio <span>6</span></a></nav>
 
             <section id="grupo-sistema" class="group">
               <div class="group-head">
@@ -1647,13 +1647,58 @@
               <div class="group-head">
                 <h2>Dashboard</h2>
                 <div class="group-counts">
-                  <span>8 consultas</span>
+                  <span>23 consultas</span>
                   <span>0 escrituras</span>
                 </div>
               </div>
               <div class="columns">
                 <div>
                   <h3>Consultas</h3>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>clientes_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones comerciales sobre clientes que caen o deterioran deuda/margen.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>clientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume clientes en riesgo, bajadas de venta y concentracion comercial.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de clientes.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>compras_articulos_pendientes_recibir</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Agrupa por articulo las cantidades pendientes de recibir desde pedidos de compra.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">proveedor</td><td>integer</td><td>no</td><td>Filtro por proveedor.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>compras_documentos_pendientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume documentos de proveedor pendientes desde CABDOCM.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de documentos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>compras_pedidos_pendientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume ordenes de compra pendientes desde CABORC/DETORC.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de pedidos.</td></tr></tbody></table></details>
+      </article>
 
       <article class="tool-card read">
         <div class="tool-title">
@@ -1666,11 +1711,38 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>dashboard_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones priorizadas combinando ventas, clientes, stock, pendientes y tesoreria.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_alertas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Consolida alertas de rentabilidad, clientes, stock, pendientes y tesoreria.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de alertas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>dashboard_evolucion_anual</code>
           <span class="pill read">Consulta</span>
         </div>
         <p>Dashboard ERP. Evolucion por años de ventas, compras, documentos y margen aproximado.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">anio_desde</td><td>integer</td><td>no</td><td>Año inicial. Por defecto año actual - 4.</td></tr><tr><td class="param-name">anio_hasta</td><td>integer</td><td>no</td><td>Año final. Por defecto año actual.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>dashboard_filtros</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Devuelve catalogos existentes para poblar filtros del dashboard.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas por catalogo.</td></tr></tbody></table></details>
       </article>
 
       <article class="tool-card read">
@@ -1702,6 +1774,60 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>documentos_pendientes_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume albaranes, facturas y creditos pendientes usando documentos y cartera.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>pedidos_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones sobre pedidos, presupuestos y documentos pendientes.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>pedidos_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume pedidos y presupuestos de venta desde documentos existentes.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de documentos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>proveedores_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume ventas y compras agrupadas por proveedor con funciones existentes.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de proveedores.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>stock_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones sobre stock parado, sobrestock y compras sin salida.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>stock_resumen</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Resume stock, valor inmovilizado y alertas de rotacion.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial ventas/compras.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final ventas/compras.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>tesoreria_acciones_recomendadas</code>
           <span class="pill read">Consulta</span>
         </div>
@@ -1720,11 +1846,94 @@
 
       <article class="tool-card read">
         <div class="tool-title">
+          <code>ventas_acciones_recomendadas</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Dashboard ERP. LECTURA. Recomienda acciones sobre lineas y articulos con margen negativo.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de acciones.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
           <code>ventas_resumen</code>
           <span class="pill read">Consulta</span>
         </div>
         <p>Dashboard ERP. Resume ventas por periodo con agrupacion opcional por mes, año, cliente, articulo, familia, centro o tipo_documento.</p>
         <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial YYYY-MM-DD.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final YYYY-MM-DD.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>mes, anio, cliente, articulo, familia, centro o tipo_documento. Por defecto mes.</td></tr><tr><td class="param-name">tipos_documento</td><td>array</td><td>no</td><td>Tipos de venta a incluir. Por defecto F,T,A,C.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
+      </article>
+
+                </div>
+                <div>
+                  <h3>Escritura</h3>
+                  <p class="empty">Sin funciones de escritura.</p>
+                </div>
+              </div>
+            </section>
+
+            <section id="grupo-dashboard---negocio" class="group">
+              <div class="group-head">
+                <h2>Dashboard / negocio</h2>
+                <div class="group-counts">
+                  <span>6 consultas</span>
+                  <span>0 escrituras</span>
+                </div>
+              </div>
+              <div class="columns">
+                <div>
+                  <h3>Consultas</h3>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_clientes_riesgo</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Analiza clientes en riesgo comparando ventas, deuda y rentabilidad.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de clientes.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_cuadro_mando</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Resume ventas, margen, rentabilidad, clientes en riesgo y stock/rotacion.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de filas por bloque.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_diagnostico_cambios</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Diagnostica por que cambian ventas o margen entre dos periodos.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Periodo actual desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Periodo actual hasta.</td></tr><tr><td class="param-name">comparar_desde</td><td>string</td><td>no</td><td>Periodo comparativo desde.</td></tr><tr><td class="param-name">comparar_hasta</td><td>string</td><td>no</td><td>Periodo comparativo hasta.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de elementos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_stock_rotacion</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Analiza stock actual, valor inmovilizado, ventas, compras y rotacion.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Fecha inicial.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Fecha final.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_stock_tendencias</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Compara dos periodos de stock/ventas/compras para detectar deterioros.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Periodo actual desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Periodo actual hasta.</td></tr><tr><td class="param-name">comparar_desde</td><td>string</td><td>no</td><td>Periodo comparativo desde.</td></tr><tr><td class="param-name">comparar_hasta</td><td>string</td><td>no</td><td>Periodo comparativo hasta.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de articulos.</td></tr></tbody></table></details>
+      </article>
+
+      <article class="tool-card read">
+        <div class="tool-title">
+          <code>negocio_tendencias</code>
+          <span class="pill read">Consulta</span>
+        </div>
+        <p>Cuadro de mando. LECTURA. Compara ventas y rentabilidad por dimension entre dos periodos.</p>
+        <details><summary>Parametros</summary><table><thead><tr><th>Nombre</th><th>Tipo</th><th>Oblig.</th><th>Descripcion</th></tr></thead><tbody><tr><td class="param-name">empresa</td><td>integer</td><td>no</td><td>Empresa. Por defecto KOFEDAS_EMPRESA o 1.</td></tr><tr><td class="param-name">centro</td><td>integer</td><td>no</td><td>Filtro por centro.</td></tr><tr><td class="param-name">desde</td><td>string</td><td>no</td><td>Periodo actual desde.</td></tr><tr><td class="param-name">hasta</td><td>string</td><td>no</td><td>Periodo actual hasta.</td></tr><tr><td class="param-name">comparar_desde</td><td>string</td><td>no</td><td>Periodo comparativo desde.</td></tr><tr><td class="param-name">comparar_hasta</td><td>string</td><td>no</td><td>Periodo comparativo hasta.</td></tr><tr><td class="param-name">agrupar_por</td><td>string</td><td>no</td><td>articulo, familia, cliente, mes.</td></tr><tr><td class="param-name">limite</td><td>integer</td><td>no</td><td>Maximo de grupos.</td></tr></tbody></table></details>
       </article>
 
                 </div>

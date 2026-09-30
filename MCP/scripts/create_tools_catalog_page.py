@@ -45,6 +45,7 @@ GROUP_LABELS = {
     "descuadre": "Cartera / tesoreria",
     "dashboard": "Dashboard",
     "compras": "Dashboard",
+    "negocio": "Dashboard / negocio",
 }
 
 GROUP_ORDER = [
@@ -66,6 +67,7 @@ GROUP_ORDER = [
     "Cartera",
     "Cartera / tesoreria",
     "Dashboard",
+    "Dashboard / negocio",
 ]
 
 WRITE_HINTS = (
@@ -123,6 +125,7 @@ def group_label(name: str, description: str) -> str:
         "Pedidos/almacen",
         "Cartera",
         "Dashboard ERP",
+        "Cuadro de mando",
         "Ventas/Rentabilidad",
         "Ventas/ANADOC",
         "Stock",
@@ -130,6 +133,7 @@ def group_label(name: str, description: str) -> str:
     }:
         return {
             "Dashboard ERP": "Dashboard",
+            "Cuadro de mando": "Dashboard / negocio",
             "Ventas/Rentabilidad": "Ventas / rentabilidad",
             "Ventas/ANADOC": "Ventas / dashboard",
             "Stock": "Articulos / stock",
