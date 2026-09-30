@@ -10003,14 +10003,17 @@ class KofedasToolRuntime:
 
     def ventas_acciones_recomendadas(self, args: dict[str, Any]) -> dict[str, Any]:
         limit = _positive_limit(args.get("limite"), 20)
-        profitability = self.rentabilidad_articulos_resumen({**args, "orden": "rentabilidad", "limite": limit, "limite_lineas": args.get("limite_lineas") or 2000})
+        scan_limit = max(limit * 5, 100)
+        profitability = self.rentabilidad_articulos_resumen({**args, "orden": "rentabilidad", "limite": scan_limit, "limite_lineas": args.get("limite_lineas") or 5000})
         actions = []
         for item in profitability.get("items", []):
             margin = self._to_float(item.get("margen"), 0)
-            rent = self._to_float(item.get("rentabilidad_pct"), 0)
+            rent = self._to_float(item.get("rentabilidad"), 0)
+            sales_value = self._to_float(item.get("ventas"), 0)
+            cost_value = self._to_float(item.get("coste"), 0)
             if margin < 0 or rent < 0:
                 actions.append(self._dashboard_action("alta", "margen_negativo", "Revisar precio/coste de articulo con margen negativo", "rentabilidad_articulos_resumen", item))
-            elif rent < 10:
+            elif sales_value > 0 and cost_value > 0 and rent < 10:
                 actions.append(self._dashboard_action("media", "margen_bajo", "Revisar condiciones comerciales de articulo con margen bajo", "rentabilidad_articulos_resumen", item))
         return {"acciones": actions[:limit], "total": min(len(actions), limit)}
 
