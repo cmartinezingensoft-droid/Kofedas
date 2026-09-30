@@ -108,6 +108,7 @@ lectura/escritura controlada:
 - `regularizacion_listar`
 - `stock_por_almacen`
 - `stock_a_fecha`
+- `inventario_valorar_articulos`
 - `articulo_regularizar`
 - `trasvase_generar`
 - `recuento_listar`
@@ -185,6 +186,10 @@ inventario. `trasvase_generar` crea salida en tienda origen y entrada espejo en
 destino. `stock_por_almacen` lee existencias actuales por centro y
 `stock_a_fecha` reconstruye el stock historico desde el stock actual
 deshaciendo entradas, ventas y regularizaciones posteriores a la fecha indicada.
+`inventario_valorar_articulos` valora existencias a coste leyendo
+`PARAMETROS.RENTAB` (`PBASE`, `PMEDIO` o `ULTIMO`) como
+`ARTICUL_UB.PRECIO_COSTE_ARTICUL`; tambien permite forzar el modo para
+diagnostico y devuelve detalle por articulo, origen del coste y totales.
 
 El grupo Ventas cubre `CABDOCV` y `DETMOV`, con apoyo de `NUMERA`, `CLIEN`,
 `CLIART`, `CLIFAM`, `CLIACT`, `OFERTAS` y `DETOFER`, segun `CABDOCV_UDM.pas`

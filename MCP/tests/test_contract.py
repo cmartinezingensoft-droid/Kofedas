@@ -8,7 +8,7 @@ from kofedas_mcp import KofedasToolRuntime, tool_definitions
 def test_tool_definitions_are_json_serializable():
     definitions = tool_definitions()
 
-    assert len(definitions) == 104
+    assert len(definitions) == 105
     assert {item["name"] for item in definitions} >= {
         "auxiliar_tablas",
         "auxiliar_listar",
@@ -73,6 +73,7 @@ def test_tool_definitions_are_json_serializable():
         "regularizacion_listar",
         "stock_por_almacen",
         "stock_a_fecha",
+        "inventario_valorar_articulos",
         "articulo_regularizar",
         "trasvase_generar",
         "recuento_listar",

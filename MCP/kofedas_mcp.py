@@ -1744,6 +1744,24 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
         },
         ["articulo"],
     ),
+    "inventario_valorar_articulos": _tool(
+        "inventario_valorar_articulos",
+        "Stock. Valora existencias a coste respetando PARAMETROS.RENTAB: PBASE, PMEDIO o ULTIMO.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Centro; usa -1 para todos. Por defecto KOFEDAS_CENTRO."),
+            "fecha": _string_schema("Fecha YYYY-MM-DD para coste medio/ultimo y stock historico. Por defecto hoy."),
+            "articulo": _string_schema("Codigo exacto de articulo."),
+            "texto": _string_schema("Filtro por codigo o descripcion."),
+            "familia": _string_schema("Filtro por ART_CODFAM."),
+            "subfamilia": _string_schema("Filtro por ART_SUBFAM."),
+            "proveedor": _int_schema("Filtro por ART_CODPRO."),
+            "modo_coste": _string_schema("Opcional. Fuerza PBASE, PMEDIO, ULTIMO, ART_PRECOS, COSTE_MEDIO o ULTIMO_PRECIO."),
+            "solo_con_stock": {"type": "boolean", "description": "Si true, excluye articulos sin stock. Por defecto true."},
+            "incluir_no_inventariables": {"type": "boolean", "description": "Si true, incluye ART_INDINV='N'. Por defecto false."},
+            "limite": _int_schema("Maximo de articulos devueltos."),
+        },
+    ),
     "articulo_regularizar": _tool(
         "articulo_regularizar",
         "Regularizaciones. ESCRITURA. Ajusta el stock actual de un articulo a una cantidad objetivo y graba DETMOVR.",
@@ -1929,6 +1947,7 @@ class KofedasToolRuntime:
             "regularizacion_listar": self.regularizacion_listar,
             "stock_por_almacen": self.stock_por_almacen,
             "stock_a_fecha": self.stock_a_fecha,
+            "inventario_valorar_articulos": self.inventario_valorar_articulos,
             "articulo_regularizar": self.articulo_regularizar,
             "trasvase_generar": self.trasvase_generar,
             "recuento_listar": self.recuento_listar,
@@ -3337,6 +3356,124 @@ class KofedasToolRuntime:
                 (empresa, centro, articulo),
             )
         return self._to_float((row or {}).get("existencias"), 0)
+
+    def _inventory_cost_mode(self, empresa: int, requested: Any = None) -> dict[str, Any]:
+        parameter = str(self._parameter_value("RENTAB", "PBASE", empresa) or "PBASE").strip().upper()
+        raw = str(requested or parameter or "PBASE").strip().upper()
+        aliases = {
+            "PBASE": "PBASE",
+            "PCOSTE": "PBASE",
+            "COSTE": "PBASE",
+            "PRECOST": "PBASE",
+            "PRECIO_COSTE": "PBASE",
+            "ART_PRECOS": "PBASE",
+            "PMEDIO": "PMEDIO",
+            "MEDIO": "PMEDIO",
+            "PRECIO_MEDIO": "PMEDIO",
+            "COSTE_MEDIO": "PMEDIO",
+            "ULTIMO": "ULTIMO",
+            "ULTIMO_PRECIO": "ULTIMO",
+            "ULTIMO_PRECIO_COMPRA": "ULTIMO",
+            "COSTE_ULTIMO": "ULTIMO",
+            "PREBAS": "PREBAS",
+            "BASE": "PREBAS",
+            "PRECIO_BASE": "PREBAS",
+            "ART_PREBAS": "PREBAS",
+        }
+        normalized = aliases.get(raw)
+        if normalized is None:
+            raise KofedasError("modo_coste no valido. Usa PBASE, PMEDIO, ULTIMO o PREBAS")
+        labels = {
+            "PBASE": "Coste ficha articulo (ART_PRECOS)",
+            "PMEDIO": "Precio medio (ARTICULM)",
+            "ULTIMO": "Ultimo precio de compra (DETMOVM)",
+            "PREBAS": "Precio base articulo (ART_PREBAS)",
+        }
+        return {"modo": normalized, "parametro_codigo": "RENTAB", "parametro_valor": parameter, "origen": "argumento" if requested not in (None, "") else "PARAMETROS", "descripcion": labels[normalized]}
+
+    def _article_unit_field_price(self, empresa: int, article: dict[str, Any], field: str) -> float:
+        price = self._to_float(article.get(field.lower()), 0)
+        canpre = self._to_float(article.get("art_canpre"), 0)
+        if canpre > 0:
+            return price / canpre
+        provider = self._to_int(article.get("art_codpro"), 0)
+        if provider:
+            purchase = self.db.one(
+                """
+                SELECT FIRST 1 ARTP_CANCON, ARTP_CANVEN
+                FROM ARTICULP
+                WHERE ARTP_NUMEMP = ? AND ARTP_CODART = ? AND ARTP_CODPRO = ?
+                """,
+                (empresa, article.get("art_codart"), provider),
+            )
+            if purchase:
+                cancon = self._to_float(purchase.get("artp_cancon"), 1) or 1
+                canven = self._to_float(purchase.get("artp_canven"), 1) or 1
+                return price * cancon / canven
+        return price
+
+    def _article_last_purchase_cost(self, empresa: int, articulo: str, query_date: str, fallback: float) -> tuple[float, str]:
+        row = self.db.one(
+            """
+            SELECT FIRST 1 DMM_FECMOV, DMM_CANTID, DMM_VALLIN, DMM_IMPDTO
+            FROM DETMOVM
+            WHERE DMM_NUMEMP = ? AND DMM_CODART = ? AND DMM_FECMOV <= ?
+            ORDER BY DMM_FECMOV DESC
+            """,
+            (empresa, articulo, query_date),
+        )
+        if not row:
+            return fallback, "ART_PRECOS sin entradas anteriores"
+        quantity = self._to_float(row.get("dmm_cantid"), 0) or 1
+        value = self._to_float(row.get("dmm_vallin"), 0) - self._to_float(row.get("dmm_impdto"), 0)
+        return value / quantity, "DETMOVM " + str(row.get("dmm_fecmov") or "")
+
+    def _article_average_cost(self, empresa: int, articulo: str, query_date: str, fallback: float) -> tuple[float, str]:
+        if not self.db.columns("ARTICULM"):
+            return fallback, "ARTICULM no disponible; fallback ART_PRECOS"
+        row = self.db.one(
+            """
+            SELECT FIRST 1 ARTM_COSMED, ARTM_FECFIN
+            FROM ARTICULM
+            WHERE ARTM_NUMEMP = ? AND ARTM_CODART = ? AND ARTM_FECFIN <= ?
+            ORDER BY ARTM_FECFIN DESC
+            """,
+            (empresa, articulo, query_date),
+        )
+        if not row:
+            return self._article_last_purchase_cost(empresa, articulo, query_date, fallback)
+        return self._to_float(row.get("artm_cosmed"), fallback), "ARTICULM " + str(row.get("artm_fecfin") or "")
+
+    def _article_inventory_cost(self, empresa: int, article: dict[str, Any], query_date: str, mode: str) -> dict[str, Any]:
+        fallback = self._article_unit_field_price(empresa, article, "ART_PRECOS")
+        if mode == "PBASE":
+            cost, source = fallback, "ART_PRECOS"
+        elif mode == "PREBAS":
+            cost, source = self._article_unit_field_price(empresa, article, "ART_PREBAS"), "ART_PREBAS"
+        elif mode == "PMEDIO":
+            cost, source = self._article_average_cost(empresa, str(article.get("art_codart") or ""), query_date, fallback)
+        else:
+            cost, source = self._article_last_purchase_cost(empresa, str(article.get("art_codart") or ""), query_date, fallback)
+        return {"coste_unitario": round(cost, 6), "origen_coste": source}
+
+    def _stock_at_date(self, empresa: int, articulo: str, centro: int, query_date: str) -> float:
+        if query_date == date.today().isoformat():
+            return self._stock_current(empresa, articulo, centro)
+        current = self._stock_current(empresa, articulo, centro)
+        if centro == -1:
+            entrada_filter = "DMM_NUMEMP = ? AND DMM_CODART = ? AND DMM_FECMOV >= ?"
+            regular_filter = "DMR_NUMEMP = ? AND DMR_CODART = ? AND DMR_FECMOV >= ?"
+            venta_filter = "DMV_NUMEMP = ? AND DMV_CODART = ? AND DMV_SIGNO = '1' AND DMV_FECMOV >= ?"
+            movement_params = (empresa, articulo, query_date)
+        else:
+            entrada_filter = "DMM_NUMEMP = ? AND DMM_CENTRO = ? AND DMM_CODART = ? AND DMM_FECMOV >= ?"
+            regular_filter = "DMR_NUMEMP = ? AND DMR_CENTRO = ? AND DMR_CODART = ? AND DMR_FECMOV >= ?"
+            venta_filter = "DMV_NUMEMP = ? AND DMV_CENTRO = ? AND DMV_CODART = ? AND DMV_SIGNO = '1' AND DMV_FECMOV >= ?"
+            movement_params = (empresa, centro, articulo, query_date)
+        entradas = self._movement_sum(f"SELECT SUM(DMM_CANTID) AS EXISTENCIAS FROM DETMOVM WHERE {entrada_filter}", movement_params)
+        regularizaciones = self._movement_sum(f"SELECT SUM(DMR_CANTID) AS EXISTENCIAS FROM DETMOVR WHERE {regular_filter}", movement_params)
+        ventas = self._movement_sum(f"SELECT SUM(DMV_CANTID) AS EXISTENCIAS FROM DETMOV WHERE {venta_filter}", movement_params)
+        return current - entradas - regularizaciones + ventas
 
     def _movement_sum(self, sql: str, params: tuple[Any, ...]) -> float:
         row = self.db.one(sql, params)
@@ -7434,6 +7571,94 @@ class KofedasToolRuntime:
             "stock_fecha": round(stock_fecha, 4),
             "inventariable": True,
             "fuente_delphi": "LIBESP_U.UTL_STOCK",
+        }
+
+    def inventario_valorar_articulos(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        centro = int(args.get("centro") if args.get("centro") is not None else self.centro)
+        query_date = self._date_arg(args.get("fecha")) if args.get("fecha") else date.today().isoformat()
+        limit = _positive_limit(args.get("limite"), 100)
+        mode_info = self._inventory_cost_mode(empresa, args.get("modo_coste"))
+        where = ["A.ART_NUMEMP = ?"]
+        join_params: list[Any] = []
+        params: list[Any] = [empresa]
+        join_extra = ""
+        if centro != -1:
+            join_extra = " AND E.ARTE_CENTRO = ?"
+            join_params.append(centro)
+        if args.get("articulo"):
+            where.append("A.ART_CODART = ?")
+            params.append(str(args["articulo"]).strip())
+        if args.get("texto"):
+            where.append("(UPPER(A.ART_CODART) LIKE ? OR UPPER(A.ART_DESCRI) LIKE ?)")
+            like = _like(str(args["texto"]))
+            params.extend([like, like])
+        if args.get("familia"):
+            where.append("A.ART_CODFAM = ?")
+            params.append(str(args["familia"]).strip())
+        if args.get("subfamilia"):
+            where.append("A.ART_SUBFAM = ?")
+            params.append(str(args["subfamilia"]).strip())
+        if args.get("proveedor") is not None:
+            where.append("A.ART_CODPRO = ?")
+            params.append(int(args["proveedor"]))
+        if not args.get("incluir_no_inventariables"):
+            where.append("COALESCE(A.ART_INDINV, 'S') <> 'N'")
+        having = "HAVING COALESCE(SUM(E.ARTE_EXIST), 0) <> 0" if args.get("solo_con_stock", True) else ""
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   A.ART_CODART, A.ART_DESCRI, A.ART_INDINV, A.ART_CODFAM, A.ART_SUBFAM,
+                   A.ART_CODPRO, A.ART_PRECOS, A.ART_PREBAS, A.ART_CANPRE, A.ART_CODMON,
+                   COALESCE(SUM(E.ARTE_EXIST), 0) AS STOCK_ACTUAL
+            FROM ARTICUL A
+            LEFT JOIN ARTICULE E ON E.ARTE_NUMEMP = A.ART_NUMEMP
+                                AND E.ARTE_CODART = A.ART_CODART
+                                {join_extra}
+            WHERE {' AND '.join(where)}
+            GROUP BY A.ART_CODART, A.ART_DESCRI, A.ART_INDINV, A.ART_CODFAM, A.ART_SUBFAM,
+                     A.ART_CODPRO, A.ART_PRECOS, A.ART_PREBAS, A.ART_CANPRE, A.ART_CODMON
+            {having}
+            ORDER BY A.ART_DESCRI, A.ART_CODART
+            """,
+            tuple(join_params + params),
+            limit,
+        )
+        items: list[dict[str, Any]] = []
+        total_stock = 0.0
+        total_value = 0.0
+        for row in rows:
+            articulo = str(row.get("art_codart") or "")
+            stock = self._to_float(row.get("stock_actual"), 0)
+            if query_date != date.today().isoformat():
+                stock = self._stock_at_date(empresa, articulo, centro, query_date)
+            if args.get("solo_con_stock", True) and stock == 0:
+                continue
+            cost = self._article_inventory_cost(empresa, row, query_date, str(mode_info["modo"]))
+            value = stock * self._to_float(cost["coste_unitario"], 0)
+            total_stock += stock
+            total_value += value
+            items.append({
+                "articulo": articulo,
+                "descripcion": row.get("art_descri"),
+                "familia": row.get("art_codfam"),
+                "subfamilia": row.get("art_subfam"),
+                "proveedor": row.get("art_codpro"),
+                "inventariable": str(row.get("art_indinv") or "S").upper() != "N",
+                "stock": round(stock, 4),
+                "coste_unitario": cost["coste_unitario"],
+                "valor_coste": round(value, 2),
+                "origen_coste": cost["origen_coste"],
+            })
+        return {
+            "empresa": empresa,
+            "centro": centro,
+            "fecha": query_date,
+            "modo_coste": mode_info,
+            "total_articulos": len(items),
+            "totales": {"stock": round(total_stock, 4), "valor_coste": round(total_value, 2)},
+            "items": items,
+            "fuente_delphi": "ARTICUL_UB.PRECIO_COSTE_ARTICUL + PARAMETROS.RENTAB",
         }
 
     def articulo_regularizar(self, args: dict[str, Any]) -> dict[str, Any]:
