@@ -1651,6 +1651,255 @@ PUBLIC_TOOL_DEFINITIONS: dict[str, dict[str, Any]] = {
         },
         ["cliente", "lineas"],
     ),
+    "pedido_crear": _tool(
+        "pedido_crear",
+        "Pedidos. ESCRITURA. Crea un pedido de cliente con sus lineas y valoracion comercial; alias compatible con Kronos sobre CABDOCV/DETMOV.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Centro. Por defecto KOFEDAS_CENTRO o 0."),
+            "ejercicio": _int_schema("Ejercicio. Por defecto año de fecha."),
+            "serie": _string_schema("Serie. Por defecto CLIENI SERIE, parametro P<centro>/P o PM."),
+            "numero": _int_schema("Numero. 0/omitido calcula desde NUMERA."),
+            "cliente": _int_schema("Cliente. Tambien acepta codcli."),
+            "codcli": _int_schema("Alias Kronos de cliente."),
+            "subcliente": _int_schema("Subcliente. Tambien acepta subcli. Por defecto 0."),
+            "subcli": _int_schema("Alias Kronos de subcliente."),
+            "fecha": _string_schema("Fecha documento. Por defecto hoy."),
+            "fecha_entrega": _string_schema("Fecha entrega. Por defecto fecha."),
+            "observaciones": _string_schema("Observaciones de cabecera."),
+            "referencia_cliente": _string_schema("Referencia del cliente."),
+            "retira": _string_schema("Persona o texto de retirada."),
+            "lineas": {"type": "array", "description": "Lineas estructuradas. Si se omite y se informa texto, intenta parsear lineas JSON.", "items": {"type": "object"}},
+            "texto": _string_schema("Compatibilidad Kronos: JSON con lineas o texto informativo."),
+            "simular": {"type": "boolean", "description": "Si true, devuelve el plan sin escribir."},
+        },
+        [],
+    ),
+    "pedido_listar": _tool(
+        "pedido_listar",
+        "Pedidos. Lista pedidos y presupuestos de cliente desde CABDOCV, filtrando por cliente, estado, fecha, articulo o documento.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Filtro por centro. Por defecto KOFEDAS_CENTRO si no se indica cliente."),
+            "tipo_documento": _string_schema("P pedido, R presupuesto, S cerrado/historico. Por defecto P,R."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto todos."),
+            "ejercicio": _int_schema("Filtro por ejercicio."),
+            "serie": _string_schema("Filtro por serie."),
+            "numero": _int_schema("Filtro por numero."),
+            "cliente": _int_schema("Filtro por cliente. Tambien acepta codcli."),
+            "codcli": _int_schema("Alias Kronos de cliente."),
+            "subcliente": _int_schema("Filtro por subcliente. Tambien acepta subcli."),
+            "subcli": _int_schema("Alias Kronos de subcliente."),
+            "estado": _string_schema("Filtro CBV_SITUAC."),
+            "desde": _string_schema("Fecha desde."),
+            "hasta": _string_schema("Fecha hasta."),
+            "articulo": _string_schema("Filtro por articulo incluido."),
+            "texto": _string_schema("Filtro por cliente, referencia u observaciones."),
+            "limite": _int_schema("Maximo de filas."),
+        },
+    ),
+    "pedido_detalle": _tool(
+        "pedido_detalle",
+        "Pedidos. Devuelve cabecera y lineas de un pedido; modo preparacion incluye cantidades pendientes/preparadas cuando existen.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "modo": _string_schema("normal o preparacion."),
+        },
+        ["serie"],
+    ),
+    "pedido_cerrar": _tool(
+        "pedido_cerrar",
+        "Pedidos. ESCRITURA. Cierra un pedido/presupuesto de cliente marcandolo como historico S y cerrando sus lineas.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("P pedido o R presupuesto. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["serie"],
+    ),
+    "pedido_situacion_actualizar": _tool(
+        "pedido_situacion_actualizar",
+        "Pedidos. ESCRITURA. Actualiza CBV_SITUAC de un pedido.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "situacion": _string_schema("Nuevo valor CBV_SITUAC. Tambien acepta situac."),
+            "situac": _string_schema("Alias Kronos de situacion."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["serie"],
+    ),
+    "pedido_retirada_actualizar": _tool(
+        "pedido_retirada_actualizar",
+        "Pedidos. ESCRITURA. Actualiza datos de retirada y referencia de cliente de un pedido.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "retirado": _string_schema("Texto de retirada para CBV_RETIRA."),
+            "retira": _string_schema("Alias de retirado."),
+            "referencia": _string_schema("Referencia cliente para CBV_REFCLI."),
+            "referencia_cliente": _string_schema("Alias de referencia."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["serie"],
+    ),
+    "pedido_albaranar": _tool(
+        "pedido_albaranar",
+        "Pedidos. ESCRITURA. Crea un albaran desde un pedido usando sus lineas pendientes o las cantidades indicadas.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("Centro del pedido. Por defecto KOFEDAS_CENTRO o 0."),
+            "ejercicio": _int_schema("Ejercicio pedido. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("Serie pedido."),
+            "numero": _int_schema("Numero pedido. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "tipo_accion": _string_schema("CBV_TIPAC pedido. Por defecto 0."),
+            "serie_albaran": _string_schema("Serie del albaran. Por defecto parametros A<centro>/A."),
+            "fecha": _string_schema("Fecha del albaran. Por defecto hoy."),
+            "lineas": {"type": "array", "description": "Opcional: {linea,cantidad}. Si se omite usa cantidades pendientes/cantidad del pedido.", "items": {"type": "object"}},
+            "cerrar_pedido": {"type": "boolean", "description": "Si true, cierra el pedido tras crear el albaran."},
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, devuelve el plan sin escribir."},
+        },
+        ["serie"],
+    ),
+    "pedido_marcar_preparado": _tool(
+        "pedido_marcar_preparado",
+        "Pedidos/almacen. ESCRITURA. Marca cantidades preparadas en lineas de pedido cuando existen campos de preparacion; si no, actualiza la situacion de cabecera.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "lineas": {"type": "array", "description": "Opcional: {linea,cantidad_preparada}.", "items": {"type": "object"}},
+            "situacion": _string_schema("Situacion de cabecera a dejar. Por defecto P."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["serie"],
+    ),
+    "pedido_finalizar": _tool(
+        "pedido_finalizar",
+        "Pedidos. ESCRITURA. Finaliza/revisa la preparacion de un pedido y opcionalmente cambia su situacion.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "situacion": _string_schema("Situacion final opcional. Por defecto no cambia."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve diagnostico."},
+        },
+        ["serie"],
+    ),
+    "pedido_linea_mover": _tool(
+        "pedido_linea_mover",
+        "Pedidos/almacen. ESCRITURA. Mueve una linea de pedido entre zonas de preparacion si DETMOV dispone de campos de zona.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "linea": _int_schema("DMV_NUMLIN."),
+            "zona_destino": _int_schema("Zona destino."),
+            "zona_origen": _int_schema("Zona origen opcional."),
+            "usuario": _string_schema("Usuario de modificacion."),
+            "simular": {"type": "boolean", "description": "Si true, no escribe y devuelve el plan."},
+        },
+        ["serie", "linea", "zona_destino"],
+    ),
+    "pedido_pdf_gestion": _tool(
+        "pedido_pdf_gestion",
+        "Pedidos. Genera o recupera una representacion HTML/Base64 del pedido para integraciones sin depender del motor de informes Delphi.",
+        {
+            "accion": _string_schema("generar u obtener. Ambas devuelven contenido HTML en Base64."),
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+        },
+        ["accion", "serie"],
+    ),
+    "pedido_enviar": _tool(
+        "pedido_enviar",
+        "Pedidos. Prepara el envio por email de un pedido devolviendo asunto, destinatario sugerido y HTML/Base64; no envia correo directamente.",
+        {
+            "empresa": _int_schema("Empresa. Por defecto KOFEDAS_EMPRESA o 1."),
+            "centro": _int_schema("CBV_CENTRO. Por defecto KOFEDAS_CENTRO o 0."),
+            "tipo_documento": _string_schema("CBV_TIPDOC. Tambien acepta tipdoc. Por defecto P."),
+            "tipdoc": _string_schema("Alias Kronos de tipo_documento."),
+            "tipo_accion": _string_schema("CBV_TIPAC. Por defecto 0."),
+            "ejercicio": _int_schema("CBV_EJERCI. Tambien acepta ejerci."),
+            "ejerci": _int_schema("Alias Kronos de ejercicio."),
+            "serie": _string_schema("CBV_SERIE."),
+            "numero": _int_schema("CBV_NUMDOC. Tambien acepta numdoc."),
+            "numdoc": _int_schema("Alias Kronos de numero."),
+            "email": _string_schema("Destinatario. Si se omite, intenta usar el email del cliente."),
+            "asunto": _string_schema("Asunto del mensaje."),
+        },
+        ["serie"],
+    ),
     "cartera_tablas": _tool(
         "cartera_tablas",
         "Cartera. Describe CABDOCVE y tablas relacionadas para deuda, vencimientos y remesas.",
@@ -2047,6 +2296,18 @@ class KofedasToolRuntime:
             "venta_documento_alta_preparar": self.venta_documento_alta_preparar,
             "venta_documento_alta": self.venta_documento_alta,
             "venta_pedido_alta": self.venta_pedido_alta,
+            "pedido_crear": self.pedido_crear,
+            "pedido_listar": self.pedido_listar,
+            "pedido_detalle": self.pedido_detalle,
+            "pedido_cerrar": self.pedido_cerrar,
+            "pedido_situacion_actualizar": self.pedido_situacion_actualizar,
+            "pedido_retirada_actualizar": self.pedido_retirada_actualizar,
+            "pedido_albaranar": self.pedido_albaranar,
+            "pedido_marcar_preparado": self.pedido_marcar_preparado,
+            "pedido_finalizar": self.pedido_finalizar,
+            "pedido_linea_mover": self.pedido_linea_mover,
+            "pedido_pdf_gestion": self.pedido_pdf_gestion,
+            "pedido_enviar": self.pedido_enviar,
             "cartera_tablas": self.cartera_tablas,
             "cartera_efectos_detalle": self.cartera_efectos_detalle,
             "cartera_deuda_cliente": self.cartera_deuda_cliente,
@@ -4326,6 +4587,155 @@ class KofedasToolRuntime:
         return (
             "INSERT INTO NUMERA (NUM_NUMEMP, NUM_CENTRO, NUM_TIPAC, NUM_TIPDOC, NUM_EJERCI, NUM_SERIE, NUM_NUMERO) VALUES (?, ?, ?, ?, ?, ?, ?)",
             (*key, header["CBV_NUMDOC"]),
+        )
+
+    def _pedido_key(self, args: dict[str, Any], default_tipdoc: str = "P") -> dict[str, Any]:
+        tipdoc = self._sale_document_type(args.get("tipo_documento", args.get("tipdoc")), default_tipdoc)
+        return {
+            "empresa": self._empresa(args),
+            "centro": self._centro(args),
+            "tipdoc": tipdoc,
+            "tipac": str(args.get("tipo_accion") or args.get("tipac") or "0").strip()[:1] or "0",
+            "ejercicio": self._to_int(args.get("ejercicio", args.get("ejerci")), 0),
+            "serie": str(args.get("serie") or "").strip()[:2],
+            "numero": self._to_int(args.get("numero", args.get("numdoc")), 0),
+        }
+
+    def _pedido_where_from_key(self, key: dict[str, Any], alias: str = "C") -> tuple[str, tuple[Any, ...]]:
+        missing = [name for name in ("ejercicio", "serie", "numero") if key.get(name) in (None, "", 0)]
+        if missing:
+            raise KofedasError("Faltan claves de pedido: " + ", ".join(missing))
+        prefix = alias + "." if alias else ""
+        return (
+            f"{prefix}CBV_NUMEMP = ? AND {prefix}CBV_CENTRO = ? AND {prefix}CBV_TIPDOC = ? "
+            f"AND {prefix}CBV_TIPAC = ? AND {prefix}CBV_EJERCI = ? AND {prefix}CBV_SERIE = ? AND {prefix}CBV_NUMDOC = ?",
+            (key["empresa"], key["centro"], key["tipdoc"], key["tipac"], key["ejercicio"], key["serie"], key["numero"]),
+        )
+
+    def _pedido_header(self, key: dict[str, Any]) -> dict[str, Any]:
+        where, params = self._pedido_where_from_key(key)
+        row = self.db.one(
+            f"""
+            SELECT FIRST 1 C.*, CL.CLI_EMAIL, CL.CLI_NOMCLI, CL.CLI_RAZSOC
+            FROM CABDOCV C
+            LEFT JOIN CLIEN CL ON CL.CLI_NUMEMP = C.CBV_NUMEMP
+                              AND CL.CLI_CODCLI = C.CBV_CODCLI
+                              AND CL.CLI_SUBCLI = C.CBV_SUBCLI
+            WHERE {where}
+            """,
+            params,
+        )
+        if row is None:
+            raise KofedasError("Pedido no encontrado")
+        return row
+
+    def _pedido_lines(self, key: dict[str, Any]) -> list[dict[str, Any]]:
+        return self.db.query(
+            """
+            SELECT D.*
+            FROM DETMOV D
+            WHERE D.DMV_NUMEMP = ? AND D.DMV_CENTRO = ? AND D.DMV_TIPDOC = ?
+              AND D.DMV_TIPAC = ? AND D.DMV_EJERCI = ? AND D.DMV_SERIE = ? AND D.DMV_NUMDOC = ?
+            ORDER BY D.DMV_NUMLIN
+            """,
+            (key["empresa"], key["centro"], key["tipdoc"], key["tipac"], key["ejercicio"], key["serie"], key["numero"]),
+            MAX_ROWS_LIMIT,
+        )
+
+    def _pedido_document_result(self, key: dict[str, Any], modo: str = "normal") -> dict[str, Any]:
+        header = self._pedido_header(key)
+        lines = self._pedido_lines(key)
+        items: list[dict[str, Any]] = []
+        total_quantity = 0.0
+        total_prepared = 0.0
+        line_columns = set(lines[0].keys()) if lines else set()
+        prepared_field = next((field for field in ("dmv_canprea", "dmv_canpre", "dmv_canser", "dmv_canpreparada") if field in line_columns), None)
+        pending_field = next((field for field in ("dmv_canpen", "dmv_canpte", "dmv_pendie") if field in line_columns), None)
+        zone_field = next((field for field in ("dmv_zona", "dmv_zonpre", "dmv_zonprep") if field in line_columns), None)
+        for row in lines:
+            qty = self._to_float(row.get("dmv_cantid"), 0)
+            prepared = self._to_float(row.get(prepared_field), 0) if prepared_field else 0.0
+            pending = self._to_float(row.get(pending_field), max(qty - prepared, 0)) if pending_field else max(qty - prepared, 0)
+            total_quantity += qty
+            total_prepared += prepared
+            item = {
+                "linea": row.get("dmv_numlin"),
+                "tipo_linea": row.get("dmv_tiplin"),
+                "articulo": row.get("dmv_codart"),
+                "descripcion": row.get("dmv_descri"),
+                "cantidad": qty,
+                "cantidad_preparada": prepared,
+                "cantidad_pendiente": pending,
+                "unidad": row.get("dmv_unimed"),
+                "precio": row.get("dmv_preven"),
+                "dto1": row.get("dmv_dto1"),
+                "dto2": row.get("dmv_dto2"),
+                "base": row.get("dmv_vallins"),
+                "total": row.get("dmv_vallin"),
+            }
+            if zone_field:
+                item["zona"] = row.get(zone_field)
+            if modo == "normal":
+                item["raw"] = row
+            items.append(item)
+        return {
+            "modo": modo,
+            "cabecera": header,
+            "lineas": items,
+            "totales_preparacion": {
+                "lineas": len(items),
+                "cantidad": round(total_quantity, 4),
+                "cantidad_preparada": round(total_prepared, 4),
+                "cantidad_pendiente": round(max(total_quantity - total_prepared, 0), 4),
+            },
+        }
+
+    def _pedido_update_statement(
+        self,
+        table: str,
+        updates: dict[str, Any],
+        where: str,
+        params: tuple[Any, ...],
+    ) -> tuple[str, tuple[Any, ...]] | None:
+        columns = set(self._table_columns(table))
+        applied = {column: value for column, value in updates.items() if column in columns}
+        if not applied:
+            return None
+        sql = f"UPDATE {table} SET " + ", ".join(f"{column}=?" for column in applied) + f" WHERE {where}"
+        return sql, tuple(applied.values()) + params
+
+    def _pedido_html(self, key: dict[str, Any]) -> str:
+        detail = self._pedido_document_result(key, "preparacion")
+        header = detail["cabecera"]
+        lines_html = []
+        for line in detail["lineas"]:
+            lines_html.append(
+                "<tr>"
+                f"<td>{line.get('linea') or ''}</td>"
+                f"<td>{line.get('articulo') or ''}</td>"
+                f"<td>{line.get('descripcion') or ''}</td>"
+                f"<td style=\"text-align:right\">{line.get('cantidad') or 0}</td>"
+                f"<td style=\"text-align:right\">{line.get('precio') or 0}</td>"
+                f"<td style=\"text-align:right\">{line.get('base') or 0}</td>"
+                "</tr>"
+            )
+        title = f"Pedido {key['ejercicio']}/{key['serie']}/{key['numero']}"
+        return (
+            "<!doctype html><html><head><meta charset=\"utf-8\">"
+            f"<title>{title}</title>"
+            "<style>body{font-family:Arial,sans-serif;margin:32px;color:#1f2937}"
+            "table{width:100%;border-collapse:collapse;margin-top:24px}"
+            "th,td{border-bottom:1px solid #d1d5db;padding:8px;text-align:left}"
+            "th{background:#f3f4f6}</style></head><body>"
+            f"<h1>{title}</h1>"
+            f"<p><strong>Cliente:</strong> {header.get('cbv_codcli')}/{header.get('cbv_subcli')} "
+            f"{header.get('cbv_nomcli') or header.get('cli_razsoc') or header.get('cli_nomcli') or ''}</p>"
+            f"<p><strong>Fecha:</strong> {header.get('cbv_fecha') or ''} "
+            f"<strong>Total:</strong> {header.get('cbv_totald') or 0}</p>"
+            "<table><thead><tr><th>Linea</th><th>Articulo</th><th>Descripcion</th>"
+            "<th>Cantidad</th><th>Precio</th><th>Base</th></tr></thead><tbody>"
+            + "".join(lines_html)
+            + "</tbody></table></body></html>"
         )
 
     def _cartera_effect_type_label(self, value: Any) -> str:
@@ -7871,6 +8281,357 @@ class KofedasToolRuntime:
         payload["tipo_documento"] = "P"
         payload["tipo_accion"] = payload.get("tipo_accion") or "0"
         return self.venta_documento_alta(payload)
+
+    def pedido_crear(self, args: dict[str, Any]) -> dict[str, Any]:
+        payload = dict(args)
+        if payload.get("cliente") in (None, "") and payload.get("codcli") not in (None, ""):
+            payload["cliente"] = payload["codcli"]
+        if payload.get("subcliente") in (None, "") and payload.get("subcli") not in (None, ""):
+            payload["subcliente"] = payload["subcli"]
+        if not payload.get("lineas") and payload.get("texto"):
+            try:
+                parsed = json.loads(str(payload["texto"]))
+                if isinstance(parsed, list):
+                    payload["lineas"] = parsed
+                elif isinstance(parsed, dict) and isinstance(parsed.get("lineas"), list):
+                    payload.update({key: value for key, value in parsed.items() if key not in payload or payload.get(key) in (None, "")})
+            except json.JSONDecodeError:
+                pass
+        if not payload.get("lineas"):
+            raise KofedasError("pedido_crear necesita lineas estructuradas o texto JSON con lineas")
+        return self.venta_pedido_alta(payload)
+
+    def pedido_listar(self, args: dict[str, Any]) -> dict[str, Any]:
+        empresa = self._empresa(args)
+        limit = _positive_limit(args.get("limite"), 100)
+        where = ["C.CBV_NUMEMP = ?"]
+        params: list[Any] = [empresa]
+        if args.get("centro") not in (None, ""):
+            where.append("C.CBV_CENTRO = ?")
+            params.append(self._to_int(args.get("centro"), self.centro))
+        elif args.get("cliente", args.get("codcli")) in (None, ""):
+            where.append("C.CBV_CENTRO = ?")
+            params.append(self.centro)
+        raw_tipdoc = args.get("tipo_documento", args.get("tipdoc"))
+        if raw_tipdoc not in (None, ""):
+            tipdocs = [self._sale_document_type(part, "P") for part in re.split(r"[,; ]+", str(raw_tipdoc)) if part.strip()]
+        else:
+            tipdocs = ["P", "R"]
+        where.append("C.CBV_TIPDOC IN (" + ", ".join("?" for _ in tipdocs) + ")")
+        params.extend(tipdocs)
+        if args.get("tipo_accion", args.get("tipac")) not in (None, ""):
+            where.append("C.CBV_TIPAC = ?")
+            params.append(str(args.get("tipo_accion", args.get("tipac"))).strip()[:1])
+        for arg_name, column in (("ejercicio", "C.CBV_EJERCI"), ("numero", "C.CBV_NUMDOC")):
+            if args.get(arg_name) not in (None, ""):
+                where.append(f"{column} = ?")
+                params.append(self._to_int(args.get(arg_name), 0))
+        if args.get("ejerci") not in (None, "") and args.get("ejercicio") in (None, ""):
+            where.append("C.CBV_EJERCI = ?")
+            params.append(self._to_int(args.get("ejerci"), 0))
+        if args.get("numdoc") not in (None, "") and args.get("numero") in (None, ""):
+            where.append("C.CBV_NUMDOC = ?")
+            params.append(self._to_int(args.get("numdoc"), 0))
+        if args.get("serie") not in (None, ""):
+            where.append("C.CBV_SERIE = ?")
+            params.append(str(args.get("serie")).strip()[:2])
+        cliente = args.get("cliente", args.get("codcli"))
+        subcliente = args.get("subcliente", args.get("subcli"))
+        if cliente not in (None, ""):
+            where.append("C.CBV_CODCLI = ?")
+            params.append(self._to_int(cliente, 0))
+        if subcliente not in (None, ""):
+            where.append("C.CBV_SUBCLI = ?")
+            params.append(self._to_int(subcliente, 0))
+        if args.get("estado") not in (None, ""):
+            where.append("C.CBV_SITUAC = ?")
+            params.append(str(args.get("estado")).strip().upper()[:1])
+        if args.get("desde"):
+            where.append("C.CBV_FECHA >= ?")
+            params.append(self._date_arg(args.get("desde")))
+        if args.get("hasta"):
+            where.append("C.CBV_FECHA <= ?")
+            params.append(self._date_arg(args.get("hasta")))
+        if args.get("articulo"):
+            where.append(
+                """EXISTS (
+                    SELECT 1 FROM DETMOV D
+                    WHERE D.DMV_NUMEMP = C.CBV_NUMEMP AND D.DMV_CENTRO = C.CBV_CENTRO
+                      AND D.DMV_TIPDOC = C.CBV_TIPDOC AND D.DMV_TIPAC = C.CBV_TIPAC
+                      AND D.DMV_EJERCI = C.CBV_EJERCI AND D.DMV_SERIE = C.CBV_SERIE
+                      AND D.DMV_NUMDOC = C.CBV_NUMDOC AND D.DMV_CODART = ?
+                )"""
+            )
+            params.append(str(args.get("articulo")).strip())
+        if args.get("texto"):
+            pattern = _like(str(args.get("texto")))
+            where.append("(UPPER(C.CBV_NOMCLI) LIKE ? OR UPPER(C.CBV_REFCLI) LIKE ? OR UPPER(C.CBV_OBSERV) LIKE ?)")
+            params.extend([pattern, pattern, pattern])
+        rows = self.db.query(
+            f"""
+            SELECT FIRST {limit}
+                   C.CBV_NUMEMP, C.CBV_CENTRO, C.CBV_TIPDOC, C.CBV_TIPAC, C.CBV_EJERCI,
+                   C.CBV_SERIE, C.CBV_NUMDOC, C.CBV_FECHA, C.CBV_FECHAE, C.CBV_CODCLI,
+                   C.CBV_SUBCLI, C.CBV_NOMCLI, C.CBV_REFCLI, C.CBV_RETIRA, C.CBV_SITUAC,
+                   C.CBV_TOTALS, C.CBV_TOTALD, C.CBV_IMPCOB, C.CBV_OBSERV,
+                   COUNT(D.DMV_NUMLIN) AS LINEAS,
+                   SUM(COALESCE(D.DMV_CANTID,0)) AS CANTIDAD
+            FROM CABDOCV C
+            LEFT JOIN DETMOV D ON D.DMV_NUMEMP = C.CBV_NUMEMP AND D.DMV_CENTRO = C.CBV_CENTRO
+                              AND D.DMV_TIPDOC = C.CBV_TIPDOC AND D.DMV_TIPAC = C.CBV_TIPAC
+                              AND D.DMV_EJERCI = C.CBV_EJERCI AND D.DMV_SERIE = C.CBV_SERIE
+                              AND D.DMV_NUMDOC = C.CBV_NUMDOC
+            WHERE {' AND '.join(where)}
+            GROUP BY C.CBV_NUMEMP, C.CBV_CENTRO, C.CBV_TIPDOC, C.CBV_TIPAC, C.CBV_EJERCI,
+                     C.CBV_SERIE, C.CBV_NUMDOC, C.CBV_FECHA, C.CBV_FECHAE, C.CBV_CODCLI,
+                     C.CBV_SUBCLI, C.CBV_NOMCLI, C.CBV_REFCLI, C.CBV_RETIRA, C.CBV_SITUAC,
+                     C.CBV_TOTALS, C.CBV_TOTALD, C.CBV_IMPCOB, C.CBV_OBSERV
+            ORDER BY C.CBV_FECHA DESC, C.CBV_EJERCI DESC, C.CBV_SERIE, C.CBV_NUMDOC DESC
+            """,
+            tuple(params),
+            limit,
+        )
+        return {"total": len(rows), "items": rows}
+
+    def pedido_detalle(self, args: dict[str, Any]) -> dict[str, Any]:
+        key = self._pedido_key(args)
+        modo = str(args.get("modo") or "normal").strip().lower()
+        if modo not in {"normal", "preparacion"}:
+            raise KofedasError("modo debe ser normal o preparacion")
+        return self._pedido_document_result(key, modo)
+
+    def pedido_situacion_actualizar(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        situation = str(args.get("situacion", args.get("situac")) or "").strip().upper()[:1]
+        if not situation:
+            raise KofedasError("Debe informar situacion")
+        where, params = self._pedido_where_from_key(key, "")
+        updates = {
+            "CBV_SITUAC": situation,
+            "CBV_FECMOD": datetime.now().replace(microsecond=0).isoformat(sep=" "),
+            "CBV_USUMOD": str(args.get("usuario") or f"{key['centro']} MCP")[:10],
+        }
+        statement = self._pedido_update_statement("CABDOCV", updates, where, params)
+        if not statement:
+            raise KofedasError("CABDOCV no contiene campos actualizables de situacion")
+        if args.get("simular"):
+            return {"simulado": True, "pedido": key, "situacion": situation, "sentencias": [statement[0]]}
+        count = self.db.execute(statement[0], statement[1])
+        return {"simulado": False, "pedido": key, "situacion": situation, "filas_afectadas": count}
+
+    def pedido_retirada_actualizar(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        where, params = self._pedido_where_from_key(key, "")
+        updates = {
+            "CBV_RETIRA": str(args.get("retirado", args.get("retira")) or "")[:40],
+            "CBV_REFCLI": str(args.get("referencia", args.get("referencia_cliente")) or "")[:20],
+            "CBV_FECMOD": datetime.now().replace(microsecond=0).isoformat(sep=" "),
+            "CBV_USUMOD": str(args.get("usuario") or f"{key['centro']} MCP")[:10],
+        }
+        statement = self._pedido_update_statement("CABDOCV", updates, where, params)
+        if not statement:
+            raise KofedasError("CABDOCV no contiene campos actualizables de retirada")
+        if args.get("simular"):
+            return {"simulado": True, "pedido": key, "retira": updates["CBV_RETIRA"], "referencia": updates["CBV_REFCLI"], "sentencias": [statement[0]]}
+        count = self.db.execute(statement[0], statement[1])
+        return {"simulado": False, "pedido": key, "retira": updates["CBV_RETIRA"], "referencia": updates["CBV_REFCLI"], "filas_afectadas": count}
+
+    def pedido_cerrar(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        if key["tipdoc"] not in {"P", "R"}:
+            raise KofedasError("pedido_cerrar solo puede cerrar pedidos (P) o presupuestos (R)")
+        self._pedido_header(key)
+        closed_key = {**key, "tipdoc": "S"}
+        if self._sale_document_exists(closed_key["empresa"], closed_key["centro"], closed_key["tipdoc"], closed_key["tipac"], closed_key["ejercicio"], closed_key["serie"], closed_key["numero"]):
+            raise KofedasError("Ya existe un documento historico S con las mismas claves")
+        now = datetime.now().replace(microsecond=0).isoformat(sep=" ")
+        user = str(args.get("usuario") or f"{key['centro']} MCP")[:10]
+        where_h, params_h = self._pedido_where_from_key(key, "")
+        statements: list[tuple[str, tuple[Any, ...]]] = [
+            ("UPDATE CABDOCV SET CBV_TIPDOC = 'S', CBV_SITUAC = 'C', CBV_FECMOD = ?, CBV_USUMOD = ? WHERE " + where_h, (now, user, *params_h)),
+            (
+                """
+                UPDATE DETMOV SET DMV_TIPDOC = 'S'
+                WHERE DMV_NUMEMP = ? AND DMV_CENTRO = ? AND DMV_TIPDOC = ? AND DMV_TIPAC = ?
+                  AND DMV_EJERCI = ? AND DMV_SERIE = ? AND DMV_NUMDOC = ?
+                """,
+                (key["empresa"], key["centro"], key["tipdoc"], key["tipac"], key["ejercicio"], key["serie"], key["numero"]),
+            ),
+        ]
+        if args.get("simular"):
+            return {"simulado": True, "pedido": key, "pedido_historico": closed_key, "sentencias": [sql for sql, _ in statements]}
+        counts = self.db.execute_transaction(statements)
+        return {"simulado": False, "pedido": key, "pedido_historico": closed_key, "filas_afectadas": counts}
+
+    def pedido_marcar_preparado(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        self._pedido_header(key)
+        columns = set(self._table_columns("DETMOV"))
+        prepared_column = next((column for column in ("DMV_CANPREA", "DMV_CANPRE", "DMV_CANSER", "DMV_CANPREPARADA") if column in columns), None)
+        statements: list[tuple[str, tuple[Any, ...]]] = []
+        raw_lines = args.get("lineas") or []
+        if prepared_column and raw_lines:
+            for item in raw_lines:
+                if not isinstance(item, dict):
+                    continue
+                line_number = self._to_int(item.get("linea", item.get("numlin")), 0)
+                if not line_number:
+                    continue
+                quantity = self._to_float(item.get("cantidad_preparada", item.get("cantidad", item.get("cantid"))), 0)
+                statements.append((
+                    f"""
+                    UPDATE DETMOV SET {prepared_column} = ?
+                    WHERE DMV_NUMEMP = ? AND DMV_CENTRO = ? AND DMV_TIPDOC = ? AND DMV_TIPAC = ?
+                      AND DMV_EJERCI = ? AND DMV_SERIE = ? AND DMV_NUMDOC = ? AND DMV_NUMLIN = ?
+                    """,
+                    (quantity, key["empresa"], key["centro"], key["tipdoc"], key["tipac"], key["ejercicio"], key["serie"], key["numero"], line_number),
+                ))
+        situation = str(args.get("situacion") or "P").strip().upper()[:1]
+        where_h, params_h = self._pedido_where_from_key(key, "")
+        header_statement = self._pedido_update_statement(
+            "CABDOCV",
+            {
+                "CBV_SITUAC": situation,
+                "CBV_FECMOD": datetime.now().replace(microsecond=0).isoformat(sep=" "),
+                "CBV_USUMOD": str(args.get("usuario") or f"{key['centro']} MCP")[:10],
+            },
+            where_h,
+            params_h,
+        )
+        if header_statement:
+            statements.append(header_statement)
+        if args.get("simular"):
+            return {"simulado": True, "pedido": key, "campo_preparacion": prepared_column, "sentencias": [sql for sql, _ in statements]}
+        counts = self.db.execute_transaction(statements) if statements else []
+        return {"simulado": False, "pedido": key, "campo_preparacion": prepared_column, "filas_afectadas": counts}
+
+    def pedido_finalizar(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        detail = self._pedido_document_result(key, "preparacion")
+        situation = str(args.get("situacion") or "").strip().upper()[:1]
+        if not situation:
+            return {"simulado": bool(args.get("simular")), "pedido": key, "diagnostico": detail["totales_preparacion"], "detalle": detail}
+        result = self.pedido_situacion_actualizar({**args, "situacion": situation})
+        return {"pedido": key, "diagnostico": detail["totales_preparacion"], "actualizacion": result}
+
+    def pedido_linea_mover(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        key = self._pedido_key(args)
+        line_number = self._to_int(args.get("linea", args.get("numlin")), 0)
+        if not line_number:
+            raise KofedasError("Debe informar linea")
+        columns = set(self._table_columns("DETMOV"))
+        zone_column = next((column for column in ("DMV_ZONA", "DMV_ZONPRE", "DMV_ZONPREP") if column in columns), None)
+        if not zone_column:
+            raise KofedasError("DETMOV no tiene campos de zona de preparacion conocidos")
+        params: tuple[Any, ...] = (
+            self._to_int(args.get("zona_destino"), 0),
+            key["empresa"], key["centro"], key["tipdoc"], key["tipac"], key["ejercicio"], key["serie"], key["numero"], line_number,
+        )
+        sql = (
+            f"UPDATE DETMOV SET {zone_column} = ? "
+            "WHERE DMV_NUMEMP = ? AND DMV_CENTRO = ? AND DMV_TIPDOC = ? AND DMV_TIPAC = ? "
+            "AND DMV_EJERCI = ? AND DMV_SERIE = ? AND DMV_NUMDOC = ? AND DMV_NUMLIN = ?"
+        )
+        if args.get("zona_origen") not in (None, ""):
+            sql += f" AND {zone_column} = ?"
+            params = (*params, self._to_int(args.get("zona_origen"), 0))
+        if args.get("simular"):
+            return {"simulado": True, "pedido": key, "linea": line_number, "campo_zona": zone_column, "sentencias": [sql]}
+        count = self.db.execute(sql, params)
+        return {"simulado": False, "pedido": key, "linea": line_number, "campo_zona": zone_column, "filas_afectadas": count}
+
+    def pedido_albaranar(self, args: dict[str, Any]) -> dict[str, Any]:
+        self._require_write()
+        order_key = self._pedido_key(args)
+        header = self._pedido_header(order_key)
+        lines = self._pedido_lines(order_key)
+        selected_quantities: dict[int, float] = {}
+        for item in args.get("lineas") or []:
+            if isinstance(item, dict):
+                selected_quantities[self._to_int(item.get("linea", item.get("numlin")), 0)] = self._to_float(item.get("cantidad", item.get("cantid")), 0)
+        delivery_lines: list[dict[str, Any]] = []
+        for line in lines:
+            if str(line.get("dmv_tiplin") or "").upper() not in {"D", "X"}:
+                continue
+            line_number = self._to_int(line.get("dmv_numlin"), 0)
+            quantity = selected_quantities.get(line_number, self._to_float(line.get("dmv_canpen"), 0) or self._to_float(line.get("dmv_cantid"), 0))
+            if quantity <= 0:
+                continue
+            delivery_lines.append({
+                "articulo": line.get("dmv_codart"),
+                "descripcion": line.get("dmv_descri"),
+                "cantidad": quantity,
+                "precio": line.get("dmv_preven"),
+                "dto1": line.get("dmv_dto1"),
+                "dto2": line.get("dmv_dto2"),
+                "unidad": line.get("dmv_unimed"),
+                "origen_ejercicio": order_key["ejercicio"],
+                "origen_tipo_documento": order_key["tipdoc"],
+                "origen_serie": order_key["serie"],
+                "origen_numero": order_key["numero"],
+                "origen_linea": line_number,
+            })
+        if not delivery_lines:
+            raise KofedasError("No hay lineas con cantidad para albaranar")
+        payload = {
+            "empresa": order_key["empresa"],
+            "centro": order_key["centro"],
+            "tipo_documento": "A",
+            "tipo_accion": order_key["tipac"],
+            "serie": args.get("serie_albaran"),
+            "cliente": header.get("cbv_codcli"),
+            "subcliente": header.get("cbv_subcli"),
+            "fecha": args.get("fecha"),
+            "fecha_entrega": args.get("fecha"),
+            "observaciones": "Albaran generado desde pedido "
+            + f"{order_key['ejercicio']}/{order_key['serie']}/{order_key['numero']}",
+            "referencia_cliente": header.get("cbv_refcli"),
+            "retira": header.get("cbv_retira"),
+            "lineas": delivery_lines,
+            "simular": args.get("simular"),
+        }
+        result = self.venta_documento_alta(payload)
+        if args.get("cerrar_pedido") and not args.get("simular"):
+            result["cierre_pedido"] = self.pedido_cerrar({**args, "simular": False})
+        return {"pedido": order_key, "albaran": result}
+
+    def pedido_pdf_gestion(self, args: dict[str, Any]) -> dict[str, Any]:
+        action = str(args.get("accion") or "").strip().lower()
+        if action not in {"generar", "obtener"}:
+            raise KofedasError("accion debe ser generar u obtener")
+        key = self._pedido_key(args)
+        html = self._pedido_html(key)
+        encoded = base64.b64encode(html.encode("utf-8")).decode("ascii")
+        return {
+            "accion": action,
+            "pedido": key,
+            "formato": "html",
+            "mime_type": "text/html; charset=utf-8",
+            "nombre_fichero": f"pedido_{key['ejercicio']}_{key['serie']}_{key['numero']}.html",
+            "content_base64": encoded,
+            "nota": "Kofedas MCP genera HTML autonomo; no ejecuta el motor de informes Delphi.",
+        }
+
+    def pedido_enviar(self, args: dict[str, Any]) -> dict[str, Any]:
+        key = self._pedido_key(args)
+        header = self._pedido_header(key)
+        attachment = self.pedido_pdf_gestion({**args, "accion": "generar"})
+        email = str(args.get("email") or header.get("cli_email") or "").strip()
+        subject = str(args.get("asunto") or f"Pedido {key['ejercicio']}/{key['serie']}/{key['numero']}").strip()
+        return {
+            "enviado": False,
+            "pedido": key,
+            "destinatario": email,
+            "asunto": subject,
+            "adjunto": attachment,
+            "nota": "Funcion preparada para integracion: devuelve el contenido, pero no envia correo desde el MCP.",
+        }
 
     def cartera_tablas(self, args: dict[str, Any]) -> list[dict[str, Any]]:
         del args

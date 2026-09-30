@@ -96,6 +96,18 @@ lectura/escritura controlada:
 - `venta_documento_alta_preparar`
 - `venta_documento_alta`
 - `venta_pedido_alta`
+- `pedido_crear`
+- `pedido_listar`
+- `pedido_detalle`
+- `pedido_cerrar`
+- `pedido_situacion_actualizar`
+- `pedido_retirada_actualizar`
+- `pedido_albaranar`
+- `pedido_marcar_preparado`
+- `pedido_finalizar`
+- `pedido_linea_mover`
+- `pedido_pdf_gestion`
+- `pedido_enviar`
 - `cartera_tablas`
 - `cartera_efectos_detalle`
 - `cartera_deuda_cliente`
@@ -217,6 +229,18 @@ de `ANADOC`: trabajan por cabecera `CABDOCV`, calculan base, IVA, recargo,
 total, cobrado y pendiente, y permiten agrupar por tipo de documento, cliente,
 forma de pago, forma de cobro, representante/agente, poblacion, centro, serie,
 mes, dia de semana, hora, situacion o tarjeta.
+
+El grupo Pedidos de cliente anade compatibilidad con las funciones operativas
+de Kronos sobre las tablas Kofedas `CABDOCV` y `DETMOV`. `pedido_crear` es un
+alias compatible de alta de pedido y acepta `cliente/subcliente` o
+`codcli/subcli`; `pedido_listar` y `pedido_detalle` consultan el cuadro de
+pedidos, historico por cliente y detalle normal/preparacion. Las funciones de
+escritura `pedido_cerrar`, `pedido_situacion_actualizar`,
+`pedido_retirada_actualizar`, `pedido_marcar_preparado`, `pedido_finalizar`,
+`pedido_linea_mover` y `pedido_albaranar` admiten `simular=true` cuando la
+operacion modifica datos. `pedido_pdf_gestion` y `pedido_enviar` preparan una
+salida HTML/Base64 del pedido para integraciones; no ejecutan el motor de
+informes Delphi ni envian correo directamente desde el MCP.
 
 El grupo Cartera cubre los vencimientos/efectos de clientes en `CABDOCVE`,
 enlazando con `CLIEN` y `CABDOCV` cuando hay cabecera origen. Permite listar

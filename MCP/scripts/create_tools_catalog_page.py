@@ -35,6 +35,7 @@ GROUP_LABELS = {
     "venta": "Ventas",
     "ventas": "Ventas / dashboard",
     "rentabilidad": "Ventas / rentabilidad",
+    "pedido": "Pedidos",
     "cartera": "Cartera",
     "dashboard": "Dashboard",
     "compras": "Dashboard",
@@ -55,6 +56,7 @@ GROUP_ORDER = [
     "Ventas",
     "Ventas / rentabilidad",
     "Ventas / dashboard",
+    "Pedidos",
     "Cartera",
     "Dashboard",
 ]
@@ -107,6 +109,8 @@ def group_label(name: str, description: str) -> str:
         "Entradas de Almacen",
         "Regularizaciones",
         "Ventas",
+        "Pedidos",
+        "Pedidos/almacen",
         "Cartera",
         "Dashboard ERP",
         "Ventas/Rentabilidad",
@@ -120,6 +124,7 @@ def group_label(name: str, description: str) -> str:
             "Ventas/ANADOC": "Ventas / dashboard",
             "Stock": "Articulos / stock",
             "Recuentos": "Regularizaciones",
+            "Pedidos/almacen": "Pedidos",
         }.get(first, first)
     return GROUP_LABELS.get(prefix(name), prefix(name).replace("_", " ").title())
 
@@ -302,7 +307,8 @@ def anchor(group: str) -> str:
 def main() -> None:
     output = ROOT / "examples" / "catalogo_funciones_mcp.html"
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(build_page(), encoding="utf-8")
+    page = "\n".join(line.rstrip() for line in build_page().splitlines()) + "\n"
+    output.write_text(page, encoding="utf-8")
     print(output)
 
 
